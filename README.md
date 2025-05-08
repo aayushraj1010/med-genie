@@ -1,5 +1,4 @@
-# Firebase Studio
+# MED GENIE
+## An AI Assistant for health
 
-This is a NextJS starter in Firebase Studio.
-
-To get started, take a look at src/app/page.tsx.
+Project for MS AINSI Internship
