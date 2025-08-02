@@ -5,15 +5,22 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center">
-        <Link href="/" className="mr-6 flex items-center space-x-2">
-          <LogoIcon className="h-6 w-6 text-primary" />
-          <span className="font-bold sm:inline-block text-lg">
-            Med Genie
-          </span>
-        </Link>
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          {/* Additional nav items can go here */}
+        {/* Combine logo/title with nav links for tight grouping */}
+        <div className="flex items-center space-x-6">
+          <Link href="/" className="flex items-center space-x-2">
+            <LogoIcon className="h-6 w-6 text-primary" />
+            <span className="font-bold sm:inline-block text-lg">
+              Med Genie
+            </span>
+          </Link>
+          {/* Links right next to brand */}
+          <nav className="flex items-center space-x-4">
+            <Link href="/about" className="hover:underline">About</Link>
+            <Link href="/contact" className="hover:underline">Contact</Link>
+          </nav>
         </div>
+        {/* This section keeps the rest space flexible, you can add more nav items here */}
+        <div className="flex-1" />
       </div>
     </header>
   );
