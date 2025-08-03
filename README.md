@@ -48,3 +48,8 @@ git clone https://github.com/your-username/med-genie.git
 cd med-genie
 
 # Run the project (open index.html or run locally via live server)
+```
+## 📝 License
+
+Released under the [MIT License](LICENSE).  
+You’re free to use, modify, and distribute this software with proper attribution.
