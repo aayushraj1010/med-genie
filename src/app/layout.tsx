@@ -5,6 +5,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from '@vercel/analytics/react';
 import { StructuredData } from './structured-data';
+import { SiteHeader } from '@/components/site-header';
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -110,6 +111,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <StructuredData />
+        <SiteHeader />
         {children}
         <Toaster />
         <Analytics />
