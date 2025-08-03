@@ -1,6 +1,6 @@
 'use client';
 
-import { User, Bot, Brain, UserCircle2 } from 'lucide-react';
+import { User, Bot, UserCircle2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -8,6 +8,7 @@ import type { ChatMessage } from '@/lib/types';
 import { FeedbackButtons } from './feedback-buttons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { RobotDoctorIcon } from './icons/robot-doctor-icon';
 
 
 interface ChatMessageItemProps {
@@ -17,21 +18,23 @@ interface ChatMessageItemProps {
 
 export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
   const isUser = message.sender === 'user';
-  const Icon = isUser ? UserCircle2 : Brain;
+  // Use a robot doctor icon for the bot
+  const Icon = isUser ? UserCircle2 : RobotDoctorIcon;
 
   const handleFeedback = (feedback: 'good' | 'bad') => {
     onFeedback(message.id, feedback);
   };
   
   // A simple way to add emojis based on sender, or if AI includes them, this can be removed/modified.
-  const messagePrefix = isUser ? '🧑‍💻 You: ' : '🧠 AI: ';
+  const messagePrefix = isUser ? '🧑‍💻 You: ' : '🤖 Med Genie: ';
 
   return (
     <div className={cn('flex items-end space-x-3', isUser ? 'justify-end' : 'justify-start')}>
       {!isUser && (
-        <Avatar className="h-8 w-8 self-start">
+        <Avatar className="h-10 w-10 self-start ring-2 ring-primary ring-offset-2 ring-offset-background">
+          <AvatarImage src="/images/robot-doctor.svg" alt="Med Genie" />
           <AvatarFallback className="bg-primary text-primary-foreground">
-            <Icon className="h-5 w-5" />
+            <Icon className="h-6 w-6" />
           </AvatarFallback>
         </Avatar>
       )}
@@ -40,10 +43,20 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
       )}>
         <CardContent className="p-3">
           {message.isLoading ? (
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-75"></div>
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-150"></div>
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-300"></div>
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center">
+                <span className="text-sm font-medium">🤖 Med Genie is thinking</span>
+                <span className="inline-flex ml-1">
+                  <span className="animate-bounce mx-px">.</span>
+                  <span className="animate-bounce animation-delay-200 mx-px">.</span>
+                  <span className="animate-bounce animation-delay-400 mx-px">.</span>
+                </span>
+              </div>
+              <div className="flex items-center space-x-2 mt-1">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-75"></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-150"></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-300"></div>
+              </div>
             </div>
           ) : (
              <ReactMarkdown
@@ -68,9 +81,9 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
         )}
       </Card>
       {isUser && (
-         <Avatar className="h-8 w-8 self-start">
+         <Avatar className="h-10 w-10 self-start">
           <AvatarFallback className="bg-secondary text-secondary-foreground">
-             <UserCircle2 className="h-5 w-5" />
+             <UserCircle2 className="h-6 w-6" />
           </AvatarFallback>
         </Avatar>
       )}
