@@ -44,7 +44,7 @@ Here’s how Med-Genie looks in action:
 - 🏥 Hospital & emergency contact guidance
 - 📋 Symptom-based suggestion system
 - 🌐 Fully responsive web UI
-- 🌗 Dark/Light mode toggle for better user experience
+- 🌗 Dark or Light mode toggle for better user experience
 - 🔒 Privacy-focused (no user data stored)
 
 ---
