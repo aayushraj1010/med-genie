@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { LogoIcon } from '@/components/icons/logo-icon';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export function SiteHeader() {
   return (
@@ -21,6 +22,10 @@ export function SiteHeader() {
         </div>
         {/* This section keeps the rest space flexible, you can add more nav items here */}
         <div className="flex-1" />
+        {/* Theme toggle button */}
+        <div className="flex items-center">
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

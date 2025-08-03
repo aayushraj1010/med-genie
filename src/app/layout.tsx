@@ -5,6 +5,7 @@ import { StructuredData } from './structured-data';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
+import { ThemeProvider } from '@/hooks/use-theme';
 import './globals.css';
 
 const geistSans = GeistSans;
@@ -111,13 +112,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
-        <StructuredData />
-        <SiteHeader />
-        {children}
-        <Toaster />
-        <Analytics />
+        <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
+          <StructuredData />
+          <SiteHeader />
+          {children}
+          <Toaster />
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );
