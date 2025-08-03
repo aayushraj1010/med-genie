@@ -8,7 +8,7 @@ import { ChatInputForm } from '@/components/chat-input-form';
 import { UserProfileModal } from '@/components/user-profile-modal';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
+import {
   personalizedHealthQuestionAnswering,
   type PersonalizedHealthQuestionAnsweringInput,
   type PersonalizedHealthQuestionAnsweringOutput
@@ -262,7 +262,7 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
-      <SiteHeader />
+      {/* <SiteHeader /> */}
       <div className="flex flex-1 overflow-hidden"> {/* Main content area */}
         
         {/* Left Column: Chat Interface */}
