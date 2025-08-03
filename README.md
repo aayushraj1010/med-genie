@@ -74,9 +74,11 @@ med-genie/
 
 ## 🛠 Tech Stack
 
-- *Frontend:* HTML, CSS, JavaScript
-- *AI Integration:* OpenAI API (or similar)
-- *Deployment:* Vercel
+- **Frontend:** Next.js 15, React 18, TypeScript  
+- **UI:** Tailwind CSS, Radix UI components  
+- **AI Integration:** Genkit with Google AI (Gemini)  
+- **Deployment:** Vercel  
+- **SEO:** Comprehensive metadata, Open Graph, Twitter Cards  
 
 ---
 
@@ -94,28 +96,91 @@ med-genie/
 git clone https://github.com/aayushraj1010/med-genie.git
 cd med-genie
 
-# Run the project
+```bash
+# Clone the repo
+git clone https://github.com/your-username/med-genie.git
+cd med-genie
 
-# Option 1: Open the index.html file directly in your browser
+# Install dependencies
+npm install
 
-# Option 2: Use VS Code Live Server
-# - Install the Live Server extension
-# - Right-click on index.html → “Open with Live Server”
-```
+# Run the development server
+npm run dev
 
----
+# Open http://localhost:9002 in your browser
+🔍 SEO & Social Sharing
+This project includes comprehensive SEO optimization:
 
-## 📜 License
+Meta Tags: Complete meta description, keywords, and author information
 
-This project is licensed under the terms of the [MIT License](License.md).  
-Feel free to use, modify, and distribute it with proper attribution.
+Open Graph: Facebook and social media sharing optimization
 
----
-=======
-# Run the project (open index.html or run locally via live server)
-```
-## 📝 License
+Twitter Cards: Optimized Twitter sharing with large image cards
 
-Released under the [MIT License](LICENSE).  
+Structured Data: JSON-LD schema markup for better search engine understanding
+
+Sitemap: XML sitemap for search engine indexing
+
+Robots.txt: Search engine crawling instructions
+
+PWA Support: Web app manifest for mobile installation
+
+Favicon: Multiple favicon formats for different devices
+
+SEO Features Implemented:
+✅ Comprehensive Metadata
+
+Title templates and descriptions
+
+Keywords and author information
+
+Canonical URLs
+
+✅ Social Media Optimization
+
+Open Graph tags for Facebook/LinkedIn
+
+Twitter Card tags for Twitter
+
+Social sharing images
+
+✅ Search Engine Optimization
+
+Structured data (JSON-LD)
+
+Sitemap.xml
+
+Robots.txt
+
+Meta robots directives
+
+✅ Mobile & PWA Support
+
+Web app manifest
+
+Apple touch icons
+
+Theme colors
+
+Viewport optimization
+
+📝 License
+Released under the MIT License.
 You’re free to use, modify, and distribute this software with proper attribution.
 
+yaml
+Copy
+Edit
+
+---
+
+### 🛠 What You Should Do on GitHub:
+
+1. Click **“Resolve conflicts”** on the PR.
+2. Replace the entire conflicted block with the version above.
+3. Click **“Mark as resolved”**
+4. Click **“Commit merge”**
+
+---
+
+If you’re still maintaining an alternate HTML version for legacy purposes, I can also help add both options side-by-side. Otherwise, the above version is best for a **Next.js-first production app**. Let me know if you want that version too.
