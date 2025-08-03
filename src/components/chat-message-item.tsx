@@ -38,8 +38,8 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
           </AvatarFallback>
         </Avatar>
       )}
-      <Card className={cn('max-w-lg lg:max-w-xl xl:max-w-2xl rounded-xl shadow-md', 
-        isUser ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card text-card-foreground rounded-bl-none'
+      <Card className={cn('max-w-lg lg:max-w-xl xl:max-w-2xl rounded-xl shadow-md card-enhanced', 
+        isUser ? 'bg-primary bg-opacity-90 text-primary-foreground rounded-br-none' : 'bg-card bg-opacity-80 text-card-foreground rounded-bl-none'
       )}>
         <CardContent className="p-3">
           {message.isLoading ? (

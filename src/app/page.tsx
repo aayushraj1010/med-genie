@@ -6,6 +6,7 @@ import { SiteHeader } from '@/components/site-header';
 import { ChatMessageItem } from '@/components/chat-message-item';
 import { ChatInputForm } from '@/components/chat-input-form';
 import { UserProfileModal } from '@/components/user-profile-modal';
+import { BackgroundParticles } from '@/components/background-particles';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -261,20 +262,21 @@ export default function HomePage() {
 
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
+    <div className="flex flex-col h-screen bg-med-genie-dark text-foreground">
+      <BackgroundParticles />
       {/* <SiteHeader /> */}
-      <div className="flex flex-1 overflow-hidden"> {/* Main content area */}
+      <div className="flex flex-1 overflow-hidden content-container"> {/* Main content area */}
         
         {/* Left Column: Chat Interface */}
         <main className="flex flex-col flex-1 p-4 overflow-hidden">
           <div className="flex justify-end mb-4 shrink-0">
-            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)}>
+            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} className="backdrop-blur-sm bg-opacity-70 bg-card">
               <Info className="mr-2 h-4 w-4" />
               Update Health Info
             </Button>
           </div>
 
-          <ScrollArea className="flex-grow min-h-0 mb-4" viewportRef={viewportRef}>
+          <ScrollArea className="flex-grow min-h-0 mb-4 rounded-lg" viewportRef={viewportRef}>
             <div className="space-y-4 max-w-3xl mx-auto pr-4">
               {messages.map((msg) => (
                 <ChatMessageItem key={msg.id} message={msg} onFeedback={handleFeedback} />
@@ -289,15 +291,29 @@ export default function HomePage() {
         </main>
 
         {/* Right Column: Important Notice */}
-        <aside className="md:w-1/3 lg:w-80 xl:w-96 p-4 border-l border-border/40 bg-card overflow-y-auto hidden md:flex md:flex-col">
-           <div className="sticky top-4">
-            <Alert variant="default">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Important Notice</AlertTitle>
-                <AlertDescription>
+        <aside className="md:w-1/3 lg:w-80 xl:w-96 p-4 border-l border-border/40 overflow-y-auto hidden md:flex md:flex-col backdrop-blur-sm bg-opacity-30 bg-card">
+           <div className="sticky top-4 space-y-4">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-bold text-primary-foreground mb-2">Med Genie</h2>
+              <p className="text-sm text-primary-foreground/80">Your AI Health Assistant</p>
+            </div>
+            
+            <Alert variant="default" className="card-enhanced border-2 border-primary/30 shadow-lg pulse-animation">
+                <AlertCircle className="h-5 w-5 text-primary" />
+                <AlertTitle className="text-lg font-bold mb-2 text-primary-foreground">Important Notice</AlertTitle>
+                <AlertDescription className="text-primary-foreground/90 leading-relaxed">
                   Med Genie provides information for general knowledge only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
                 </AlertDescription>
             </Alert>
+            
+            <div className="mt-6 p-4 rounded-lg card-enhanced border border-primary/20">
+              <h3 className="text-md font-semibold mb-2 text-primary-foreground">How to Use Med Genie</h3>
+              <ul className="list-disc pl-5 text-sm space-y-2 text-primary-foreground/90">
+                <li>Ask any health-related questions</li>
+                <li>Provide your health information for personalized answers</li>
+                <li>Get AI-powered health insights</li>
+              </ul>
+            </div>
            </div>
         </aside>
       </div>
