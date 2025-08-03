@@ -1,11 +1,12 @@
-import type { Metadata } from 'next';
-import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
-import './globals.css';
+import { SiteHeader } from '@/components/site-header';
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from '@vercel/analytics/react';
 import { StructuredData } from './structured-data';
 import { SiteHeader } from '@/components/site-header';
+import { GeistMono } from 'geist/font/mono';
+import { GeistSans } from 'geist/font/sans';
+import type { Metadata } from 'next';
+import './globals.css';
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -115,7 +116,4 @@ export default function RootLayout({
         {children}
         <Toaster />
         <Analytics />
-      </body>
-    </html>
-  );
-}
+
