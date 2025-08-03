@@ -34,9 +34,11 @@ This chatbot aims to make healthcare assistance more accessible by enabling user
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** HTML, CSS, JavaScript
-- **AI Integration:** OpenAI API (or similar)
+- **Frontend:** Next.js 15, React 18, TypeScript
+- **UI:** Tailwind CSS, Radix UI components
+- **AI Integration:** Genkit with Google AI (Gemini)
 - **Deployment:** Vercel
+- **SEO:** Comprehensive metadata, Open Graph, Twitter Cards
 
 ---
 
@@ -47,4 +49,48 @@ This chatbot aims to make healthcare assistance more accessible by enabling user
 git clone https://github.com/your-username/med-genie.git
 cd med-genie
 
-# Run the project (open index.html or run locally via live server)
+# Install dependencies
+npm install
+
+# Run the development server
+npm run dev
+
+# Open http://localhost:9002 in your browser
+```
+
+## 🔍 SEO & Social Sharing
+
+This project includes comprehensive SEO optimization:
+
+- **Meta Tags:** Complete meta description, keywords, and author information
+- **Open Graph:** Facebook and social media sharing optimization
+- **Twitter Cards:** Optimized Twitter sharing with large image cards
+- **Structured Data:** JSON-LD schema markup for better search engine understanding
+- **Sitemap:** XML sitemap for search engine indexing
+- **Robots.txt:** Search engine crawling instructions
+- **PWA Support:** Web app manifest for mobile installation
+- **Favicon:** Multiple favicon formats for different devices
+
+### SEO Features Implemented:
+
+✅ **Comprehensive Metadata**
+- Title templates and descriptions
+- Keywords and author information
+- Canonical URLs
+
+✅ **Social Media Optimization**
+- Open Graph tags for Facebook/LinkedIn
+- Twitter Card tags for Twitter
+- Social sharing images
+
+✅ **Search Engine Optimization**
+- Structured data (JSON-LD)
+- Sitemap.xml
+- Robots.txt
+- Meta robots directives
+
+✅ **Mobile & PWA Support**
+- Web app manifest
+- Apple touch icons
+- Theme colors
+- Viewport optimization

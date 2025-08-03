@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "generate-og": "node scripts/generate-og-image.js"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.6.2",
