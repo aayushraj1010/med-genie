@@ -16,7 +16,7 @@ A smart AI-powered medical chatbot that assists users with basic health-related 
 
 ## 🎯 About the Project
 
-*Med-Genie* is an open-source project developed during the *MS AINSI Internship* and now selected as a part of *GirlScript Summer of Code 2025 (GSSoC'25)*.
+*Med-Genie is an open-source project developed during the Open Source Health Tech Initiative and now selected as a part of GirlScript Summer of Code 2025 (GSSoC'25).*
 
 This chatbot aims to make healthcare assistance more accessible by enabling users to chat naturally with an AI for health advice and emergency information.
 
