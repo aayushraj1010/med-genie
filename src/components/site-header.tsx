@@ -1,18 +1,10 @@
-'use client';
-
 import Link from 'next/link';
 import { LogoIcon } from '@/components/icons/logo-icon';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { VoiceSettingsButton } from '@/components/voice-settings-button';
-import { useTextToSpeechContext } from '@/contexts/text-to-speech-context';
 
 export function SiteHeader() {
-  const { isSpeaking } = useTextToSpeechContext();
-  
   return (
-    <header className={`sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ${
-      isSpeaking() ? 'ring-2 ring-primary/20' : ''
-    }`}>
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center">
         {/* Combine logo/title with nav links for tight grouping */}
         <div className="flex items-center space-x-6">
@@ -31,8 +23,7 @@ export function SiteHeader() {
         {/* This section keeps the rest space flexible, you can add more nav items here */}
         <div className="flex-1" />
         {/* Theme toggle button */}
-        <div className="flex items-center space-x-2">
-          <VoiceSettingsButton />
+        <div className="flex items-center">
           <ThemeToggle />
         </div>
       </div>
