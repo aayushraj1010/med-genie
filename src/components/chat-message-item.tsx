@@ -70,15 +70,20 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
       >
         <CardContent className="p-3">
           {message.isLoading ? (
-            <div 
-              className="flex items-center space-x-2"
-              role="status"
-              aria-label="Med Genie is thinking"
-            >
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-75"></div>
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-150"></div>
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-300"></div>
-              <span className="sr-only">Med Genie is processing your question</span>
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center">
+                <span className="text-sm font-medium">🤖 Med Genie is thinking</span>
+                <span className="inline-flex ml-1">
+                  <span className="animate-bounce mx-px">.</span>
+                  <span className="animate-bounce animation-delay-200 mx-px">.</span>
+                  <span className="animate-bounce animation-delay-400 mx-px">.</span>
+                </span>
+              </div>
+              <div className="flex items-center space-x-2 mt-1">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-75"></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-150"></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-300"></div>
+              </div>
             </div>
           ) : (
              <ReactMarkdown
@@ -107,8 +112,10 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
         )}
       </Card>
       {isUser && (
+
          <Avatar className="h-10 w-10 self-start">
-rFallback className="bg-secondary text-secondary-foreground">
+          <AvatarFallback className="bg-secondary text-secondary-foreground">
+
              <UserCircle2 className="h-6 w-6" />
           </AvatarFallback>
         </Avatar>
