@@ -10,15 +10,31 @@
 
 A smart AI-powered medical chatbot that assists users with basic health-related queries and helps guide them during emergencies through natural conversations.
 
-> 🚀 **Live Website:** [https://med-genie-five.vercel.app/](https://med-genie-five.vercel.app/)
+> 🚀 *Live Website:* [https://med-genie-five.vercel.app/](https://med-genie-five.vercel.app/)
 
 ---
 
 ## 🎯 About the Project
 
-**Med-Genie** is an open-source project developed during the **MS AINSI Internship** and now selected as a part of **GirlScript Summer of Code 2025 (GSSoC'25)**.
+*Med-Genie is an open-source project developed during the Open Source Health Tech Initiative and now selected as a part of GirlScript Summer of Code 2025 (GSSoC'25).*
 
 This chatbot aims to make healthcare assistance more accessible by enabling users to chat naturally with an AI for health advice and emergency information.
+
+>  This project is part of [GirlScript Summer of Code 2025](https://gssoc.girlscript.tech/)
+
+
+
+---
+
+## 📸 Demo
+
+Here’s how Med-Genie looks in action:
+
+### 🔹 Welcome Screen
+![Welcome Screen](./assets/demo1.png)
+
+### 🔹 Chat in Action
+![Chatbot Demo](./assets/demo2.png)
 
 ---
 
@@ -28,28 +44,144 @@ This chatbot aims to make healthcare assistance more accessible by enabling user
 - 🏥 Hospital & emergency contact guidance
 - 📋 Symptom-based suggestion system
 - 🌐 Fully responsive web UI
+- 🌗 Dark or Light mode toggle for better user experience
 - 🔒 Privacy-focused (no user data stored)
 
 ---
 
-## 🛠️ Tech Stack
+## 📂 Folder Structure
+```text
+med-genie/
+├── assets/
+│   ├── demo1.png
+│   └── demo2.png
+├── src/
+├── .gitignore
+├── components.json
+├── License.md
+├── next-env.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── README.md
+├── tailwind.config.ts
+└── tsconfig.json
+```
 
-- **Frontend:** HTML, CSS, JavaScript
-- **AI Integration:** OpenAI API (or similar)
-- **Deployment:** Vercel
+---
+
+
+
+## 🛠 Tech Stack
+
+- **Frontend:** Next.js 15, React 18, TypeScript  
+- **UI:** Tailwind CSS, Radix UI components  
+- **AI Integration:** Genkit with Google AI (Gemini)  
+- **Deployment:** Vercel  
+- **SEO:** Comprehensive metadata, Open Graph, Twitter Cards  
 
 ---
 
 ## 📁 Getting Started
+
+### 🔧 Prerequisites
+
+- Web browser (Chrome, Firefox, etc.)  
+- VS Code (optional, for Live Server preview)
+
+### 🧪 Installation
+
+```bash
+# Clone the repo
+git clone https://github.com/aayushraj1010/med-genie.git
+cd med-genie
 
 ```bash
 # Clone the repo
 git clone https://github.com/your-username/med-genie.git
 cd med-genie
 
-# Run the project (open index.html or run locally via live server)
-```
-## 📝 License
+# Install dependencies
+npm install
 
-Released under the [MIT License](LICENSE).  
+# Run the development server
+npm run dev
+
+# Open http://localhost:9002 in your browser
+🔍 SEO & Social Sharing
+This project includes comprehensive SEO optimization:
+
+Meta Tags: Complete meta description, keywords, and author information
+
+Open Graph: Facebook and social media sharing optimization
+
+Twitter Cards: Optimized Twitter sharing with large image cards
+
+Structured Data: JSON-LD schema markup for better search engine understanding
+
+Sitemap: XML sitemap for search engine indexing
+
+Robots.txt: Search engine crawling instructions
+
+PWA Support: Web app manifest for mobile installation
+
+Favicon: Multiple favicon formats for different devices
+
+SEO Features Implemented:
+✅ Comprehensive Metadata
+
+Title templates and descriptions
+
+Keywords and author information
+
+Canonical URLs
+
+✅ Social Media Optimization
+
+Open Graph tags for Facebook/LinkedIn
+
+Twitter Card tags for Twitter
+
+Social sharing images
+
+✅ Search Engine Optimization
+
+Structured data (JSON-LD)
+
+Sitemap.xml
+
+Robots.txt
+
+Meta robots directives
+
+✅ Mobile & PWA Support
+
+Web app manifest
+
+Apple touch icons
+
+Theme colors
+
+Viewport optimization
+
+📝 License
+Released under the MIT License.
 You’re free to use, modify, and distribute this software with proper attribution.
+
+yaml
+Copy
+Edit
+
+---
+
+### 🛠 What You Should Do on GitHub:
+
+1. Click **“Resolve conflicts”** on the PR.
+2. Replace the entire conflicted block with the version above.
+3. Click **“Mark as resolved”**
+4. Click **“Commit merge”**
+
+---
+
+If you’re still maintaining an alternate HTML version for legacy purposes, I can also help add both options side-by-side. Otherwise, the above version is best for a **Next.js-first production app**. Let me know if you want that version too.

@@ -271,13 +271,18 @@ export default function HomePage() {
         <main className="flex flex-col flex-1 p-4 overflow-hidden">
           <div className="flex justify-end mb-4 shrink-0">
             <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} className="backdrop-blur-sm bg-opacity-70 bg-card">
+        <main className="flex flex-col flex-1 p-4 overflow-hidden" role="main" aria-label="Chat with Med Genie">
+          <header className="flex justify-end mb-4 shrink-0">
+            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information for personalized responses">
               <Info className="mr-2 h-4 w-4" />
               Update Health Info
             </Button>
-          </div>
+          </header>
 
           <ScrollArea className="flex-grow min-h-0 mb-4 rounded-lg" viewportRef={viewportRef}>
             <div className="space-y-4 max-w-3xl mx-auto pr-4">
+          <ScrollArea className="flex-grow min-h-0 mb-4" viewportRef={viewportRef} role="log" aria-label="Chat messages">
+            <div className="space-y-4 max-w-3xl mx-auto pr-4" role="list" aria-label="Chat conversation">
               {messages.map((msg) => (
                 <ChatMessageItem key={msg.id} message={msg} onFeedback={handleFeedback} />
               ))}
@@ -302,6 +307,7 @@ export default function HomePage() {
                 <AlertCircle className="h-5 w-5 text-primary" />
                 <AlertTitle className="text-lg font-bold mb-2 text-primary-foreground">Important Notice</AlertTitle>
                 <AlertDescription className="text-primary-foreground/90 leading-relaxed">
+
                   Med Genie provides information for general knowledge only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
                 </AlertDescription>
             </Alert>
