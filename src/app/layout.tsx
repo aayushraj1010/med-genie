@@ -6,8 +6,6 @@ import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
 import { ThemeProvider } from '@/hooks/use-theme';
-import { TextToSpeechProvider } from '@/contexts/text-to-speech-context';
-import { SettingsProvider } from '@/contexts/settings-context';
 import './globals.css';
 
 const geistSans = GeistSans;
@@ -117,15 +115,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
-          <SettingsProvider>
-            <TextToSpeechProvider>
-              <StructuredData />
-              <SiteHeader />
-              {children}
-              <Toaster />
-              <Analytics />
-            </TextToSpeechProvider>
-          </SettingsProvider>
+          <StructuredData />
+          <SiteHeader />
+          {children}
+          <Toaster />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

@@ -41,9 +41,6 @@ Here’s how Med-Genie looks in action:
 ## 💡 Features
 
 - 💬 Conversational AI for basic health questions
-- 🎤 Voice input with speech-to-text functionality
-- 🔊 Text-to-speech for AI responses
-- 🎛️ Voice settings with auto-speak options
 - 🏥 Hospital & emergency contact guidance
 - 📋 Symptom-based suggestion system
 - 🌐 Fully responsive web UI

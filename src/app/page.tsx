@@ -15,8 +15,6 @@ import {
 } from '@/ai/flows/personalized-health-question-answering';
 import type { ChatMessage, UserProfile, AISuggestedKey } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { useSettings } from '@/contexts/settings-context';
-import { useTextToSpeechContext } from '@/contexts/text-to-speech-context';
 import { AlertCircle, Info } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
@@ -39,8 +37,6 @@ export default function HomePage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const { settings } = useSettings();
-  const { speak, stop, isSpeaking } = useTextToSpeechContext();
 
   useEffect(() => {
     if (viewportRef.current) {
@@ -51,22 +47,6 @@ export default function HomePage() {
     }
   }, [messages]);
 
-  // Keyboard shortcut to stop speech (Escape key)
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isSpeaking()) {
-        stop();
-        toast({
-          title: "Speech Stopped",
-          description: "Speech stopped by keyboard shortcut (Escape)",
-        });
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [stop, isSpeaking, toast]);
-
   const handleFeedback = (messageId: string, feedback: 'good' | 'bad') => {
     setMessages((prevMessages) =>
       prevMessages.map((msg) =>
@@ -74,15 +54,6 @@ export default function HomePage() {
       )
     );
     console.log(`Feedback for message ${messageId}: ${feedback}`);
-  };
-
-  const handleAutoSpeak = (text: string, messageId: string) => {
-    if (settings.autoSpeak && settings.voiceEnabled) {
-      // Add a small delay to ensure the message is rendered first
-      setTimeout(() => {
-        speak(text, messageId);
-      }, 500);
-    }
   };
 
   const handleSubmitQuestion = async (question: string) => {
@@ -123,15 +94,13 @@ export default function HomePage() {
         else if (result.followUpQuestion.toLowerCase().includes('symptom')) keyToUpdate = 'symptoms';
 
         const aiInfoMessageText = result.answer && result.answer !== result.followUpQuestion ? result.answer : "To provide a more accurate response, I need a little more information.";
-        const aiInfoMessageId = `ai-info-${Date.now()}`;
         const aiInfoMessage: ChatMessage = {
-            id: aiInfoMessageId,
+            id: `ai-info-${Date.now()}`,
             text: aiInfoMessageText,
             sender: 'ai',
             timestamp: Date.now(),
         };
         setMessages((prev) => [...prev, aiInfoMessage]);
-        handleAutoSpeak(aiInfoMessageText, aiInfoMessageId);
         
         const aiFollowUpMessage: ChatMessage = {
           id: `ai-followup-prompt-${Date.now()}`,
@@ -146,15 +115,13 @@ export default function HomePage() {
         setIsProfileModalOpen(true); 
 
       } else {
-        const aiResponseMessageId = `ai-response-${Date.now()}`;
         const aiResponseMessage: ChatMessage = {
-          id: aiResponseMessageId,
+          id: `ai-response-${Date.now()}`,
           text: result.answer,
           sender: 'ai',
           timestamp: Date.now(),
         };
         setMessages((prev) => [...prev, aiResponseMessage]);
-        handleAutoSpeak(result.answer, aiResponseMessageId);
       }
     } catch (error) {
       console.error('Error fetching AI response:', error);
@@ -213,15 +180,13 @@ export default function HomePage() {
         const result: PersonalizedHealthQuestionAnsweringOutput = await personalizedHealthQuestionAnswering(updatedInput);
         setMessages(prev => prev.filter(msg => msg.id !== aiLoadingMessageId));
   
-        const aiResponseMessageId = `ai-refined-response-${Date.now()}`;
         const aiResponseMessage: ChatMessage = {
-          id: aiResponseMessageId,
+          id: `ai-refined-response-${Date.now()}`,
           text: result.answer || "Thank you for the information. How else can I help you?",
           sender: 'ai',
           timestamp: Date.now(),
         };
         setMessages((prev) => [...prev, aiResponseMessage]);
-        handleAutoSpeak(result.answer || "Thank you for the information. How else can I help you?", aiResponseMessageId);
   
         if (result.followUpQuestion) {
           const aiFollowUpMessage: ChatMessage = {
