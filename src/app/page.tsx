@@ -268,19 +268,14 @@ export default function HomePage() {
       <div className="flex flex-1 overflow-hidden content-container"> {/* Main content area */}
         
         {/* Left Column: Chat Interface */}
-        <main className="flex flex-col flex-1 p-4 overflow-hidden">
-          <div className="flex justify-end mb-4 shrink-0">
-            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} className="backdrop-blur-sm bg-opacity-70 bg-card">
         <main className="flex flex-col flex-1 p-4 overflow-hidden" role="main" aria-label="Chat with Med Genie">
           <header className="flex justify-end mb-4 shrink-0">
-            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information for personalized responses">
+            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information for personalized responses" className="backdrop-blur-sm bg-opacity-70 bg-card">
               <Info className="mr-2 h-4 w-4" />
               Update Health Info
             </Button>
           </header>
 
-          <ScrollArea className="flex-grow min-h-0 mb-4 rounded-lg" viewportRef={viewportRef}>
-            <div className="space-y-4 max-w-3xl mx-auto pr-4">
           <ScrollArea className="flex-grow min-h-0 mb-4" viewportRef={viewportRef} role="log" aria-label="Chat messages">
             <div className="space-y-4 max-w-3xl mx-auto pr-4" role="list" aria-label="Chat conversation">
               {messages.map((msg) => (
