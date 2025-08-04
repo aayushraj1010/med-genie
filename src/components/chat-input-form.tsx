@@ -24,13 +24,14 @@ export function ChatInputForm({ onSubmit, isLoading, placeholder = "Ask Med Geni
   };
 
   return (
+    <form onSubmit={handleSubmit} className="p-4 backdrop-blur-sm bg-opacity-70 bg-card border-t border-border/40 shadow-md rounded-lg">
     <form onSubmit={handleSubmit} className="p-4 bg-background border-t border-border/40 shadow-sm" role="form" aria-label="Chat with Med Genie">
       <div className="container max-w-3xl mx-auto flex items-center space-x-3">
         <Textarea
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           placeholder={placeholder}
-          className="flex-grow resize-none min-h-[40px] max-h-[150px] py-2"
+          className="flex-grow resize-none min-h-[40px] max-h-[150px] py-2 custom-textarea"
           rows={1}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -47,6 +48,7 @@ export function ChatInputForm({ onSubmit, isLoading, placeholder = "Ask Med Geni
           type="submit" 
           disabled={isLoading || !question.trim()} 
           size="icon" 
+          className="shrink-0 bg-primary hover:bg-primary/90 transition-all duration-200"
           className="shrink-0"
           aria-label={isLoading ? "Sending message, please wait" : "Send your health question to Med Genie"}
           aria-describedby={isLoading ? "loading-description" : undefined}

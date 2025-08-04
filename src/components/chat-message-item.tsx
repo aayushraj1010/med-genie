@@ -37,12 +37,30 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
       {!isUser && (
         <Avatar className="h-10 w-10 self-start ring-2 ring-primary ring-offset-2 ring-offset-background">
           <AvatarImage src="/images/robot-doctor.svg" alt="Med Genie" />
-
           <AvatarFallback className="bg-primary text-primary-foreground">
             <Icon className="h-6 w-6" />
           </AvatarFallback>
         </Avatar>
       )}
+      <Card className={cn('max-w-lg lg:max-w-xl xl:max-w-2xl rounded-xl shadow-md card-enhanced', 
+        isUser ? 'bg-primary bg-opacity-90 text-primary-foreground rounded-br-none' : 'bg-card bg-opacity-80 text-card-foreground rounded-bl-none'
+      )}>
+        <CardContent className="p-3">
+          {message.isLoading ? (
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center">
+                <span className="text-sm font-medium">🤖 Med Genie is thinking</span>
+                <span className="inline-flex ml-1">
+                  <span className="animate-bounce mx-px">.</span>
+                  <span className="animate-bounce animation-delay-200 mx-px">.</span>
+                  <span className="animate-bounce animation-delay-400 mx-px">.</span>
+                </span>
+              </div>
+              <div className="flex items-center space-x-2 mt-1">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-75"></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-150"></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-300"></div>
+              </div>
       <Card 
         className={cn('max-w-lg lg:max-w-xl xl:max-w-2xl rounded-xl shadow-md', 
           isUser ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card text-card-foreground rounded-bl-none'
@@ -97,6 +115,7 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
 
          <Avatar className="h-10 w-10 self-start">
           <AvatarFallback className="bg-secondary text-secondary-foreground">
+
              <UserCircle2 className="h-6 w-6" />
           </AvatarFallback>
         </Avatar>
