@@ -266,16 +266,16 @@ export default function HomePage() {
       <div className="flex flex-1 overflow-hidden"> {/* Main content area */}
         
         {/* Left Column: Chat Interface */}
-        <main className="flex flex-col flex-1 p-4 overflow-hidden">
-          <div className="flex justify-end mb-4 shrink-0">
-            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)}>
+        <main className="flex flex-col flex-1 p-4 overflow-hidden" role="main" aria-label="Chat with Med Genie">
+          <header className="flex justify-end mb-4 shrink-0">
+            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information for personalized responses">
               <Info className="mr-2 h-4 w-4" />
               Update Health Info
             </Button>
-          </div>
+          </header>
 
-          <ScrollArea className="flex-grow min-h-0 mb-4" viewportRef={viewportRef}>
-            <div className="space-y-4 max-w-3xl mx-auto pr-4">
+          <ScrollArea className="flex-grow min-h-0 mb-4" viewportRef={viewportRef} role="log" aria-label="Chat messages">
+            <div className="space-y-4 max-w-3xl mx-auto pr-4" role="list" aria-label="Chat conversation">
               {messages.map((msg) => (
                 <ChatMessageItem key={msg.id} message={msg} onFeedback={handleFeedback} />
               ))}
@@ -289,11 +289,13 @@ export default function HomePage() {
         </main>
 
         {/* Right Column: Important Notice */}
-        <aside className="md:w-1/3 lg:w-80 xl:w-96 p-4 border-l border-border/40 bg-card overflow-y-auto hidden md:flex md:flex-col">
+        <aside className="md:w-1/3 lg:w-80 xl:w-96 p-4 border-l border-border/40 bg-card overflow-y-auto hidden md:flex md:flex-col" role="complementary" aria-label="Important medical notice">
            <div className="sticky top-4">
             <Alert variant="default">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Important Notice</AlertTitle>
+                <AlertTitle asChild>
+                  <h2>Important Notice</h2>
+                </AlertTitle>
                 <AlertDescription>
                   Med Genie provides information for general knowledge only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
                 </AlertDescription>

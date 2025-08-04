@@ -29,18 +29,27 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
   const messagePrefix = isUser ? '🧑‍💻 You: ' : '🤖 Med Genie: ';
 
   return (
-    <div className={cn('flex items-end space-x-3', isUser ? 'justify-end' : 'justify-start')}>
+    <div 
+      className={cn('flex items-end space-x-3', isUser ? 'justify-end' : 'justify-start')}
+      role="article"
+      aria-label={`${isUser ? 'Your message' : 'Med Genie response'}: ${message.text.substring(0, 50)}${message.text.length > 50 ? '...' : ''}`}
+    >
       {!isUser && (
         <Avatar className="h-10 w-10 self-start ring-2 ring-primary ring-offset-2 ring-offset-background">
           <AvatarImage src="/images/robot-doctor.svg" alt="Med Genie" />
+
           <AvatarFallback className="bg-primary text-primary-foreground">
             <Icon className="h-6 w-6" />
           </AvatarFallback>
         </Avatar>
       )}
-      <Card className={cn('max-w-lg lg:max-w-xl xl:max-w-2xl rounded-xl shadow-md', 
-        isUser ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card text-card-foreground rounded-bl-none'
-      )}>
+      <Card 
+        className={cn('max-w-lg lg:max-w-xl xl:max-w-2xl rounded-xl shadow-md', 
+          isUser ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card text-card-foreground rounded-bl-none'
+        )}
+        role="region"
+        aria-label={isUser ? 'Your message' : 'Med Genie response'}
+      >
         <CardContent className="p-3">
           {message.isLoading ? (
             <div className="flex flex-col space-y-2">
@@ -64,9 +73,13 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
               className="prose prose-sm dark:prose-invert max-w-none"
               components={{
                 p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
-                ul: ({node, ...props}) => <ul className="list-disc list-inside mb-2" {...props} />,
-                ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-2" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-disc list-inside mb-2" role="list" {...props} />,
+                ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-2" role="list" {...props} />,
+                li: ({node, ...props}) => <li role="listitem" {...props} />,
                 strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
+                h1: ({node, ...props}) => <h1 className="text-xl font-bold mb-2" {...props} />,
+                h2: ({node, ...props}) => <h2 className="text-lg font-bold mb-2" {...props} />,
+                h3: ({node, ...props}) => <h3 className="text-base font-bold mb-2" {...props} />,
                 // Add more custom renderers as needed
               }}
             >
@@ -81,6 +94,7 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
         )}
       </Card>
       {isUser && (
+
          <Avatar className="h-10 w-10 self-start">
           <AvatarFallback className="bg-secondary text-secondary-foreground">
              <UserCircle2 className="h-6 w-6" />

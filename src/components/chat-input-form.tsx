@@ -24,7 +24,7 @@ export function ChatInputForm({ onSubmit, isLoading, placeholder = "Ask Med Geni
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-background border-t border-border/40 shadow-sm">
+    <form onSubmit={handleSubmit} className="p-4 bg-background border-t border-border/40 shadow-sm" role="form" aria-label="Chat with Med Genie">
       <div className="container max-w-3xl mx-auto flex items-center space-x-3">
         <Textarea
           value={question}
@@ -39,13 +39,32 @@ export function ChatInputForm({ onSubmit, isLoading, placeholder = "Ask Med Geni
             }
           }}
           disabled={isLoading}
-          aria-label="Your health question"
+          aria-label="Type your health question here"
+          aria-describedby="chat-input-description"
+          aria-required="true"
         />
-        <Button type="submit" disabled={isLoading || !question.trim()} size="icon" className="shrink-0">
+        <Button 
+          type="submit" 
+          disabled={isLoading || !question.trim()} 
+          size="icon" 
+          className="shrink-0"
+          aria-label={isLoading ? "Sending message, please wait" : "Send your health question to Med Genie"}
+          aria-describedby={isLoading ? "loading-description" : undefined}
+        >
           {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <SendHorizonal className="h-5 w-5" />}
-          <span className="sr-only">Send</span>
+          <span className="sr-only">
+            {isLoading ? "Sending message, please wait" : "Send message"}
+          </span>
         </Button>
       </div>
+      <div id="chat-input-description" className="sr-only">
+        Type your health question and press Enter or click Send to get advice from Med Genie
+      </div>
+      {isLoading && (
+        <div id="loading-description" className="sr-only">
+          Med Genie is processing your question, please wait
+        </div>
+      )}
     </form>
   );
 }
