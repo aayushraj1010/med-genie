@@ -33,9 +33,6 @@ export function SiteFooter() {
                     </Link>
                 </div>
             </div>
-            <div className="mt-2 text-xs text-center text-muted-foreground">
-                Not medical advice • For information only
-            </div>
         </footer>
     );
 }
