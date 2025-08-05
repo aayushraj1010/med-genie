@@ -17,6 +17,7 @@ export function SiteHeader() {
           {/* Links right next to brand */}
           <nav className="flex items-center space-x-4">
             <Link href="/about" className="hover:underline">About</Link>
+            <Link href="/health-vault" className="hover:underline">Health Vault</Link>
             <Link href="/contact" className="hover:underline">Contact</Link>
           </nav>
         </div>
