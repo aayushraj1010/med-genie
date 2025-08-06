@@ -1,12 +1,13 @@
+import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import { Toaster } from '@/components/ui/toaster';
+import { ThemeProvider } from '@/hooks/use-theme';
 import { Analytics } from '@vercel/analytics/react';
-import { StructuredData } from './structured-data';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
-import { ThemeProvider } from '@/hooks/use-theme';
 import './globals.css';
+import { StructuredData } from './structured-data';
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -118,6 +119,7 @@ export default function RootLayout({
           <StructuredData />
           <SiteHeader />
           {children}
+          <SiteFooter />
           <Toaster />
           <Analytics />
         </ThemeProvider>
