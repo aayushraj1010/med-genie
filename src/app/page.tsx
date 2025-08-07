@@ -271,26 +271,30 @@ export default function HomePage() {
             <ChatInputForm onSubmit={handleSubmitQuestion} isLoading={isLoading} />
           </div>
         </main>
+        
 
         {/* Sidebar */}
         <aside className="md:w-1/3 lg:w-80 xl:w-96 p-4 border-l border-border/40 overflow-y-auto hidden md:flex md:flex-col backdrop-blur-sm bg-opacity-30 bg-card">
           <div className="sticky top-4 space-y-4">
             <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-primary-foreground mb-2">Med Genie</h2>
-              <p className="text-sm text-primary-foreground/80">Your AI Health Assistant</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Med Genie</h2>
+              <p className="text-sm text-gray-800 dark:text-gray-300">Your AI Health Assistant</p>
             </div>
 
-            <Alert variant="default" className="card-enhanced border-2 border-primary/30 shadow-lg pulse-animation">
+            
+              <Alert variant="default" className="card-enhanced border-2 border-primary/30 shadow-lg pulse-animation">
               <AlertCircle className="h-5 w-5 text-primary" />
-              <AlertTitle className="text-lg font-bold mb-2 text-primary-foreground">Important Notice</AlertTitle>
-              <AlertDescription className="text-primary-foreground/90 leading-relaxed">
-                Med Genie provides general health information and is not a substitute for professional medical advice. Always consult a doctor for serious concerns.
-              </AlertDescription>
+              <AlertTitle className="text-lg font-bold mb-2 text-gray-900 dark:text-white">Important Notice</AlertTitle>
+              <AlertDescription className="leading-relaxed text-gray-800 dark:text-gray-300">
+                 Med Genie provides general health information and is not a substitute for professional medical advice. Always consult a doctor for serious concerns.
+               </AlertDescription>
             </Alert>
 
+
             <div className="mt-6 p-4 rounded-lg card-enhanced border border-primary/20">
-              <h3 className="text-md font-semibold mb-2 text-primary-foreground">How to Use Med Genie</h3>
-              <ul className="list-disc pl-5 text-sm space-y-2 text-primary-foreground/90">
+              <h3 className="text-md font-semibold mb-2 text-gray-900 dark:text-white">How to Use Med Genie</h3>
+              <ul className="list-disc pl-5 text-sm space-y-2 text-gray-800 dark:text-gray-300">
+
                 <li>Ask any health-related questions</li>
                 <li>Update your health profile for better answers</li>
                 <li>Get AI-powered health insights</li>
