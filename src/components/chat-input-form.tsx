@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, type FormEvent } from 'react';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { SendHorizonal, Loader2 } from 'lucide-react';
+import { useState, type FormEvent } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { SendHorizonal, Loader2 } from "lucide-react";
 
 interface ChatInputFormProps {
   onSubmit: (question: string) => Promise<void>;
@@ -16,13 +16,13 @@ export function ChatInputForm({
   isLoading,
   placeholder = "Ask Med Genie about your health...",
 }: ChatInputFormProps) {
-  const [question, setQuestion] = useState('');
+  const [question, setQuestion] = useState("");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!question.trim() || isLoading) return;
     await onSubmit(question);
-    setQuestion('');
+    setQuestion("");
   };
 
   return (
@@ -40,7 +40,7 @@ export function ChatInputForm({
           className="flex-grow resize-none min-h-[40px] max-h-[150px] py-2 custom-textarea"
           rows={1}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
+            if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               handleSubmit(e as unknown as FormEvent<HTMLFormElement>);
             }
@@ -55,7 +55,11 @@ export function ChatInputForm({
           disabled={isLoading || !question.trim()}
           size="icon"
           className="shrink-0 bg-primary hover:bg-primary/90 transition-all duration-200"
-          aria-label={isLoading ? "Sending message, please wait" : "Send your health question to Med Genie"}
+          aria-label={
+            isLoading
+              ? "Sending message, please wait"
+              : "Send your health question to Med Genie"
+          }
           aria-describedby={isLoading ? "loading-description" : undefined}
         >
           {isLoading ? (
@@ -70,7 +74,8 @@ export function ChatInputForm({
       </div>
 
       <div id="chat-input-description" className="sr-only">
-        Type your health question and press Enter or click Send to get advice from Med Genie
+        Type your health question and press Enter or click Send to get advice
+        from Med Genie
       </div>
 
       {isLoading && (

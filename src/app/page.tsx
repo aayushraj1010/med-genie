@@ -256,6 +256,7 @@ export default function HomePage() {
               <Info className="mr-2 h-4 w-4" />
               Update Health Info
             </Button>
+            
           </header>
 
           <ScrollArea className="flex-grow min-h-0 mb-4 rounded-lg" viewportRef={viewportRef} role="log" aria-label="Chat conversation">
