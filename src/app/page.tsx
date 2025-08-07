@@ -75,6 +75,46 @@ export default function HomePage() {
     setMessages((prev) => [...prev, aiLoadingMessage]);
 
     try {
+          // 💡 Check if it's a hospital-related query
+    if (/hospital|emergency/i.test(question)) {
+const locationMatch = question.match(/(?:in|near|nearby|around)\s+([A-Za-z ]+)/i);
+      const location = locationMatch?.[1]?.trim();
+
+      if (location) {
+        try {
+          const res = await fetch(`/api/nearby-hospitals?state=${encodeURIComponent(location)}`);
+const data = await res.json();
+
+if (Array.isArray(data.hospitals) && data.hospitals.length > 0) {
+  const hospitalList = data.hospitals.slice(0, 5).map((h: any) =>
+    `🏥 **${h.name}**\n📍 ${h.address}\n📞 ${h.contact}`
+  ).join('\n\n');
+
+  const aiResponseMessage: ChatMessage = {
+    id: `ai-hospital-${Date.now()}`,
+    text: `Here are some nearby hospitals in **${location}**:\n\n${hospitalList}`,
+    sender: 'ai',
+    timestamp: Date.now(),
+  };
+  setMessages(prev => [...prev.filter(msg => msg.id !== aiLoadingMessage.id), aiResponseMessage]);
+  return;
+} else {
+  throw new Error("No hospitals found");
+}
+        } catch (err) {
+          console.error("Error fetching hospital data", err);
+          const aiErrorMessage: ChatMessage = {
+            id: `a-hospital-error-${Date.now()}`,
+            text: `😔 I couldn't find hospital data for "${location}". Please check the location name.`,
+            sender: 'ai',
+            timestamp: Date.now(),
+          };
+          setMessages(prev => [...prev.filter(msg => msg.id !== aiLoadingMessage.id), aiErrorMessage]);
+          return;
+        }
+      }
+    }
+
       const input: PersonalizedHealthQuestionAnsweringInput = {
         question,
         medicalHistory: userProfile.medicalHistory,
