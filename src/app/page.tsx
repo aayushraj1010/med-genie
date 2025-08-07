@@ -262,10 +262,8 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
-      {/* <SiteHeader /> */}
       <div className="flex flex-1 overflow-hidden"> {/* Main content area */}
         
-        {/* Left Column: Chat Interface */}
         <main className="flex flex-col flex-1 p-4 overflow-hidden" role="main" aria-label="Chat with Med Genie">
           <header className="flex justify-end mb-4 shrink-0">
             <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information for personalized responses">
@@ -294,7 +292,7 @@ export default function HomePage() {
             <Alert variant="default">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle asChild>
-                  <h2>Important Notice</h2>
+                  {/* <h2>Important Notice</h2> */}
                 </AlertTitle>
                 <AlertDescription>
                   Med Genie provides information for general knowledge only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.

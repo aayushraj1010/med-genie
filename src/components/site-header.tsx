@@ -16,8 +16,10 @@ export function SiteHeader() {
           </Link>
           {/* Links right next to brand */}
           <nav className="flex items-center space-x-4">
+
             <Link href="/about" className="hover:underline">About</Link>
             <Link href="/contact" className="hover:underline">Contact</Link>
+            <Link href='/register' className='hover:underline'>Register</Link>
           </nav>
         </div>
         {/* This section keeps the rest space flexible, you can add more nav items here */}
