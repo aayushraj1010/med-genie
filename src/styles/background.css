@@ -1,0 +1,103 @@
+/* Modern Background Styles for Med Genie */
+
+/* Light mode background */
+.bg-med-genie-light {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e1f5fe 50%, #e8f5e9 100%);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  position: relative;
+}
+
+.bg-med-genie-light::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2393c5fd' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Dark mode background */
+.bg-med-genie-dark {
+  background: linear-gradient(135deg, #0a1929 0%, #102a43 30%, #1a365d 70%, #0f2942 100%);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  position: relative;
+  
+  /* Enhanced radial gradient overlay with more vibrant colors */
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(41, 121, 255, 0.15) 0%, transparent 30%),
+    radial-gradient(circle at 80% 70%, rgba(66, 153, 225, 0.12) 0%, transparent 30%),
+    radial-gradient(circle at 50% 50%, rgba(0, 102, 204, 0.08) 0%, transparent 50%);
+}
+
+.bg-med-genie-dark::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234299e1' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.1;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Gradient animation */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Subtle pulse animation for important elements */
+@keyframes subtle-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(66, 153, 225, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(66, 153, 225, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(66, 153, 225, 0);
+  }
+}
+
+/* Apply pulse animation to important notice */
+.pulse-animation {
+  animation: subtle-pulse 3s infinite;
+}
+
+/* Content container to ensure content appears above the background pattern */
+.content-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Card styling enhancements */
+.card-enhanced {
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode card */
+.light .card-enhanced {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Dark mode card */
+.dark .card-enhanced {
+  background-color: rgba(16, 42, 67, 0.7);
+}

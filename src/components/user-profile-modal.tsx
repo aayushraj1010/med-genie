@@ -70,6 +70,15 @@ export function UserProfileModal({ isOpen, onClose, onSave, currentProfile, aiSu
   };
 
   const handleChange = (field: keyof UserProfile, value: string) => {
+    // Check if value is purely numeric (reject if so)
+    if (value.trim() && /^\d+$/.test(value.trim())) {
+      toast({
+        title: "Invalid Input",
+        description: "Please enter descriptive text rather than numbers only.",
+        variant: "destructive"
+      });
+      return;
+    }
     setProfile((prev) => ({ ...prev, [field]: value }));
   };
 

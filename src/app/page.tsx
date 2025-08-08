@@ -1,11 +1,10 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { SiteHeader } from '@/components/site-header';
 import { ChatMessageItem } from '@/components/chat-message-item';
 import { ChatInputForm } from '@/components/chat-input-form';
 import { UserProfileModal } from '@/components/user-profile-modal';
+import { BackgroundParticles } from '@/components/background-particles';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -25,11 +24,16 @@ const initialWelcomeMessage: ChatMessage = {
   timestamp: Date.now(),
 };
 
+const defaultUserProfile: UserProfile = {
+  medicalHistory: '',
+  lifestyle: '',
+  symptoms: '',
+};
 
 export default function HomePage() {
   const [messages, setMessages] = useState<ChatMessage[]>([initialWelcomeMessage]);
   const [isLoading, setIsLoading] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile>({});
+  const [userProfile, setUserProfile] = useState<UserProfile>(defaultUserProfile);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [currentAiFollowUpKey, setCurrentAiFollowUpKey] = useState<AISuggestedKey | undefined>(undefined);
   const [lastUserQuestionForFollowUp, setLastUserQuestionForFollowUp] = useState<string | undefined>(undefined);
@@ -39,12 +43,7 @@ export default function HomePage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (viewportRef.current) {
-      const timerId = setTimeout(() => {
-        viewportRef.current!.scrollTo({ top: viewportRef.current!.scrollHeight, behavior: 'smooth' });
-      }, 100);
-      return () => clearTimeout(timerId);
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const handleFeedback = (messageId: string, feedback: 'good' | 'bad') => {
@@ -65,7 +64,7 @@ export default function HomePage() {
     };
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
-    
+
     const aiLoadingMessage: ChatMessage = {
       id: `ai-loading-${Date.now()}`,
       text: 'Thinking...',
@@ -76,6 +75,46 @@ export default function HomePage() {
     setMessages((prev) => [...prev, aiLoadingMessage]);
 
     try {
+          // 💡 Check if it's a hospital-related query
+    if (/hospital|emergency/i.test(question)) {
+const locationMatch = question.match(/(?:in|near|nearby|around)\s+([A-Za-z ]+)/i);
+      const location = locationMatch?.[1]?.trim();
+
+      if (location) {
+        try {
+          const res = await fetch(`/api/nearby-hospitals?state=${encodeURIComponent(location)}`);
+const data = await res.json();
+
+if (Array.isArray(data.hospitals) && data.hospitals.length > 0) {
+  const hospitalList = data.hospitals.slice(0, 5).map((h: any) =>
+    `🏥 **${h.name}**\n📍 ${h.address}\n📞 ${h.contact}`
+  ).join('\n\n');
+
+  const aiResponseMessage: ChatMessage = {
+    id: `ai-hospital-${Date.now()}`,
+    text: `Here are some nearby hospitals in **${location}**:\n\n${hospitalList}`,
+    sender: 'ai',
+    timestamp: Date.now(),
+  };
+  setMessages(prev => [...prev.filter(msg => msg.id !== aiLoadingMessage.id), aiResponseMessage]);
+  return;
+} else {
+  throw new Error("No hospitals found");
+}
+        } catch (err) {
+          console.error("Error fetching hospital data", err);
+          const aiErrorMessage: ChatMessage = {
+            id: `a-hospital-error-${Date.now()}`,
+            text: `😔 I couldn't find hospital data for "${location}". Please check the location name.`,
+            sender: 'ai',
+            timestamp: Date.now(),
+          };
+          setMessages(prev => [...prev.filter(msg => msg.id !== aiLoadingMessage.id), aiErrorMessage]);
+          return;
+        }
+      }
+    }
+
       const input: PersonalizedHealthQuestionAnsweringInput = {
         question,
         medicalHistory: userProfile.medicalHistory,
@@ -84,55 +123,55 @@ export default function HomePage() {
       };
 
       const result: PersonalizedHealthQuestionAnsweringOutput = await personalizedHealthQuestionAnswering(input);
-      
-      setMessages(prev => prev.filter(msg => msg.id !== aiLoadingMessage.id)); 
+      setMessages(prev => prev.filter(msg => msg.id !== aiLoadingMessage.id));
 
       if (result.followUpQuestion) {
         let keyToUpdate: AISuggestedKey | undefined;
-        if (result.followUpQuestion.toLowerCase().includes('medical history')) keyToUpdate = 'medicalHistory';
-        else if (result.followUpQuestion.toLowerCase().includes('lifestyle')) keyToUpdate = 'lifestyle';
-        else if (result.followUpQuestion.toLowerCase().includes('symptom')) keyToUpdate = 'symptoms';
+        const followUpLower = result.followUpQuestion.toLowerCase();
 
-        const aiInfoMessageText = result.answer && result.answer !== result.followUpQuestion ? result.answer : "To provide a more accurate response, I need a little more information.";
-        const aiInfoMessage: ChatMessage = {
+        if (followUpLower.includes('medical history')) keyToUpdate = 'medicalHistory';
+        else if (followUpLower.includes('lifestyle')) keyToUpdate = 'lifestyle';
+        else if (followUpLower.includes('symptom')) keyToUpdate = 'symptoms';
+
+        if (result.answer && result.answer !== result.followUpQuestion) {
+          setMessages(prev => [...prev, {
             id: `ai-info-${Date.now()}`,
-            text: aiInfoMessageText,
+            text: result.answer,
             sender: 'ai',
             timestamp: Date.now(),
-        };
-        setMessages((prev) => [...prev, aiInfoMessage]);
-        
-        const aiFollowUpMessage: ChatMessage = {
-          id: `ai-followup-prompt-${Date.now()}`,
-          text: result.followUpQuestion, 
+          }]);
+        }
+
+        setMessages(prev => [...prev, {
+          id: `ai-followup-${Date.now()}`,
+          text: result.followUpQuestion,
           sender: 'ai',
           timestamp: Date.now(),
-          isFollowUpPrompt: true, 
-        };
-        setMessages((prev) => [...prev, aiFollowUpMessage]);
+          isFollowUpPrompt: true,
+        }]);
+
         setCurrentAiFollowUpKey(keyToUpdate);
-        setLastUserQuestionForFollowUp(question); 
-        setIsProfileModalOpen(true); 
+        setLastUserQuestionForFollowUp(question);
+        setIsProfileModalOpen(true);
 
       } else {
-        const aiResponseMessage: ChatMessage = {
+        setMessages(prev => [...prev, {
           id: `ai-response-${Date.now()}`,
           text: result.answer,
           sender: 'ai',
           timestamp: Date.now(),
-        };
-        setMessages((prev) => [...prev, aiResponseMessage]);
+        }]);
       }
+
     } catch (error) {
-      console.error('Error fetching AI response:', error);
+      console.error('AI response error:', error);
       setMessages(prev => prev.filter(msg => msg.id !== aiLoadingMessage.id));
-      const errorMessage: ChatMessage = {
+      setMessages(prev => [...prev, {
         id: `ai-error-${Date.now()}`,
         text: '😔 Sorry, I encountered an error. Please try again later.',
         sender: 'ai',
         timestamp: Date.now(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      }]);
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -144,149 +183,147 @@ export default function HomePage() {
   };
 
   const handleSaveProfile = async (newProfileData: UserProfile) => {
-    const oldProfile = {...userProfile}; // Capture old profile state
+    const oldProfile = { ...userProfile };
     setUserProfile(newProfileData);
     setIsProfileModalOpen(false);
-  
+
     if (lastUserQuestionForFollowUp) {
       const updatedInput: PersonalizedHealthQuestionAnsweringInput = {
         question: lastUserQuestionForFollowUp,
-        medicalHistory: newProfileData.medicalHistory,
-        lifestyle: newProfileData.lifestyle,
-        symptoms: newProfileData.symptoms,
+        ...newProfileData,
       };
-  
-      const profileUpdateMessage: ChatMessage = {
+
+      setMessages(prev => [...prev, {
         id: `system-profile-updated-${Date.now()}`,
         text: "✅ Your information has been updated. I'll use this to refine my answer.",
         sender: 'ai',
         timestamp: Date.now(),
         isFollowUpPrompt: true,
-      };
-      setMessages(prev => [...prev, profileUpdateMessage]);
-  
-      setIsLoading(true);
-      const aiLoadingMessageId = `ai-loading-refine-${Date.now()}`;
-      const aiLoadingMessage: ChatMessage = {
-        id: aiLoadingMessageId,
+      }]);
+
+      const loadingId = `ai-loading-refine-${Date.now()}`;
+      setMessages(prev => [...prev, {
+        id: loadingId,
         text: 'Refining answer...',
         sender: 'ai',
         timestamp: Date.now(),
         isLoading: true,
-      };
-      setMessages((prev) => [...prev, aiLoadingMessage]);
-  
+      }]);
+
+      setIsLoading(true);
+
       try {
-        const result: PersonalizedHealthQuestionAnsweringOutput = await personalizedHealthQuestionAnswering(updatedInput);
-        setMessages(prev => prev.filter(msg => msg.id !== aiLoadingMessageId));
-  
-        const aiResponseMessage: ChatMessage = {
+        const result = await personalizedHealthQuestionAnswering(updatedInput);
+        setMessages(prev => prev.filter(msg => msg.id !== loadingId));
+
+        setMessages(prev => [...prev, {
           id: `ai-refined-response-${Date.now()}`,
-          text: result.answer || "Thank you for the information. How else can I help you?",
+          text: result.answer || "Thanks! Let me know how else I can help.",
           sender: 'ai',
           timestamp: Date.now(),
-        };
-        setMessages((prev) => [...prev, aiResponseMessage]);
-  
+        }]);
+
         if (result.followUpQuestion) {
-          const aiFollowUpMessage: ChatMessage = {
+          setMessages(prev => [...prev, {
             id: `ai-refined-followup-${Date.now()}`,
             text: result.followUpQuestion,
             sender: 'ai',
             timestamp: Date.now(),
             isFollowUpPrompt: true,
-          };
-          setMessages((prev) => [...prev, aiFollowUpMessage]);
-          console.warn("AI requested further follow-up after profile update:", result.followUpQuestion);
+          }]);
           toast({
-            title: "Further Information Requested",
-            description: "The AI has another follow-up question. Please see the chat.",
+            title: "Further Info Needed",
+            description: "The AI has another follow-up question.",
           });
         }
+
       } catch (error) {
-        console.error('Error re-fetching AI response after profile update:', error);
-        setMessages(prev => prev.filter(msg => msg.id !== aiLoadingMessageId));
-        const errorMessage: ChatMessage = {
+        console.error('Refinement error:', error);
+        setMessages(prev => prev.filter(msg => msg.id !== loadingId));
+        setMessages(prev => [...prev, {
           id: `ai-error-refine-${Date.now()}`,
-          text: '😔 Sorry, I encountered an error while refining the answer. Please try again.',
+          text: '😔 Error refining the answer. Try again later.',
           sender: 'ai',
           timestamp: Date.now(),
-        };
-        setMessages((prev) => [...prev, errorMessage]);
+        }]);
         toast({
           variant: 'destructive',
           title: 'Refinement Error',
-          description: 'Failed to get refined response from AI.',
+          description: 'AI failed to refine the response.',
         });
       } finally {
         setIsLoading(false);
         setLastUserQuestionForFollowUp(undefined);
         setCurrentAiFollowUpKey(undefined);
       }
-    } else {
-        // If there was no pending question, just acknowledge the update.
-        const acknowledgementMessage: ChatMessage = {
-            id: `system-profile-ack-${Date.now()}`,
-            text: "Your health information has been updated. How can I assist you now?",
-            sender: 'ai',
-            timestamp: Date.now(),
-        };
-        // Only add if profile actually changed to avoid duplicate messages on simple close
-        if (JSON.stringify(oldProfile) !== JSON.stringify(newProfileData)) {
-            setMessages(prev => [...prev, acknowledgementMessage]);
-        }
+    } else if (JSON.stringify(oldProfile) !== JSON.stringify(newProfileData)) {
+      setMessages(prev => [...prev, {
+        id: `system-profile-ack-${Date.now()}`,
+        text: "Your health information has been updated. How can I assist you now?",
+        sender: 'ai',
+        timestamp: Date.now(),
+      }]);
     }
   };
-  
+
   const handleCloseProfileModal = () => {
     setIsProfileModalOpen(false);
     if (lastUserQuestionForFollowUp && currentAiFollowUpKey) {
-      // Check against the latest userProfile state
-      const relevantProfileData = userProfile[currentAiFollowUpKey];
-      const relevantProfileFieldFilled = relevantProfileData && relevantProfileData.trim() !== '';
-      if (!relevantProfileFieldFilled) {
-        const cancelFollowUpMessage: ChatMessage = {
+      const relevantField = userProfile[currentAiFollowUpKey];
+      if (!relevantField || relevantField.trim() === '') {
+        setMessages(prev => [...prev, {
           id: `ai-cancel-followup-${Date.now()}`,
           text: "Okay, I understand. If you change your mind, you can update your info anytime. How else can I help you today?",
           sender: 'ai',
           timestamp: Date.now(),
           isFollowUpPrompt: true,
-        };
-        setMessages(prev => [...prev, cancelFollowUpMessage]);
+        }]);
       }
     }
     setLastUserQuestionForFollowUp(undefined);
     setCurrentAiFollowUpKey(undefined);
   };
 
-
   return (
+
     <div className="flex flex-col h-screen bg-background text-foreground">
-      <div className="flex flex-1 overflow-hidden"> {/* Main content area */}
-        
+      <div className="flex flex-1 overflow-hidden"> {
+    <div className="flex flex-col h-screen bg-med-genie-dark text-foreground">
+      <BackgroundParticles />
+
+      <div className="flex flex-1 overflow-hidden content-container">
         <main className="flex flex-col flex-1 p-4 overflow-hidden" role="main" aria-label="Chat with Med Genie">
           <header className="flex justify-end mb-4 shrink-0">
-            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information for personalized responses">
+            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information">
               <Info className="mr-2 h-4 w-4" />
               Update Health Info
             </Button>
+            
           </header>
 
-          <ScrollArea className="flex-grow min-h-0 mb-4" viewportRef={viewportRef} role="log" aria-label="Chat messages">
-            <div className="space-y-4 max-w-3xl mx-auto pr-4" role="list" aria-label="Chat conversation">
+          <ScrollArea className="flex-grow min-h-0 mb-4 rounded-lg" viewportRef={viewportRef} role="log" aria-label="Chat conversation">
+            <div className="space-y-4 max-w-3xl mx-auto pr-4">
               {messages.map((msg) => (
                 <ChatMessageItem key={msg.id} message={msg} onFeedback={handleFeedback} />
               ))}
-              <div ref={messagesEndRef} /> {/* This ref helps with initial scroll to bottom, less effective for subsequent messages */}
+              <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
-          
+
           <div className="shrink-0">
             <ChatInputForm onSubmit={handleSubmitQuestion} isLoading={isLoading} />
           </div>
         </main>
+        
 
-        {/* Right Column: Important Notice */}
+        {/* Sidebar */}
+        <aside className="md:w-1/3 lg:w-80 xl:w-96 p-4 border-l border-border/40 overflow-y-auto hidden md:flex md:flex-col backdrop-blur-sm bg-opacity-30 bg-card">
+          <div className="sticky top-4 space-y-4">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Med Genie</h2>
+              <p className="text-sm text-gray-800 dark:text-gray-300">Your AI Health Assistant</p>
+            </div>
+
         <aside className="md:w-1/3 lg:w-80 xl:w-96 p-4 border-l border-border/40 bg-card overflow-y-auto hidden md:flex md:flex-col" role="complementary" aria-label="Important medical notice">
            <div className="sticky top-4">
             <Alert variant="default">
@@ -297,8 +334,27 @@ export default function HomePage() {
                 <AlertDescription>
                   Med Genie provides information for general knowledge only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
                 </AlertDescription>
+              </Alert>
+            <Alert variant="default" className="card-enhanced border-2 border-primary/30 shadow-lg pulse-animation">
+              <AlertCircle className="h-5 w-5 text-primary" />
+              <AlertTitle className="text-lg font-bold mb-2 text-gray-900 dark:text-white">Important Notice</AlertTitle>
+              <AlertDescription className="leading-relaxed text-gray-800 dark:text-gray-300">
+                 Med Genie provides general health information and is not a substitute for professional medical advice. Always consult a doctor for serious concerns.
+               </AlertDescription>
+
             </Alert>
-           </div>
+
+
+            <div className="mt-6 p-4 rounded-lg card-enhanced border border-primary/20">
+              <h3 className="text-md font-semibold mb-2 text-gray-900 dark:text-white">How to Use Med Genie</h3>
+              <ul className="list-disc pl-5 text-sm space-y-2 text-gray-800 dark:text-gray-300">
+
+                <li>Ask any health-related questions</li>
+                <li>Update your health profile for better answers</li>
+                <li>Get AI-powered health insights</li>
+              </ul>
+            </div>
+          </div>
         </aside>
       </div>
 
@@ -312,5 +368,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#4f46e5" />
+  
+  <!-- Medical cross -->
+  <rect x="85" y="50" width="30" height="100" rx="5" fill="white" />
+  <rect x="50" y="85" width="100" height="30" rx="5" fill="white" />
+  
+  <!-- Brain outline -->
+  <path d="M140,100 C140,70 120,50 100,50 C80,50 60,70 60,100 C60,130 80,150 100,150 C120,150 140,130 140,100 Z" 
+        fill="none" stroke="white" stroke-width="5" stroke-linecap="round" />
+  
+  <!-- Brain details -->
+  <path d="M70,80 Q85,65 100,80 Q115,65 130,80" 
+        fill="none" stroke="white" stroke-width="3" stroke-linecap="round" />
+  <path d="M70,120 Q85,135 100,120 Q115,135 130,120" 
+        fill="none" stroke="white" stroke-width="3" stroke-linecap="round" />
+  
+  <!-- Friendly eyes -->
+  <circle cx="80" cy="95" r="5" fill="white" />
+  <circle cx="120" cy="95" r="5" fill="white" />
+  
+  <!-- Smile -->
+  <path d="M85,115 Q100,130 115,115" 
+        fill="none" stroke="white" stroke-width="3" stroke-linecap="round" />
+</svg>
