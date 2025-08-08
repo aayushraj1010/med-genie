@@ -198,7 +198,6 @@ You’re free to use, modify, and distribute this software with proper attributi
 yaml
 Copy
 Edit
-
 ---
 
 ✅ You can directly **replace your current `README.md`** with this content. It’s organized, informative, and optimized for contributors, users, and open-source discoverability.
