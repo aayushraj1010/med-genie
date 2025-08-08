@@ -62,6 +62,44 @@ Here’s how Med-Genie looks in action:
 - 🌗 Dark or Light mode toggle for better user experience  
 - 🔒 Privacy-focused (no user data stored)  
 
+
+🔭 FEATURE SCOPE
+
+✅ Current Capabilities
+
+💬 Conversational AI – Chat naturally with an AI trained on health-related queries
+
+🏥 Emergency Assistance – Instant guidance to hospitals and emergency services
+
+🩺 Symptom Checker – Get condition suggestions based on inputs
+
+📱 Voice Input – Speak to Med Genie using built-in speech recognition
+
+🌓 Theme Toggle – Dark/light mode switching
+
+🧩 Modular UI – Clean, component-based Tailwind + Radix UI
+
+🔐 Privacy-First – No user data collection or storage
+
+
+🚀 UPCOMING FEATURES
+
+🧠 ML-based Diagnosis Engine – Predict health issues using AI-driven analysis
+
+📍 Smart Location Integration – Nearby hospital, clinic & pharmacy finder
+
+🗂️ Medical Chat Timeline – Track your health queries history
+
+📦 PWA Support – Offline-capable, installable on mobile
+
+👨‍⚕️ AI Doctor Avatars – Specialist replies (Cardiologist, Pediatrician, etc.)
+
+🌐 Multilingual Chat – Chat in Hindi, Bengali, Tamil & more
+
+⏰ Health Reminders – Get pill, water, and routine alerts
+
+📚 Visual Health Tips – Get first-aid, anatomy visuals, and symptom maps
+
 ---
 
 ## 📂 Folder Structure
@@ -150,39 +188,6 @@ Apple touch icons
 Offline installable
 
 Viewport and accessibility
-
-🔭 Feature Scope
-✅ Current Capabilities
-💬 Conversational AI – Chat naturally with an AI trained on health-related queries
-
-🏥 Emergency Assistance – Instant guidance to hospitals and emergency services
-
-🩺 Symptom Checker – Get condition suggestions based on inputs
-
-📱 Voice Input – Speak to Med Genie using built-in speech recognition
-
-🌓 Theme Toggle – Dark/light mode switching
-
-🧩 Modular UI – Clean, component-based Tailwind + Radix UI
-
-🔐 Privacy-First – No user data collection or storage
-
-🚀 Upcoming Features
-🧠 ML-based Diagnosis Engine – Predict health issues using AI-driven analysis
-
-📍 Smart Location Integration – Nearby hospital, clinic & pharmacy finder
-
-🗂️ Medical Chat Timeline – Track your health queries history
-
-📦 PWA Support – Offline-capable, installable on mobile
-
-👨‍⚕️ AI Doctor Avatars – Specialist replies (Cardiologist, Pediatrician, etc.)
-
-🌐 Multilingual Chat – Chat in Hindi, Bengali, Tamil & more
-
-⏰ Health Reminders – Get pill, water, and routine alerts
-
-📚 Visual Health Tips – Get first-aid, anatomy visuals, and symptom maps
 
 📝 License
 Released under the MIT License.
