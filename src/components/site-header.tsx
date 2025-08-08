@@ -15,10 +15,14 @@ export function SiteHeader() {
             <span className="font-bold sm:inline-block text-lg">Med Genie</span>
           </Link>
           {/* Links right next to brand */}
-          <nav className="flex items-center space-x-4">
-<Link href="/about" className="hover:underline">About</Link>
-<Link href="/health-vault" className="hover:underline">Health Vault</Link>
-<Link href="/contact" className="hover:underline">Contact</Link>
+          <nav className="flex items-center space-x-4"
+
+            <Link href="/about" className="hover:underline">About</Link>
+            <Link href="/contact" className="hover:underline">Contact</Link>
+            <Link href='/register' className='hover:underline'>Register</Link>
+            <Link href="/about" className="hover:underline">About</Link>
+            <Link href="/health-vault" className="hover:underline">Health Vault</Link>
+            <Link href="/contact" className="hover:underline">Contact</Link>
           </nav>
         </div>
         {/* This section keeps the rest space flexible, you can add more nav items here */}

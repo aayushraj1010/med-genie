@@ -285,11 +285,13 @@ if (Array.isArray(data.hospitals) && data.hospitals.length > 0) {
   };
 
   return (
+
+    <div className="flex flex-col h-screen bg-background text-foreground">
+      <div className="flex flex-1 overflow-hidden"> {
     <div className="flex flex-col h-screen bg-med-genie-dark text-foreground">
       <BackgroundParticles />
 
       <div className="flex flex-1 overflow-hidden content-container">
-        {/* Chat Area */}
         <main className="flex flex-col flex-1 p-4 overflow-hidden" role="main" aria-label="Chat with Med Genie">
           <header className="flex justify-end mb-4 shrink-0">
             <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information">
@@ -322,13 +324,24 @@ if (Array.isArray(data.hospitals) && data.hospitals.length > 0) {
               <p className="text-sm text-gray-800 dark:text-gray-300">Your AI Health Assistant</p>
             </div>
 
-            
-              <Alert variant="default" className="card-enhanced border-2 border-primary/30 shadow-lg pulse-animation">
+        <aside className="md:w-1/3 lg:w-80 xl:w-96 p-4 border-l border-border/40 bg-card overflow-y-auto hidden md:flex md:flex-col" role="complementary" aria-label="Important medical notice">
+           <div className="sticky top-4">
+            <Alert variant="default">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle asChild>
+                  {/* <h2>Important Notice</h2> */}
+                </AlertTitle>
+                <AlertDescription>
+                  Med Genie provides information for general knowledge only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+                </AlertDescription>
+              </Alert>
+            <Alert variant="default" className="card-enhanced border-2 border-primary/30 shadow-lg pulse-animation">
               <AlertCircle className="h-5 w-5 text-primary" />
               <AlertTitle className="text-lg font-bold mb-2 text-gray-900 dark:text-white">Important Notice</AlertTitle>
               <AlertDescription className="leading-relaxed text-gray-800 dark:text-gray-300">
                  Med Genie provides general health information and is not a substitute for professional medical advice. Always consult a doctor for serious concerns.
                </AlertDescription>
+
             </Alert>
 
 
