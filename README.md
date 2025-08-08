@@ -185,3 +185,36 @@ Edit
 ---
 
 If you’re still maintaining an alternate HTML version for legacy purposes, I can also help add both options side-by-side. Otherwise, the above version is best for a **Next.js-first production app**. Let me know if you want that version too.
+
+🔭 Feature Scope
+✅ Current Capabilities
+💬 Conversational AI – Chat naturally with an AI trained on health-related queries.
+
+🏥 Emergency Assistance – Instant guidance to hospitals and emergency services.
+
+🩺 Symptom Checker – Get possible condition suggestions based on your inputs.
+
+📱 Voice Input – Speak to Med Genie with built-in speech recognition.
+
+🌓 Theme Toggle – Switch between light and dark modes for better UX.
+
+🧩 Modular UI – Clean, component-based design using Tailwind + Radix UI.
+
+🔐 Privacy-First – No user data collection or storage.
+
+🚀 Upcoming Features
+🧠 ML-based Diagnosis Engine – Predict health issues using AI-driven analysis.
+
+📍 Smart Location Integration – Find nearby hospitals, clinics, and pharmacies.
+
+🗂️ Medical Chat Timeline – Optionally track your conversation history.
+
+📦 PWA Support – Install Med Genie like a mobile app with offline support.
+
+👨‍⚕️ AI Doctor Avatars – Get specialized replies (e.g., Pediatrician, Cardiologist).
+
+🌐 Multilingual Chat – Talk to Med Genie in Hindi, Bengali, Tamil & more.
+
+⏰ Health Reminders – Schedule pill reminders or hydration alerts.
+
+📚 Visual Health Tips – Learn from diagrams, symptom maps & first-aid steps.
