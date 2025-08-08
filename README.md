@@ -184,7 +184,9 @@ Edit
 
 ---
 
-If you’re still maintaining an alternate HTML version for legacy purposes, I can also help add both options side-by-side. Otherwise, the above version is best for a **Next.js-first production app**. Let me know if you want that version too.
+If you’re still maintaining an alternate HTML version for legacy purposes, I can also help add both options side-by-side. Otherwise, the above version is best for a **Next.js-first production app**. Let me know if you want that version too.        
+
+
 
 🔭 Feature Scope
 ✅ Current Capabilities
