@@ -14,21 +14,21 @@ export function SiteHeader() {
             <LogoIcon className="h-6 w-6 text-primary" />
             <span className="font-bold sm:inline-block text-lg">Med Genie</span>
           </Link>
-          {/* Links right next to brand */}
-          <nav className="flex items-center space-x-4"
 
+          {/* Navigation Links */}
+          <nav className="flex items-center space-x-4">
             <Link href="/about" className="hover:underline">About</Link>
             <Link href="/contact" className="hover:underline">Contact</Link>
-            <Link href='/register' className='hover:underline'>Register</Link>
-            <Link href="/about" className="hover:underline">About</Link>
+            <Link href="/register" className="hover:underline">Register</Link>
             <Link href="/health-vault" className="hover:underline">Health Vault</Link>
-            <Link href="/contact" className="hover:underline">Contact</Link>
           </nav>
         </div>
-        {/* This section keeps the rest space flexible, you can add more nav items here */}
+
+        {/* Spacer */}
         <div className="flex-1" />
-        {/* Theme toggle button */}
-        <div className="flex items-center">
+
+        {/* Theme Toggle and Reset Button */}
+        <div className="flex items-center space-x-2">
           <ThemeToggle />
           <Button
             variant="outline"

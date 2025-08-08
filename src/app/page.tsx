@@ -75,45 +75,44 @@ export default function HomePage() {
     setMessages((prev) => [...prev, aiLoadingMessage]);
 
     try {
-          // 💡 Check if it's a hospital-related query
-    if (/hospital|emergency/i.test(question)) {
-const locationMatch = question.match(/(?:in|near|nearby|around)\s+([A-Za-z ]+)/i);
-      const location = locationMatch?.[1]?.trim();
+      if (/hospital|emergency/i.test(question)) {
+        const locationMatch = question.match(/(?:in|near|nearby|around)\s+([A-Za-z ]+)/i);
+        const location = locationMatch?.[1]?.trim();
 
-      if (location) {
-        try {
-          const res = await fetch(`/api/nearby-hospitals?state=${encodeURIComponent(location)}`);
-const data = await res.json();
+        if (location) {
+          try {
+            const res = await fetch(`/api/nearby-hospitals?state=${encodeURIComponent(location)}`);
+            const data = await res.json();
 
-if (Array.isArray(data.hospitals) && data.hospitals.length > 0) {
-  const hospitalList = data.hospitals.slice(0, 5).map((h: any) =>
-    `🏥 **${h.name}**\n📍 ${h.address}\n📞 ${h.contact}`
-  ).join('\n\n');
+            if (Array.isArray(data.hospitals) && data.hospitals.length > 0) {
+              const hospitalList = data.hospitals.slice(0, 5).map((h: any) =>
+                `🏥 **${h.name}**\n📍 ${h.address}\n📞 ${h.contact}`
+              ).join('\n\n');
 
-  const aiResponseMessage: ChatMessage = {
-    id: `ai-hospital-${Date.now()}`,
-    text: `Here are some nearby hospitals in **${location}**:\n\n${hospitalList}`,
-    sender: 'ai',
-    timestamp: Date.now(),
-  };
-  setMessages(prev => [...prev.filter(msg => msg.id !== aiLoadingMessage.id), aiResponseMessage]);
-  return;
-} else {
-  throw new Error("No hospitals found");
-}
-        } catch (err) {
-          console.error("Error fetching hospital data", err);
-          const aiErrorMessage: ChatMessage = {
-            id: `a-hospital-error-${Date.now()}`,
-            text: `😔 I couldn't find hospital data for "${location}". Please check the location name.`,
-            sender: 'ai',
-            timestamp: Date.now(),
-          };
-          setMessages(prev => [...prev.filter(msg => msg.id !== aiLoadingMessage.id), aiErrorMessage]);
-          return;
+              const aiResponseMessage: ChatMessage = {
+                id: `ai-hospital-${Date.now()}`,
+                text: `Here are some nearby hospitals in **${location}**:\n\n${hospitalList}`,
+                sender: 'ai',
+                timestamp: Date.now(),
+              };
+              setMessages(prev => [...prev.filter(msg => msg.id !== aiLoadingMessage.id), aiResponseMessage]);
+              return;
+            } else {
+              throw new Error("No hospitals found");
+            }
+          } catch (err) {
+            console.error("Error fetching hospital data", err);
+            const aiErrorMessage: ChatMessage = {
+              id: `a-hospital-error-${Date.now()}`,
+              text: `😔 I couldn't find hospital data for "${location}". Please check the location name.`,
+              sender: 'ai',
+              timestamp: Date.now(),
+            };
+            setMessages(prev => [...prev.filter(msg => msg.id !== aiLoadingMessage.id), aiErrorMessage]);
+            return;
+          }
         }
       }
-    }
 
       const input: PersonalizedHealthQuestionAnsweringInput = {
         question,
@@ -285,9 +284,6 @@ if (Array.isArray(data.hospitals) && data.hospitals.length > 0) {
   };
 
   return (
-
-    <div className="flex flex-col h-screen bg-background text-foreground">
-      <div className="flex flex-1 overflow-hidden"> {
     <div className="flex flex-col h-screen bg-med-genie-dark text-foreground">
       <BackgroundParticles />
 
@@ -298,7 +294,6 @@ if (Array.isArray(data.hospitals) && data.hospitals.length > 0) {
               <Info className="mr-2 h-4 w-4" />
               Update Health Info
             </Button>
-            
           </header>
 
           <ScrollArea className="flex-grow min-h-0 mb-4 rounded-lg" viewportRef={viewportRef} role="log" aria-label="Chat conversation">
@@ -314,41 +309,25 @@ if (Array.isArray(data.hospitals) && data.hospitals.length > 0) {
             <ChatInputForm onSubmit={handleSubmitQuestion} isLoading={isLoading} />
           </div>
         </main>
-        
 
-        {/* Sidebar */}
-        <aside className="md:w-1/3 lg:w-80 xl:w-96 p-4 border-l border-border/40 overflow-y-auto hidden md:flex md:flex-col backdrop-blur-sm bg-opacity-30 bg-card">
+        <aside className="md:w-1/3 lg:w-80 xl:w-96 p-4 border-l border-border/40 bg-card overflow-y-auto hidden md:flex md:flex-col" role="complementary" aria-label="Important medical notice">
           <div className="sticky top-4 space-y-4">
             <div className="text-center mb-6">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Med Genie</h2>
               <p className="text-sm text-gray-800 dark:text-gray-300">Your AI Health Assistant</p>
             </div>
 
-        <aside className="md:w-1/3 lg:w-80 xl:w-96 p-4 border-l border-border/40 bg-card overflow-y-auto hidden md:flex md:flex-col" role="complementary" aria-label="Important medical notice">
-           <div className="sticky top-4">
-            <Alert variant="default">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle asChild>
-                  {/* <h2>Important Notice</h2> */}
-                </AlertTitle>
-                <AlertDescription>
-                  Med Genie provides information for general knowledge only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
-                </AlertDescription>
-              </Alert>
             <Alert variant="default" className="card-enhanced border-2 border-primary/30 shadow-lg pulse-animation">
               <AlertCircle className="h-5 w-5 text-primary" />
               <AlertTitle className="text-lg font-bold mb-2 text-gray-900 dark:text-white">Important Notice</AlertTitle>
               <AlertDescription className="leading-relaxed text-gray-800 dark:text-gray-300">
-                 Med Genie provides general health information and is not a substitute for professional medical advice. Always consult a doctor for serious concerns.
-               </AlertDescription>
-
+                Med Genie provides general health information and is not a substitute for professional medical advice. Always consult a doctor for serious concerns.
+              </AlertDescription>
             </Alert>
-
 
             <div className="mt-6 p-4 rounded-lg card-enhanced border border-primary/20">
               <h3 className="text-md font-semibold mb-2 text-gray-900 dark:text-white">How to Use Med Genie</h3>
               <ul className="list-disc pl-5 text-sm space-y-2 text-gray-800 dark:text-gray-300">
-
                 <li>Ask any health-related questions</li>
                 <li>Update your health profile for better answers</li>
                 <li>Get AI-powered health insights</li>
