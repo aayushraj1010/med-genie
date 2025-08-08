@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, FormEvent } from 'react';
+import dynamic from 'next/dynamic';
 import { ChatMessageItem } from '@/components/chat-message-item';
-import { ChatInputForm } from '@/components/chat-input-form';
 import { UserProfileModal } from '@/components/user-profile-modal';
 import { BackgroundParticles } from '@/components/background-particles';
 import { Button } from '@/components/ui/button';
@@ -14,8 +14,13 @@ import {
 } from '@/ai/flows/personalized-health-question-answering';
 import type { ChatMessage, UserProfile, AISuggestedKey } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { AlertCircle, Info } from 'lucide-react';
+import { AlertCircle, ArrowUp, Info } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+
+const VoiceSearch = dynamic(() => import('@/components/VoiceSearch'), {
+  ssr: false,
+});
 
 const initialWelcomeMessage: ChatMessage = {
   id: 'welcome-message',
@@ -37,6 +42,7 @@ export default function HomePage() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [currentAiFollowUpKey, setCurrentAiFollowUpKey] = useState<AISuggestedKey | undefined>(undefined);
   const [lastUserQuestionForFollowUp, setLastUserQuestionForFollowUp] = useState<string | undefined>(undefined);
+  const [input, setInput] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -45,6 +51,13 @@ export default function HomePage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!input.trim() || isLoading) return;
+    handleSubmitQuestion(input);
+    setInput('');
+  };
 
   const handleFeedback = (messageId: string, feedback: 'good' | 'bad') => {
     setMessages((prevMessages) =>
@@ -124,6 +137,15 @@ export default function HomePage() {
       const result: PersonalizedHealthQuestionAnsweringOutput = await personalizedHealthQuestionAnswering(input);
       setMessages(prev => prev.filter(msg => msg.id !== aiLoadingMessage.id));
 
+      if (result.answer && result.answer !== result.followUpQuestion) {
+        setMessages(prev => [...prev, {
+          id: `ai-info-${Date.now()}`,
+          text: result.answer,
+          sender: 'ai',
+          timestamp: Date.now(),
+        }]);
+      }
+      
       if (result.followUpQuestion) {
         let keyToUpdate: AISuggestedKey | undefined;
         const followUpLower = result.followUpQuestion.toLowerCase();
@@ -131,19 +153,10 @@ export default function HomePage() {
         if (followUpLower.includes('medical history')) keyToUpdate = 'medicalHistory';
         else if (followUpLower.includes('lifestyle')) keyToUpdate = 'lifestyle';
         else if (followUpLower.includes('symptom')) keyToUpdate = 'symptoms';
-
-        if (result.answer && result.answer !== result.followUpQuestion) {
-          setMessages(prev => [...prev, {
-            id: `ai-info-${Date.now()}`,
-            text: result.answer,
-            sender: 'ai',
-            timestamp: Date.now(),
-          }]);
-        }
-
+        
         setMessages(prev => [...prev, {
           id: `ai-followup-${Date.now()}`,
-          text: result.followUpQuestion,
+          text: result.followUpQuestion as string,
           sender: 'ai',
           timestamp: Date.now(),
           isFollowUpPrompt: true,
@@ -153,7 +166,7 @@ export default function HomePage() {
         setLastUserQuestionForFollowUp(question);
         setIsProfileModalOpen(true);
 
-      } else {
+      } else if (result.answer) {
         setMessages(prev => [...prev, {
           id: `ai-response-${Date.now()}`,
           text: result.answer,
@@ -225,7 +238,7 @@ export default function HomePage() {
         if (result.followUpQuestion) {
           setMessages(prev => [...prev, {
             id: `ai-refined-followup-${Date.now()}`,
-            text: result.followUpQuestion,
+            text: result.followUpQuestion as string,
             sender: 'ai',
             timestamp: Date.now(),
             isFollowUpPrompt: true,
@@ -306,7 +319,25 @@ export default function HomePage() {
           </ScrollArea>
 
           <div className="shrink-0">
-            <ChatInputForm onSubmit={handleSubmitQuestion} isLoading={isLoading} />
+            <form onSubmit={handleFormSubmit} className="relative w-full max-w-3xl mx-auto">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask anything about your health..."
+                disabled={isLoading}
+                className="pr-24"
+              />
+              <VoiceSearch setInput={setInput} />
+              <Button
+                type="submit"
+                size="icon"
+                disabled={isLoading || !input.trim()}
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+              >
+                <ArrowUp className="h-4 w-4" />
+                <span className="sr-only">Send message</span>
+              </Button>
+            </form>
           </div>
         </main>
 
