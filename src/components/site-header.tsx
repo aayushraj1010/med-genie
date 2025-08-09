@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LogoIcon } from "@/components/icons/logo-icon";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from '@/components/ui/button';
+import { UserPlus } from "lucide-react";
 
 export function SiteHeader() {
   return (
