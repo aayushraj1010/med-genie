@@ -31,6 +31,13 @@ export function SiteHeader() {
         {/* Theme Toggle and Reset Button */}
         <div className="flex items-center space-x-2">
           <ThemeToggle />
+          <Link 
+            href="/register" 
+            className="p-2 hover:text-primary transition-colors"
+            title="Register"
+          >
+          <UserPlus className="h-5 w-5" />
+          </Link>
           <Button
             variant="outline"
             className="text-sm"
