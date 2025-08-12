@@ -1,5 +1,8 @@
-import Link from 'next/link';
-import { LogoIcon } from '@/components/icons/logo-icon';
+'use client';
+import Link from "next/link";
+import { LogoIcon } from "@/components/icons/logo-icon";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from '@/components/ui/button';
 
 export function SiteHeader() {
   return (
@@ -9,18 +12,36 @@ export function SiteHeader() {
         <div className="flex items-center space-x-6">
           <Link href="/" className="flex items-center space-x-2">
             <LogoIcon className="h-6 w-6 text-primary" />
-            <span className="font-bold sm:inline-block text-lg">
-              Med Genie
-            </span>
+            <span className="font-bold sm:inline-block text-lg">Med Genie</span>
           </Link>
-          {/* Links right next to brand */}
+
+          {/* Navigation Links */}
           <nav className="flex items-center space-x-4">
             <Link href="/about" className="hover:underline">About</Link>
             <Link href="/contact" className="hover:underline">Contact</Link>
+            <Link href="/register" className="hover:underline">Register</Link>
+            <Link href="/health-vault" className="hover:underline">Health Vault</Link>
           </nav>
         </div>
-        {/* This section keeps the rest space flexible, you can add more nav items here */}
+
+        {/* Spacer */}
         <div className="flex-1" />
+
+        {/* Theme Toggle and Reset Button */}
+        <div className="flex items-center space-x-2">
+          <ThemeToggle />
+          <Button
+            variant="outline"
+            className="text-sm"
+            onClick={() => {
+              localStorage.clear();
+              sessionStorage.clear();
+              window.location.reload();
+            }}
+          >
+            Reset Chat
+          </Button>
+        </div>
       </div>
     </header>
   );

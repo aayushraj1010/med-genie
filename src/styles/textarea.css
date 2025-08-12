@@ -1,0 +1,15 @@
+/* Custom textarea styles */
+.custom-textarea::placeholder {
+  color: rgba(0, 51, 102, 0.6) !important; /* Dark blue with opacity */
+}
+
+.custom-textarea {
+  color: #003366 !important; /* Dark blue */
+  background-color: white !important;
+  border-color: rgba(0, 51, 102, 0.3) !important;
+}
+
+.custom-textarea:focus {
+  border-color: #003366 !important;
+  box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.2) !important;
+}

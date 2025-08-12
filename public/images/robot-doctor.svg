@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>Robot Doctor</title>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <!-- Background Circle -->
+        <circle fill="#E1F5FE" cx="100" cy="100" r="100"></circle>
+        
+        <!-- Robot Head -->
+        <rect fill="#90CAF9" x="60" y="40" width="80" height="70" rx="15"></rect>
+        
+        <!-- Robot Face -->
+        <circle fill="#FFFFFF" cx="80" cy="65" r="10"></circle>
+        <circle fill="#FFFFFF" cx="120" cy="65" r="10"></circle>
+        <circle fill="#1565C0" cx="80" cy="65" r="5"></circle>
+        <circle fill="#1565C0" cx="120" cy="65" r="5"></circle>
+        
+        <!-- Robot Mouth -->
+        <path d="M75,90 C75,95 125,95 125,90" stroke="#1565C0" stroke-width="3" stroke-linecap="round"></path>
+        
+        <!-- Robot Antenna -->
+        <rect fill="#1565C0" x="95" y="30" width="10" height="10" rx="5"></rect>
+        <line x1="100" y1="30" x2="100" y2="20" stroke="#1565C0" stroke-width="3" stroke-linecap="round"></line>
+        <circle fill="#F44336" cx="100" cy="15" r="5"></circle>
+        
+        <!-- Robot Body -->
+        <rect fill="#64B5F6" x="70" y="110" width="60" height="60" rx="10"></rect>
+        
+        <!-- Medical Cross -->
+        <rect fill="#F44336" x="90" y="120" width="20" height="40" rx="2"></rect>
+        <rect fill="#F44336" x="80" y="130" width="40" height="20" rx="2"></rect>
+        
+        <!-- Robot Arms -->
+        <rect fill="#90CAF9" x="40" y="120" width="30" height="10" rx="5"></rect>
+        <rect fill="#90CAF9" x="130" y="120" width="30" height="10" rx="5"></rect>
+        
+        <!-- Stethoscope -->
+        <path d="M130,125 C140,125 150,135 150,145 C150,155 145,160 140,160" stroke="#1565C0" stroke-width="3" fill="none" stroke-linecap="round"></path>
+        <circle fill="#1565C0" cx="140" cy="160" r="5"></circle>
+    </g>
+</svg>

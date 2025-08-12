@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Vault - Curated Tips & Trusted Wellness Resources</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(var(--border))",
+                        input: "hsl(var(--input))",
+                        ring: "hsl(var(--ring))",
+                        background: "hsl(var(--background))",
+                        foreground: "hsl(var(--foreground))",
+                        primary: {
+                            DEFAULT: "hsl(var(--primary))",
+                            foreground: "hsl(var(--primary-foreground))",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(var(--secondary))",
+                            foreground: "hsl(var(--secondary-foreground))",
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(var(--destructive))",
+                            foreground: "hsl(var(--destructive-foreground))",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(var(--muted))",
+                            foreground: "hsl(var(--muted-foreground))",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(var(--accent))",
+                            foreground: "hsl(var(--accent-foreground))",
+                        },
+                        popover: {
+                            DEFAULT: "hsl(var(--popover))",
+                            foreground: "hsl(var(--popover-foreground))",
+                        },
+                        card: {
+                            DEFAULT: "hsl(var(--card))",
+                            foreground: "hsl(var(--card-foreground))",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "var(--radius)",
+                        md: "calc(var(--radius) - 2px)",
+                        sm: "calc(var(--radius) - 4px)",
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 222.2 47.4% 11.2%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96%;
+            --secondary-foreground: 222.2 84% 4.9%;
+            --muted: 210 40% 96%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96%;
+            --accent-foreground: 222.2 84% 4.9%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 222.2 84% 4.9%;
+            --radius: 0.5rem;
+        }
+
+        .dark {
+            --background: 222.2 84% 4.9%;
+            --foreground: 210 40% 98%;
+            --card: 222.2 84% 4.9%;
+            --card-foreground: 210 40% 98%;
+            --popover: 222.2 84% 4.9%;
+            --popover-foreground: 210 40% 98%;
+            --primary: 210 40% 98%;
+            --primary-foreground: 222.2 47.4% 11.2%;
+            --secondary: 217.2 32.6% 17.5%;
+            --secondary-foreground: 210 40% 98%;
+            --muted: 217.2 32.6% 17.5%;
+            --muted-foreground: 215 20.2% 65.1%;
+            --accent: 217.2 32.6% 17.5%;
+            --accent-foreground: 210 40% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 217.2 32.6% 17.5%;
+            --input: 217.2 32.6% 17.5%;
+            --ring: 212.7 26.8% 83.9%;
+        }
+
+        .bg-gradient-text {
+            background: linear-gradient(to right, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="text-center mb-12" data-aos="fade-down">
+            <h1 class="text-4xl md:text-5xl font-bold bg-gradient-text mb-4">
+                Health Vault
+            </h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Curated tips and trusted wellness resources to help you maintain a healthy lifestyle. 
+                Each tip is verified by reputable health organizations.
+            </p>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8" data-aos="fade-up">
+            <button class="category-btn active rounded-full px-6 py-2 transition-all duration-200 hover:scale-105 bg-blue-600 text-white" data-category="all">
+                ⭐ All
+            </button>
+            <button class="category-btn rounded-full px-6 py-2 transition-all duration-200 hover:scale-105 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700" data-category="nutrition">
+                🍎 Nutrition
+            </button>
+            <button class="category-btn rounded-full px-6 py-2 transition-all duration-200 hover:scale-105 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700" data-category="mental-health">
+                🧠 Mental Health
+            </button>
+            <button class="category-btn rounded-full px-6 py-2 transition-all duration-200 hover:scale-105 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700" data-category="fitness">
+                🏃 Fitness
+            </button>
+            <button class="category-btn rounded-full px-6 py-2 transition-all duration-200 hover:scale-105 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700" data-category="wellness">
+                ❤️ Wellness
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="text-center py-12">
+            <div class="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p class="text-gray-600 dark:text-gray-300">Loading health tips...</p>
+        </div>
+
+        <!-- Tips Grid -->
+        <div id="tips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+            <!-- Tips will be dynamically loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="text-center py-12 hidden" data-aos="fade-up">
+            <div class="text-6xl mb-4">🔍</div>
+            <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                No tips found
+            </h3>
+            <p class="text-gray-500 dark:text-gray-400">
+                Try selecting a different category or check back later for new tips.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Health tips data
+        const healthTips = [
+            {
+                id: '1',
+                title: 'Stay Hydrated',
+                summary: 'Drink 8 glasses of water daily to maintain optimal body function and energy levels.',
+                icon: '💧',
+                category: 'nutrition',
+                verifiedBy: 'WHO Guidelines',
+                link: 'https://www.who.int/news-room/fact-sheets/detail/drinking-water'
+            },
+            {
+                id: '2',
+                title: 'Mindful Breathing',
+                summary: 'Practice deep breathing exercises for 5-10 minutes daily to reduce stress and improve focus.',
+                icon: '🧘',
+                category: 'mental-health',
+                verifiedBy: 'American Psychological Association',
+                link: 'https://www.apa.org/topics/mindfulness'
+            },
+            {
+                id: '3',
+                title: 'Regular Exercise',
+                summary: 'Aim for 150 minutes of moderate exercise weekly to boost cardiovascular health and mood.',
+                icon: '🏃',
+                category: 'fitness',
+                verifiedBy: 'CDC Guidelines',
+                link: 'https://www.cdc.gov/physicalactivity/basics/pa-health/index.htm'
+            },
+            {
+                id: '4',
+                title: 'Quality Sleep',
+                summary: 'Get 7-9 hours of sleep nightly to support immune function and cognitive performance.',
+                icon: '😴',
+                category: 'wellness',
+                verifiedBy: 'National Sleep Foundation',
+                link: 'https://www.sleepfoundation.org/how-sleep-works/how-much-sleep-do-we-really-need'
+            },
+            {
+                id: '5',
+                title: 'Balanced Diet',
+                summary: 'Include colorful fruits and vegetables in every meal for essential vitamins and antioxidants.',
+                icon: '🥗',
+                category: 'nutrition',
+                verifiedBy: 'USDA MyPlate',
+                link: 'https://www.myplate.gov/eat-healthy/fruits'
+            },
+            {
+                id: '6',
+                title: 'Digital Detox',
+                summary: 'Take regular breaks from screens to reduce eye strain and improve mental clarity.',
+                icon: '📱',
+                category: 'mental-health',
+                verifiedBy: 'American Academy of Ophthalmology',
+                link: 'https://www.aao.org/eye-health/tips-prevention/digital-eye-strain'
+            },
+            {
+                id: '7',
+                title: 'Social Connection',
+                summary: 'Maintain meaningful relationships to support emotional well-being and longevity.',
+                icon: '👥',
+                category: 'mental-health',
+                verifiedBy: 'Harvard Health',
+                link: 'https://www.health.harvard.edu/newsletter_article/the-health-benefits-of-strong-relationships'
+            },
+            {
+                id: '8',
+                title: 'Sun Protection',
+                summary: 'Use SPF 30+ sunscreen daily to protect against skin damage and premature aging.',
+                icon: '☀️',
+                category: 'wellness',
+                verifiedBy: 'American Academy of Dermatology',
+                link: 'https://www.aad.org/public/everyday-care/sun-protection'
+            },
+            {
+                id: '9',
+                title: 'Stress Management',
+                summary: 'Practice time management and set boundaries to reduce chronic stress levels.',
+                icon: '⚖️',
+                category: 'mental-health',
+                verifiedBy: 'Mayo Clinic',
+                link: 'https://www.mayoclinic.org/healthy-lifestyle/stress-management/in-depth/stress-management/art-20044151'
+            },
+            {
+                id: '10',
+                title: 'Regular Check-ups',
+                summary: 'Schedule annual health screenings to catch potential issues early.',
+                icon: '🏥',
+                category: 'wellness',
+                verifiedBy: 'American Medical Association',
+                link: 'https://www.ama-assn.org/delivering-care/prevention-and-wellness'
+            },
+            {
+                id: '11',
+                title: 'Mindful Eating',
+                summary: 'Eat slowly and savor each bite to improve digestion and prevent overeating.',
+                icon: '🍽️',
+                category: 'nutrition',
+                verifiedBy: 'Harvard Health',
+                link: 'https://www.health.harvard.edu/staying-healthy/mindful-eating'
+            },
+            {
+                id: '12',
+                title: 'Active Recovery',
+                summary: 'Include stretching and light movement on rest days to improve flexibility and recovery.',
+                icon: '🧘‍♀️',
+                category: 'fitness',
+                verifiedBy: 'American College of Sports Medicine',
+                link: 'https://www.acsm.org/read-research/resource-library'
+            }
+        ];
+
+        let currentCategory = 'all';
+        let filteredTips = [...healthTips];
+
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100,
+            delay: 0,
+        });
+
+        // DOM elements
+        const loadingEl = document.getElementById('loading');
+        const tipsGridEl = document.getElementById('tips-grid');
+        const emptyStateEl = document.getElementById('empty-state');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+
+        // Render tips
+        function renderTips(tips) {
+            if (tips.length === 0) {
+                tipsGridEl.classList.add('hidden');
+                emptyStateEl.classList.remove('hidden');
+                return;
+            }
+
+            emptyStateEl.classList.add('hidden');
+            tipsGridEl.classList.remove('hidden');
+
+            tipsGridEl.innerHTML = tips.map((tip, index) => `
+                <div class="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6" 
+                     data-aos="fade-up" 
+                     data-aos-delay="${index * 100}">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="text-3xl">${tip.icon}</div>
+                        <span class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300">
+                            ${tip.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        </span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-3">
+                        ${tip.title}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 leading-relaxed">
+                        ${tip.summary}
+                    </p>
+                    ${tip.verifiedBy ? `
+                        <div class="flex items-center gap-2 mb-4 text-xs text-gray-500 dark:text-gray-400">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>Verified by ${tip.verifiedBy}</span>
+                        </div>
+                    ` : ''}
+                    <a href="${tip.link}" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors text-sm flex items-center justify-center gap-2">
+                        Read More
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                    </a>
+                </div>
+            `).join('');
+
+            // Refresh AOS for new elements
+            AOS.refresh();
+        }
+
+        // Filter tips by category
+        function filterTips(category) {
+            currentCategory = category;
+            if (category === 'all') {
+                filteredTips = [...healthTips];
+            } else {
+                filteredTips = healthTips.filter(tip => tip.category === category);
+            }
+            renderTips(filteredTips);
+        }
+
+        // Category button click handlers
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update button states
+                categoryBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-blue-600', 'text-white');
+                    b.classList.add('border', 'border-gray-300', 'dark:border-gray-600');
+                });
+                btn.classList.add('active', 'bg-blue-600', 'text-white');
+                btn.classList.remove('border', 'border-gray-300', 'dark:border-gray-600');
+
+                // Filter tips
+                filterTips(btn.dataset.category);
+            });
+        });
+
+        // Simulate loading delay and initialize
+        setTimeout(() => {
+            loadingEl.classList.add('hidden');
+            renderTips(filteredTips);
+        }, 1000);
+    </script>
+</body>
+</html> 

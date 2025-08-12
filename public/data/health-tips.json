@@ -1,0 +1,146 @@
+{
+  "tips": [
+    {
+      "id": "1",
+      "title": "Stay Hydrated",
+      "summary": "Drink 8 glasses of water daily to maintain optimal body function and energy levels.",
+      "icon": "💧",
+      "category": "Nutrition",
+      "verifiedBy": "WHO Guidelines",
+      "link": "https://www.who.int/news-room/fact-sheets/detail/drinking-water"
+    },
+    {
+      "id": "2",
+      "title": "Mindful Breathing",
+      "summary": "Practice deep breathing exercises for 5-10 minutes daily to reduce stress and improve focus.",
+      "icon": "🧘",
+      "category": "Mental Health",
+      "verifiedBy": "American Psychological Association",
+      "link": "https://www.apa.org/topics/mindfulness"
+    },
+    {
+      "id": "3",
+      "title": "Regular Exercise",
+      "summary": "Aim for 150 minutes of moderate exercise weekly to boost cardiovascular health and mood.",
+      "icon": "🏃",
+      "category": "Fitness",
+      "verifiedBy": "CDC Guidelines",
+      "link": "https://www.cdc.gov/physicalactivity/basics/pa-health/index.htm"
+    },
+    {
+      "id": "4",
+      "title": "Quality Sleep",
+      "summary": "Get 7-9 hours of sleep nightly to support immune function and cognitive performance.",
+      "icon": "😴",
+      "category": "Wellness",
+      "verifiedBy": "National Sleep Foundation",
+      "link": "https://www.sleepfoundation.org/how-sleep-works/how-much-sleep-do-we-really-need"
+    },
+    {
+      "id": "5",
+      "title": "Balanced Diet",
+      "summary": "Include colorful fruits and vegetables in every meal for essential vitamins and antioxidants.",
+      "icon": "🥗",
+      "category": "Nutrition",
+      "verifiedBy": "USDA MyPlate",
+      "link": "https://www.myplate.gov/eat-healthy/fruits"
+    },
+    {
+      "id": "6",
+      "title": "Digital Detox",
+      "summary": "Take regular breaks from screens to reduce eye strain and improve mental clarity.",
+      "icon": "📱",
+      "category": "Mental Health",
+      "verifiedBy": "American Academy of Ophthalmology",
+      "link": "https://www.aao.org/eye-health/tips-prevention/digital-eye-strain"
+    },
+    {
+      "id": "7",
+      "title": "Social Connection",
+      "summary": "Maintain meaningful relationships to support emotional well-being and longevity.",
+      "icon": "👥",
+      "category": "Mental Health",
+      "verifiedBy": "Harvard Health",
+      "link": "https://www.health.harvard.edu/newsletter_article/the-health-benefits-of-strong-relationships"
+    },
+    {
+      "id": "8",
+      "title": "Sun Protection",
+      "summary": "Use SPF 30+ sunscreen daily to protect against skin damage and premature aging.",
+      "icon": "☀️",
+      "category": "Wellness",
+      "verifiedBy": "American Academy of Dermatology",
+      "link": "https://www.aad.org/public/everyday-care/sun-protection"
+    },
+    {
+      "id": "9",
+      "title": "Stress Management",
+      "summary": "Practice time management and set boundaries to reduce chronic stress levels.",
+      "icon": "⚖️",
+      "category": "Mental Health",
+      "verifiedBy": "Mayo Clinic",
+      "link": "https://www.mayoclinic.org/healthy-lifestyle/stress-management/in-depth/stress-management/art-20044151"
+    },
+    {
+      "id": "10",
+      "title": "Regular Check-ups",
+      "summary": "Schedule annual health screenings to catch potential issues early.",
+      "icon": "🏥",
+      "category": "Wellness",
+      "verifiedBy": "American Medical Association",
+      "link": "https://www.ama-assn.org/delivering-care/prevention-and-wellness"
+    },
+    {
+      "id": "11",
+      "title": "Mindful Eating",
+      "summary": "Eat slowly and savor each bite to improve digestion and prevent overeating.",
+      "icon": "🍽️",
+      "category": "Nutrition",
+      "verifiedBy": "Harvard Health",
+      "link": "https://www.health.harvard.edu/staying-healthy/mindful-eating"
+    },
+    {
+      "id": "12",
+      "title": "Active Recovery",
+      "summary": "Include stretching and light movement on rest days to improve flexibility and recovery.",
+      "icon": "🧘‍♀️",
+      "category": "Fitness",
+      "verifiedBy": "American College of Sports Medicine",
+      "link": "https://www.acsm.org/read-research/resource-library"
+    },
+    {
+      "id": "13",
+      "title": "Vitamin D",
+      "summary": "Get 10-30 minutes of sunlight daily or consider supplements to support bone health and immunity.",
+      "icon": "☀️",
+      "category": "Nutrition",
+      "verifiedBy": "NIH Office of Dietary Supplements",
+      "link": "https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/"
+    },
+    {
+      "id": "14",
+      "title": "Posture Awareness",
+      "summary": "Maintain good posture throughout the day to prevent back pain and improve breathing.",
+      "icon": "🧍",
+      "category": "Fitness",
+      "verifiedBy": "American Chiropractic Association",
+      "link": "https://www.acatoday.org/Patients/Health-Wellness-Information/Posture"
+    },
+    {
+      "id": "15",
+      "title": "Gratitude Practice",
+      "summary": "Write down 3 things you're grateful for daily to boost happiness and reduce stress.",
+      "icon": "🙏",
+      "category": "Mental Health",
+      "verifiedBy": "Greater Good Science Center",
+      "link": "https://greatergood.berkeley.edu/topic/gratitude"
+    }
+  ],
+  "categories": [
+    "All",
+    "Nutrition", 
+    "Mental Health",
+    "Fitness",
+    "Wellness"
+  ]
+} 
