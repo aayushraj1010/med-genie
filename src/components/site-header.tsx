@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LogoIcon } from "@/components/icons/logo-icon";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from '@/components/ui/button';
+import { UserPlus } from "lucide-react";
 
 export function SiteHeader() {
   return (
@@ -19,7 +20,6 @@ export function SiteHeader() {
           <nav className="flex items-center space-x-4">
             <Link href="/about" className="hover:underline">About</Link>
             <Link href="/contact" className="hover:underline">Contact</Link>
-            <Link href="/register" className="hover:underline">Register</Link>
             <Link href="/health-vault" className="hover:underline">Health Vault</Link>
           </nav>
         </div>
@@ -30,6 +30,13 @@ export function SiteHeader() {
         {/* Theme Toggle and Reset Button */}
         <div className="flex items-center space-x-2">
           <ThemeToggle />
+          <Link 
+            href="/register" 
+            className="p-2 hover:text-primary transition-colors"
+            title="Register"
+          >
+          <UserPlus className="h-5 w-5" />
+          </Link>
           <Button
             variant="outline"
             className="text-sm"
