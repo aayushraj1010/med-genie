@@ -7,8 +7,7 @@ import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
 import { AOSProvider } from '@/components/aos-provider';
-import './globals.css';
-import { StructuredData } from './structured-data';
+import { StructuredData } from '../structured-data';
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -118,8 +117,12 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
 <AOSProvider>
+  <StructuredData />
+  <SiteHeader />
   {children}
+  <SiteFooter />
   <Toaster />
+  <Analytics />
 </AOSProvider>
         </ThemeProvider>
       </body>

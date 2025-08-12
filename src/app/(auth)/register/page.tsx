@@ -25,7 +25,7 @@ export default function RegisterPage() {
     }
     catch (error: any) {
       console.log(error.message);
-      setServerError(error.response.data.message);    // set error message to show in UI
+      setServerError(error.response.data.message);  
 
     }
 
