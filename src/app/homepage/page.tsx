@@ -53,7 +53,7 @@ export default function HomePage() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
-  
+
   // Initialize chat history
   const {
     sessions,
@@ -72,7 +72,7 @@ export default function HomePage() {
 
   // Track the last loaded session ID to detect changes
   const lastLoadedSessionIdRef = useRef<string | null>(null);
-  
+
   // Initialize a new session or load existing session
   useEffect(() => {
     if (isInitialized) {
@@ -81,12 +81,12 @@ export default function HomePage() {
         createSession(initialWelcomeMessage);
         return;
       }
-      
+
       // Case 2: Session ID changed - load the session messages
       if (activeSessionId !== lastLoadedSessionIdRef.current) {
         console.log(`Loading session: ${activeSessionId}`);
         const session = getSession(activeSessionId);
-        
+
         if (session && session.messages.length > 0) {
           console.log(`Found session with ${session.messages.length} messages`);
           // Always set messages when switching to a different session
@@ -108,25 +108,25 @@ export default function HomePage() {
   }, [messages]);
 
   // Define all handlers without circular dependencies
-  
+
   const handleFeedback = useCallback((messageId: string, feedback: 'good' | 'bad') => {
     setMessages((prevMessages) =>
       prevMessages.map((msg) =>
         msg.id === messageId ? { ...msg, feedback } : msg
       )
     );
-    
+
     // Also update the message in the active session
     if (activeSessionId) {
       const session = getSession(activeSessionId);
       if (session) {
-        const updatedMessages = session.messages.map(msg => 
+        const updatedMessages = session.messages.map(msg =>
           msg.id === messageId ? { ...msg, feedback } : msg
         );
         updateSession(activeSessionId, updatedMessages);
       }
     }
-    
+
     console.log(`Feedback for message ${messageId}: ${feedback}`);
   }, [activeSessionId, getSession, updateSession]);
 
@@ -135,20 +135,20 @@ export default function HomePage() {
       console.error("No active session to add message to");
       return;
     }
-    
+
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       text: question,
       sender: 'user',
       timestamp: Date.now(),
     };
-    
+
     // Add user message to UI
     setMessages((prev) => [...prev, userMessage]);
-    
+
     // Add user message to session
     addMessage(activeSessionId, userMessage);
-    
+
     setIsLoading(true);
 
     const aiLoadingMessage: ChatMessage = {
@@ -158,10 +158,10 @@ export default function HomePage() {
       timestamp: Date.now(),
       isLoading: true,
     };
-    
+
     // Add loading message to UI
     setMessages((prev) => [...prev, aiLoadingMessage]);
-    
+
     try {
       if (/hospital|emergency/i.test(question)) {
         const locationMatch = question.match(/(?:in|near|nearby|around)\s+([A-Za-z ]+)/i);
@@ -183,13 +183,13 @@ export default function HomePage() {
                 sender: 'ai',
                 timestamp: Date.now(),
               };
-              
+
               // Update UI by removing loading message and adding response
               setMessages(prev => [...prev.filter(msg => msg.id !== aiLoadingMessage.id), aiResponseMessage]);
-              
+
               // Update session
               addMessage(activeSessionId, aiResponseMessage);
-              
+
               setIsLoading(false);
               return;
             } else {
@@ -203,46 +203,56 @@ export default function HomePage() {
               sender: 'ai',
               timestamp: Date.now(),
             };
-            
+
             // Update UI by removing loading message and adding error
             setMessages(prev => [...prev.filter(msg => msg.id !== aiLoadingMessage.id), aiErrorMessage]);
-            
+
             // Update session
             addMessage(activeSessionId, aiErrorMessage);
-            
+
             setIsLoading(false);
             return;
           }
         }
       }
 
+      // Format conversation history for context (excluding loading messages and current question)
+      const formatConversationHistory = (messages: ChatMessage[]): string => {
+        return messages
+          .filter(msg => !msg.isLoading && msg.id !== userMessage.id)
+          .slice(-10) // Only include last 10 messages for context
+          .map(msg => `${msg.sender === 'user' ? 'User' : 'Med Genie'}: ${msg.text}`)
+          .join('\n');
+      };
+
       const input: PersonalizedHealthQuestionAnsweringInput = {
         question,
         medicalHistory: userProfile.medicalHistory,
         lifestyle: userProfile.lifestyle,
         symptoms: userProfile.symptoms,
+        conversationHistory: formatConversationHistory(messages),
       };
 
       const result: PersonalizedHealthQuestionAnsweringOutput = await personalizedHealthQuestionAnswering(input);
-      
+
       // Remove loading message from UI
       setMessages(prev => prev.filter(msg => msg.id !== aiLoadingMessage.id));
 
-      if (result.answer && result.answer !== result.followUpQuestion) {
+      if (result.answer) {
         const aiInfoMessage: ChatMessage = {
           id: `ai-info-${Date.now()}`,
           text: result.answer,
           sender: 'ai',
           timestamp: Date.now(),
         };
-        
+
         // Add info message to UI
         setMessages(prev => [...prev, aiInfoMessage]);
-        
+
         // Add info message to session
         addMessage(activeSessionId, aiInfoMessage);
       }
-      
+
       if (result.followUpQuestion) {
         let keyToUpdate: AISuggestedKey | undefined;
         const followUpLower = result.followUpQuestion.toLowerCase();
@@ -250,7 +260,7 @@ export default function HomePage() {
         if (followUpLower.includes('medical history')) keyToUpdate = 'medicalHistory';
         else if (followUpLower.includes('lifestyle')) keyToUpdate = 'lifestyle';
         else if (followUpLower.includes('symptom')) keyToUpdate = 'symptoms';
-        
+
         const aiFollowUpMessage: ChatMessage = {
           id: `ai-followup-${Date.now()}`,
           text: result.followUpQuestion as string,
@@ -258,51 +268,37 @@ export default function HomePage() {
           timestamp: Date.now(),
           isFollowUpPrompt: true,
         };
-        
+
         // Add follow-up message to UI
         setMessages(prev => [...prev, aiFollowUpMessage]);
-        
+
         // Add follow-up message to session
         addMessage(activeSessionId, aiFollowUpMessage);
 
         setCurrentAiFollowUpKey(keyToUpdate);
         setLastUserQuestionForFollowUp(question);
         setIsProfileModalOpen(true);
-
-      } else if (result.answer) {
-        const aiResponseMessage: ChatMessage = {
-          id: `ai-response-${Date.now()}`,
-          text: result.answer,
-          sender: 'ai',
-          timestamp: Date.now(),
-        };
-        
-        // Add response message to UI
-        setMessages(prev => [...prev, aiResponseMessage]);
-        
-        // Add response message to session
-        addMessage(activeSessionId, aiResponseMessage);
       }
 
     } catch (error) {
       console.error('AI response error:', error);
-      
+
       // Remove loading message from UI
       setMessages(prev => prev.filter(msg => msg.id !== aiLoadingMessage.id));
-      
+
       const aiErrorMessage: ChatMessage = {
         id: `ai-error-${Date.now()}`,
         text: '😔 Sorry, I encountered an error. Please try again later.',
         sender: 'ai',
         timestamp: Date.now(),
       };
-      
+
       // Add error message to UI
       setMessages(prev => [...prev, aiErrorMessage]);
-      
+
       // Add error message to session
       addMessage(activeSessionId, aiErrorMessage);
-      
+
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -314,40 +310,40 @@ export default function HomePage() {
   }, [
     activeSessionId,
     addMessage,
-    userProfile, 
-    toast, 
-    setCurrentAiFollowUpKey, 
-    setLastUserQuestionForFollowUp, 
+    userProfile,
+    toast,
+    setCurrentAiFollowUpKey,
+    setLastUserQuestionForFollowUp,
     setIsProfileModalOpen
   ]);
-  
+
   const handleNewChat = useCallback(() => {
     if (isInitialized) {
       // Create a new session with the welcome message
       const newSessionId = createSession(initialWelcomeMessage);
-      
+
       // Set messages to just the welcome message
       setMessages([initialWelcomeMessage]);
-      
+
       console.log(`Created new chat session: ${newSessionId}`);
     }
   }, [isInitialized, createSession, initialWelcomeMessage]);
-  
+
   const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!input.trim() || isLoading || !isInitialized) return;
-    
+
     // Save the input value to a local variable to avoid closure issues
     const currentInput = input;
-    
+
     // Clear the input field immediately
     setInput('');
-    
+
     // If there's no active session, create one first
     if (!activeSessionId) {
       // Create a new session first
       createSession(initialWelcomeMessage);
-      
+
       // Wait for the next render cycle before submitting the question
       requestAnimationFrame(() => {
         handleSubmitQuestion(currentInput);
@@ -381,10 +377,10 @@ export default function HomePage() {
         timestamp: Date.now(),
         isFollowUpPrompt: true,
       };
-      
+
       // Add profile updated message to UI
       setMessages(prev => [...prev, profileUpdatedMessage]);
-      
+
       // Add profile updated message to session
       addMessage(activeSessionId, profileUpdatedMessage);
 
@@ -396,15 +392,15 @@ export default function HomePage() {
         timestamp: Date.now(),
         isLoading: true,
       };
-      
+
       // Add loading message to UI
       setMessages(prev => [...prev, loadingMessage]);
-      
+
       setIsLoading(true);
 
       try {
         const result = await personalizedHealthQuestionAnswering(updatedInput);
-        
+
         // Remove loading message from UI
         setMessages(prev => prev.filter(msg => msg.id !== loadingId));
 
@@ -414,10 +410,10 @@ export default function HomePage() {
           sender: 'ai',
           timestamp: Date.now(),
         };
-        
+
         // Add refined response message to UI
         setMessages(prev => [...prev, refinedResponseMessage]);
-        
+
         // Add refined response message to session
         addMessage(activeSessionId, refinedResponseMessage);
 
@@ -429,13 +425,13 @@ export default function HomePage() {
             timestamp: Date.now(),
             isFollowUpPrompt: true,
           };
-          
+
           // Add refined follow-up message to UI
           setMessages(prev => [...prev, refinedFollowUpMessage]);
-          
+
           // Add refined follow-up message to session
           addMessage(activeSessionId, refinedFollowUpMessage);
-          
+
           toast({
             title: "Further Info Needed",
             description: "The AI has another follow-up question.",
@@ -444,23 +440,23 @@ export default function HomePage() {
 
       } catch (error) {
         console.error('Refinement error:', error);
-        
+
         // Remove loading message from UI
         setMessages(prev => prev.filter(msg => msg.id !== loadingId));
-        
+
         const errorMessage: ChatMessage = {
           id: `ai-error-refine-${Date.now()}`,
           text: '😔 Error refining the answer. Try again later.',
           sender: 'ai',
           timestamp: Date.now(),
         };
-        
+
         // Add error message to UI
         setMessages(prev => [...prev, errorMessage]);
-        
+
         // Add error message to session
         addMessage(activeSessionId, errorMessage);
-        
+
         toast({
           variant: 'destructive',
           title: 'Refinement Error',
@@ -478,33 +474,33 @@ export default function HomePage() {
         sender: 'ai',
         timestamp: Date.now(),
       };
-      
+
       // Add profile acknowledgment message to UI
       setMessages(prev => [...prev, profileAckMessage]);
-      
+
       // Add profile acknowledgment message to session
       addMessage(activeSessionId, profileAckMessage);
     }
   }, [
     activeSessionId,
     addMessage,
-    userProfile, 
-    setUserProfile, 
-    setIsProfileModalOpen, 
-    lastUserQuestionForFollowUp, 
-    toast, 
-    setLastUserQuestionForFollowUp, 
+    userProfile,
+    setUserProfile,
+    setIsProfileModalOpen,
+    lastUserQuestionForFollowUp,
+    toast,
+    setLastUserQuestionForFollowUp,
     setCurrentAiFollowUpKey
   ]);
 
   const handleCloseProfileModal = useCallback(() => {
     setIsProfileModalOpen(false);
-    
+
     if (!activeSessionId) {
       console.error("No active session to add message to");
       return;
     }
-    
+
     if (lastUserQuestionForFollowUp && currentAiFollowUpKey) {
       const relevantField = userProfile[currentAiFollowUpKey];
       if (!relevantField || relevantField.trim() === '') {
@@ -515,10 +511,10 @@ export default function HomePage() {
           timestamp: Date.now(),
           isFollowUpPrompt: true,
         };
-        
+
         // Add cancel follow-up message to UI
         setMessages(prev => [...prev, cancelFollowUpMessage]);
-        
+
         // Add cancel follow-up message to session
         addMessage(activeSessionId, cancelFollowUpMessage);
       }
@@ -528,11 +524,11 @@ export default function HomePage() {
   }, [
     activeSessionId,
     addMessage,
-    setIsProfileModalOpen, 
-    lastUserQuestionForFollowUp, 
-    currentAiFollowUpKey, 
-    userProfile, 
-    setLastUserQuestionForFollowUp, 
+    setIsProfileModalOpen,
+    lastUserQuestionForFollowUp,
+    currentAiFollowUpKey,
+    userProfile,
+    setLastUserQuestionForFollowUp,
     setCurrentAiFollowUpKey
   ]);
 
@@ -571,8 +567,8 @@ export default function HomePage() {
                   onClearAllSessions={clearAllSessions}
                 />
               ) : (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setShowHistorySidebar(!showHistorySidebar)}
                   aria-label={showHistorySidebar ? "Hide chat history" : "Show chat history"}
                 >
@@ -580,9 +576,9 @@ export default function HomePage() {
                   {showHistorySidebar ? "Hide History" : "Show History"}
                 </Button>
               )}
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 onClick={handleNewChat}
                 aria-label="Start a new chat"
               >
@@ -590,7 +586,7 @@ export default function HomePage() {
                 New Chat
               </Button>
             </div>
-            
+
             <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information">
               <Info className="mr-2 h-4 w-4" />
               Update Health Info
