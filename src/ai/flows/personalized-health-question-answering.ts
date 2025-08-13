@@ -23,6 +23,7 @@ const PersonalizedHealthQuestionAnsweringInputSchema = z.object({
   medicalHistory: z.string().optional().describe('The user\u0027s medical history.'),
   lifestyle: z.string().optional().describe('The user\u0027s lifestyle information.'),
   symptoms: z.string().optional().describe('The user\u0027s symptoms.'),
+  conversationHistory: z.string().optional().describe('Previous messages in the conversation for context.'),
 });
 export type PersonalizedHealthQuestionAnsweringInput = z.infer<
   typeof PersonalizedHealthQuestionAnsweringInputSchema
@@ -51,6 +52,13 @@ const prompt = ai.definePrompt({
   output: {schema: PersonalizedHealthQuestionAnsweringOutputSchema},
   // Tools removed as the LLM is now instructed to directly output the JSON
   system: `You are a medical AI assistant. Your goal is to answer the user's question or ask for more information if needed.
+
+IMPORTANT: You have access to the conversation history. Use this context to:
+- Reference previous discussions and questions
+- Provide more personalized responses based on what was discussed before
+- Avoid asking for information already provided in previous messages
+- Build upon previous advice or recommendations
+
 You MUST respond in JSON format. The JSON object should conform to the following structure:
 {
   "answer": "string (This field is REQUIRED. It should contain the direct answer to the user's question. If you need to ask a follow-up question, this field should state that more information is needed, e.g., 'I need more information to help you effectively.')",
@@ -77,6 +85,7 @@ Question: {{{question}}}
 Medical History: {{{medicalHistory}}}
 Lifestyle: {{{lifestyle}}}
 Symptoms: {{{symptoms}}}
+Previous Conversation: {{{conversationHistory}}}
 
 Based on this, decide if you can answer directly or if a follow-up question is necessary, and then generate the JSON response as described.
 You should avoid providing medical advice or diagnoses. Instead, provide general information. If you are unsure, politely suggest that the user consult a healthcare professional.
@@ -86,6 +95,7 @@ Question: {{{question}}}
 Medical History: {{{medicalHistory}}}
 Lifestyle: {{{lifestyle}}}
 Symptoms: {{{symptoms}}}
+Previous Conversation: {{{conversationHistory}}}
 
 Generate your JSON response:`,
 });
