@@ -1,14 +1,125 @@
 # 🩺 MED GENIE
-### Your Intelligent AI Health Assistant
+### Your Intelligent AI Health Assistant with Secure Authentication
 
 <div align="center">
 
 ![GSSoC'25](https://img.shields.io/badge/GSSoC-2025-orange)
 ![Open Source](https://img.shields.io/badge/Open--Source-Yes-brightgreen)
 ![Live](https://img.shields.io/badge/Live-Website-blue)
-![PRs Welcome](https://img.shield---
+![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen)
+![Authentication](https://img.shields.io/badge/Auth-JWT-green)
+![Database](https://img.shields.io/badge/DB-SQLite%2FPostgreSQL-blue)
+
+> **🔐 Now featuring secure user authentication, personalized health profiles, and protected health data!**
+
+Med Genie is an intelligent AI-powered health assistant that provides instant, accurate health information and guidance. With our new authentication system, users can securely access personalized health advice, maintain their health history, and enjoy a protected experience.
+
+</div>
+
+## ✨ Key Features
+
+### 🤖 **AI-Powered Health Assistant**
+- Instant health information and guidance
+- Symptom analysis and recommendations
+- Emergency response protocols
+- Medication information lookup
+
+### 🔐 **Secure Authentication System**
+- **JWT-based authentication** with secure token management
+- **Password hashing** using bcrypt for maximum security
+- **Smart login flow** with intelligent signup suggestions
+- **Session management** with automatic token refresh
+- **Protected routes** ensuring secure access to health data
+- **API route protection** with middleware-based security
+
+### 👤 **Personalized User Experience**
+- **Individual user accounts** with secure registration
+- **Personalized health profiles** for better recommendations
+- **Chat history preservation** across sessions
+- **Seamless flow** between login and signup pages
+- **Context-aware messaging** based on user journey
+
+### 🛡️ **Security & Privacy**
+- **End-to-end encryption** for sensitive health data
+- **HIPAA-compliant** data handling practices
+- **Secure password policies** with validation
+- **Automatic session cleanup** on logout
+- **Protected API endpoints** with authentication middleware---
 
 ## 🔧 Development Setup
+
+### 📋 **Prerequisites**
+- Node.js 18+ and npm
+- Git for version control
+- Text editor (VS Code recommended)
+
+### 🚀 **Quick Start**
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ashutosh-engineer/med-genie.git
+   cd med-genie
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Environment setup:**
+   ```bash
+   # Copy environment template
+   cp env.example .env
+   
+   # Edit .env file with your configuration:
+   # - GOOGLE_API_KEY (required for AI features)
+   # - JWT_SECRET (required for authentication)
+   # - DATABASE_URL (SQLite by default)
+   ```
+
+4. **Database setup:**
+   ```bash
+   # Generate Prisma client
+   npx prisma generate
+   
+   # Create and migrate database
+   npx prisma db push
+   
+   # (Optional) View database in Prisma Studio
+   npx prisma studio
+   ```
+
+5. **Start development server:**
+   ```bash
+   npm run dev
+   ```
+
+6. **Access the application:**
+   - Main app: `http://localhost:9003`
+   - AI development: `npm run genkit:dev`
+
+### 🔐 **Authentication Setup**
+
+The application includes a complete authentication system:
+
+- **User Registration**: Create accounts with email/password
+- **Secure Login**: JWT-based authentication
+- **Protected Routes**: Homepage requires authentication
+- **Session Management**: Persistent login across browser sessions
+- **Password Security**: bcrypt hashing with salt rounds
+
+**Default Environment Variables:**
+```env
+# Authentication (Required)
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
+JWT_EXPIRES_IN=7d
+
+# Database (Auto-configured for development)
+DATABASE_URL="file:./dev.db"
+
+# AI Features (Required for chat functionality)
+GOOGLE_API_KEY=your_google_ai_api_key_here
+```
 
 ### 📁 **Project Structure**
 
@@ -20,27 +131,45 @@ med-genie/
 │   │   └── flows/               # Health Q&A flows
 │   ├── 📁 app/                  # Next.js app directory
 │   │   ├── page.tsx            # Main landing page
-│   │   ├── homepage/           # Chat interface
+│   │   ├── homepage/           # Protected chat interface
+│   │   ├── login/              # Authentication pages
+│   │   ├── sign-up/            # User registration
 │   │   └── api/                # API routes
+│   │       └── auth/           # Authentication endpoints
+│   │           ├── login/      # Login API
+│   │           ├── register/   # Registration API
+│   │           └── logout/     # Logout API
 │   ├── 📁 components/          # React components
 │   │   ├── ui/                 # Reusable UI components
+│   │   ├── ProtectedRoute.tsx  # Route protection
+│   │   ├── UserMenu.tsx        # User authentication menu
 │   │   └── landing_page/       # Landing page sections
+│   ├── 📁 contexts/            # React contexts
+│   │   └── AuthContext.tsx     # Authentication context
 │   ├── 📁 hooks/               # Custom React hooks
 │   ├── 📁 lib/                 # Utilities & types
+│   │   ├── jwt.ts             # JWT token utilities
+│   │   ├── auth-middleware.ts  # API protection middleware
+│   │   └── api-client.ts      # HTTP client with auth
 │   └── 📁 styles/              # Global styles
 ├── 📁 public/                  # Static assets
-├── 📁 prisma/                  # Database schema
+├── 📁 prisma/                  # Database schema & client
+│   ├── schema.prisma          # User & data models
+│   └── prisma.ts              # Database connection
+├── 📄 AUTHENTICATION.md        # Authentication documentation
 └── 📄 Configuration files
 ```
 
 ### 🛠️ **Development Workflow**
 
 1. **Setup**: Clone repository and install dependencies
-2. **Environment**: Configure `.env.local` with API keys
-3. **Development**: Run `npm run dev` for hot-reload development
-4. **AI Testing**: Use `npm run genkit:dev` for AI flow testing
-5. **Type Safety**: Run `npm run typecheck` for TypeScript validation
-6. **Code Quality**: Use `npm run lint` for code quality checks
+2. **Environment**: Configure `.env` with API keys and JWT secret
+3. **Database**: Generate Prisma client and push schema
+4. **Development**: Run `npm run dev` for hot-reload development
+5. **AI Testing**: Use `npm run genkit:dev` for AI flow testing
+6. **Type Safety**: Run `npm run typecheck` for TypeScript validation
+7. **Code Quality**: Use `npm run lint` for code quality checks
+8. **Authentication Testing**: Test login/signup flows and protected routes
 
 ### 🧪 **Testing & Quality Assurance**
 
@@ -51,13 +180,37 @@ npm run typecheck
 # Linting
 npm run lint
 
+# Database operations
+npx prisma studio          # View database
+npx prisma db push         # Apply schema changes
+npx prisma generate        # Regenerate client
+
 # Manual testing checklist
-# ✅ Chat functionality
+# ✅ User registration and login
+# ✅ Authentication flow and JWT tokens
+# ✅ Protected route access
+# ✅ Chat functionality (authenticated users)
 # ✅ Voice input/output
 # ✅ Responsive design
 # ✅ Accessibility features
 # ✅ Emergency scenarios
+# ✅ Session persistence and logout
 ```
+
+### 📊 **API Endpoints**
+
+#### Authentication Endpoints
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `POST /api/auth/check-email` - Check email availability
+
+#### Protected Endpoints
+- `GET /api/user/profile` - Get user profile (requires auth)
+- `PUT /api/user/profile` - Update user profile (requires auth)
+
+#### Public Endpoints
+- `GET /api/nearby-hospitals` - Find nearby hospitals
 
 ---
 
@@ -67,9 +220,11 @@ npm run lint
 
 | Feature | Description | Timeline | Priority |
 |---------|-------------|----------|----------|
+| 🔐 **Advanced Auth Features** | 2FA, OAuth providers, password reset | Q1 2025 | High |
+| 📱 **Mobile Authentication** | Biometric login, mobile-optimized flows | Q1 2025 | High |
 | 🧠 **ML Diagnosis Engine** | Advanced AI-driven health issue prediction | Q2 2025 | High |
 | 📍 **Smart Location Services** | Nearby hospitals, clinics, pharmacy finder | Q1 2025 | High |
-| 🗂️ **Health History Tracking** | Optional conversation timeline & insights | Q2 2025 | Medium |
+| 🗂️ **Enhanced Health Profiles** | Medical history, allergies, medications | Q2 2025 | Medium |
 | 👨‍⚕️ **Specialist AI Avatars** | Cardiology, Pediatrics, etc. specialized responses | Q3 2025 | Medium |
 | 🌐 **Multi-language Support** | Hindi, Bengali, Tamil, Spanish, French | Q2 2025 | High |
 | ⏰ **Health Reminders** | Medication, appointment, wellness alerts | Q3 2025 | Low |
@@ -82,6 +237,34 @@ npm run lint
 - 🎯 **Accuracy**: > 90% for common health questions
 - 📱 **Mobile Performance**: < 3 second load time
 - ♿ **Accessibility**: WCAG 2.1 AA compliance
+- 🔐 **Security**: Zero-trust authentication model
+- 🚀 **API Performance**: < 500ms for auth endpoints
+- 💾 **Database**: Optimized queries with proper indexing
+
+---
+
+## 🔐 Authentication System
+
+Med Genie features a comprehensive authentication system built with modern security practices:
+
+### ✅ **Implemented Features**
+- **JWT Authentication** with secure token management
+- **Password Hashing** using bcrypt with 10 salt rounds
+- **Smart Login Flow** with intelligent signup suggestions
+- **Protected Routes** ensuring secure access to health data
+- **Session Management** with automatic cleanup
+- **API Route Protection** with middleware-based security
+- **Context-Aware UI** that adapts to authentication state
+
+### 🔧 **Technical Implementation**
+- **Frontend**: React Context for state management
+- **Backend**: Next.js API routes with middleware protection
+- **Database**: Prisma ORM with SQLite/PostgreSQL support
+- **Security**: bcrypt password hashing, JWT tokens, HTTP-only patterns
+- **Validation**: Zod schemas for input validation
+
+### 📖 **Documentation**
+For detailed authentication documentation, see [AUTHENTICATION.md](./AUTHENTICATION.md)
 
 ---
 
