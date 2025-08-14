@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { ChatMessageItem } from '@/components/chat-message-item';
 import { UserProfileModal } from '@/components/user-profile-modal';
 import { BackgroundParticles } from '@/components/background-particles';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -40,7 +41,7 @@ const defaultUserProfile: UserProfile = {
   symptoms: '',
 };
 
-export default function HomePage() {
+function HomePage() {
   const [messages, setMessages] = useState<ChatMessage[]>([initialWelcomeMessage]);
   const [isLoading, setIsLoading] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile>(defaultUserProfile);
@@ -533,5 +534,14 @@ export default function HomePage() {
         aiSuggestedKey={currentAiFollowUpKey}
       />
     </div>
+  );
+}
+
+// Wrap with protected route
+export default function ProtectedHomePage() {
+  return (
+    <ProtectedRoute>
+      <HomePage />
+    </ProtectedRoute>
   );
 }
