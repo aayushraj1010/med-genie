@@ -20,6 +20,7 @@ import { AlertCircle, ArrowUp, Info, History, Plus } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { ChatHistorySidebar } from '@/components/chat-history-sidebar';
+import { Camera } from "lucide-react";
 import { ChatHistoryButton } from '@/components/chat-history-button';
 
 const VoiceSearch = dynamic(() => import('@/components/VoiceSearch'), {
@@ -612,11 +613,40 @@ export default function HomePage() {
                 className="pr-24"
               />
               <VoiceSearch setInput={setInput} />
+                            {/* Camera Upload Button */}
+              <label className="cursor-pointer flex items-center justify-center h-8 w-8 bg-muted rounded absolute right-20 top-1/2 -translate-y-1/2">
+                <Camera className="h-4 w-4 text-muted-foreground" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    const formData = new FormData();
+                    formData.append("file", file);
+
+                    try {
+                      const res = await fetch("/api/upload", {
+                        method: "POST",
+                        body: formData,
+                      });
+                      const data = await res.json();
+                      console.log("Uploaded image:", data);
+                    } catch (err) {
+                      console.error("Upload failed:", err);
+                    }
+                  }}
+                  className="hidden"
+                />
+              </label>
+
               <Button
                 type="submit"
                 size="icon"
                 disabled={isLoading || !input.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 h-8 w-8"
               >
                 <ArrowUp className="h-4 w-4" />
                 <span className="sr-only">Send message</span>
