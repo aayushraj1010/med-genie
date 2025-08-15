@@ -20,4 +20,8 @@ export const initialPrompts: QuickReply[] = [
     title: "Tips for Managing Stress",
     query: "What are some effective tips for managing stress?",
   },
+  {
+    title: "Find Medical Specialist",
+    query: "I need help finding the right medical specialist for my symptoms",
+  },
 ];

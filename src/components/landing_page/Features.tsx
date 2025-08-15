@@ -6,6 +6,7 @@ import {
   Stethoscope,
   Mic,
   MoonStar,
+  UserCheck,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -32,18 +33,24 @@ const features = [
   },
   {
     id: 4,
+    title: "Specialist Recommendation",
+    desc: "Get AI-powered recommendations for medical specialists based on your symptoms, age, gender, and medical history.",
+    icon: <UserCheck size={40} className="text-[rgb(63,181,244)]" />,
+  },
+  {
+    id: 5,
     title: "Voice Input",
     desc: "Speak directly to Med Genie using built-in speech recognition for quick, hands-free health assistance.",
     icon: <Mic size={40} className="text-[rgb(63,181,244)]" />,
   },
   {
-    id: 5,
+    id: 6,
     title: "Theme Toggle",
     desc: "Switch between dark and light modes for a comfortable experience in any environment.",
     icon: <MoonStar size={40} className="text-[rgb(63,181,244)]" />,
   },
   {
-    id: 6,
+    id: 7,
     title: "Privacy-First",
     desc: "No data storage or tracking — your health queries remain private and secure.",
     icon: <ShieldCheck size={40} className="text-[rgb(63,181,244)]" />,
