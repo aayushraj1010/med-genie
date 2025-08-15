@@ -1209,14 +1209,6 @@ You’re free to use, modify, and distribute this software with proper attributi
 
 © 2025 Med Genie — Built with ❤️ by Aayush Raj and contributors.
 
-yaml
-Copy
-Edit
----
-
-✅ You can directly **replace your current `README.md`** with this content. It’s organized, informative, and optimized for contributors, users, and open-source discoverability.
-
-Let me know if you'd like a **`CONTRIBUTING.md`**, **GitHub issue templates**, or a **feature roadmap.md** as well!
 
 
 
