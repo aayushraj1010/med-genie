@@ -6,6 +6,7 @@
 
 body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  background-color: rgb(9 9 9 / var(--tw-bg-opacity, 1));
 }
 
 @layer base {
@@ -124,4 +125,19 @@ body {
 
 }
 
+}
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
