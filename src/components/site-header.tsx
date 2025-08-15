@@ -25,6 +25,7 @@ export function SiteHeader() {
             <Link href="/about" className="hover:underline">About</Link>
             <Link href="/contact" className="hover:underline">Contact</Link>
             <Link href="/health-vault" className="hover:underline">Health Vault</Link>
+            <Link href="/specialist-recommendation" className="hover:underline">Find Specialist</Link>
           </nav>
         </div>
 
