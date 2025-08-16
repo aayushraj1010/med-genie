@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SendHorizonal, Loader2 } from "lucide-react";
 
 interface ChatInputFormProps {
-  onSubmit: (question: string) => Promise<void>;
+  onSubmit: (question: string, userDetailsProvided: boolean) => Promise<void>;
   isLoading: boolean;
   placeholder?: string;
 }
@@ -17,11 +17,31 @@ export function ChatInputForm({
   placeholder = "Ask Med Genie about your health...",
 }: ChatInputFormProps) {
   const [question, setQuestion] = useState("");
+  const [userDetailsProvided, setUserDetailsProvided] = useState(false);
+
+  // Load user details flag from localStorage
+  useEffect(() => {
+    const storedFlag = localStorage.getItem("userDetailsProvided");
+    if (storedFlag === "true") {
+      setUserDetailsProvided(true);
+    }
+  }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!question.trim() || isLoading) return;
-    await onSubmit(question);
+
+    // If this question contains medical details, set flag
+    if (
+      question.toLowerCase().includes("symptom") ||
+      question.toLowerCase().includes("history") ||
+      question.toLowerCase().includes("allergy")
+    ) {
+      localStorage.setItem("userDetailsProvided", "true");
+      setUserDetailsProvided(true);
+    }
+
+    await onSubmit(question, userDetailsProvided);
     setQuestion("");
   };
 
@@ -47,8 +67,6 @@ export function ChatInputForm({
           }}
           disabled={isLoading}
           aria-label="Type your health question here"
-          aria-describedby="chat-input-description"
-          aria-required="true"
         />
         <Button
           type="submit"
@@ -60,29 +78,14 @@ export function ChatInputForm({
               ? "Sending message, please wait"
               : "Send your health question to Med Genie"
           }
-          aria-describedby={isLoading ? "loading-description" : undefined}
         >
           {isLoading ? (
             <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
             <SendHorizonal className="h-5 w-5" />
           )}
-          <span className="sr-only">
-            {isLoading ? "Sending message, please wait" : "Send message"}
-          </span>
         </Button>
       </div>
-
-      <div id="chat-input-description" className="sr-only">
-        Type your health question and press Enter or click Send to get advice
-        from Med Genie
-      </div>
-
-      {isLoading && (
-        <div id="loading-description" className="sr-only">
-          Med Genie is processing your question, please wait
-        </div>
-      )}
     </form>
   );
 }
