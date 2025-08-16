@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import Lottie from "lottie-react";
+import ecgAnimation from "@/assets/animations/ECG.json";
 
 export default function MedGenieLoginForm() {
   const [email, setEmail] = useState("");
@@ -20,12 +22,12 @@ export default function MedGenieLoginForm() {
     setShowSignupSuggestion(false);
 
     const result = await login(email, password);
-    
+
     if (result.success) {
       router.push("/homepage");
     } else {
       setError(result.message);
-      
+
       // Check if the error suggests the user doesn't exist
       if (result.message.toLowerCase().includes('invalid email') || 
           result.message.toLowerCase().includes('user not found') ||
@@ -49,6 +51,16 @@ export default function MedGenieLoginForm() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-black via-[#0a0f14] to-black p-4">
       <div className="w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg">
+        <div className="flex justify-center mb-6">
+
+          {/*Added the heart rate animation to look decent login page*/}
+          <Lottie
+            animationData={ecgAnimation}
+            loop={true}
+            className="w-40 h-24"
+          />
+        </div>
+
         <h2 className="text-3xl font-bold text-center mb-2 text-white">
           MedGenie Login
         </h2>
