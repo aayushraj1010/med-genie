@@ -8,8 +8,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+
+// migrate cmnd : npx prisma migrate dev --name your_migration_name
+
+
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
