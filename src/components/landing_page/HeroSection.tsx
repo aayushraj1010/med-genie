@@ -39,7 +39,7 @@ export default function Hero() {
         </p>
 
         <a
-          href="https://med-genie-five.vercel.app/"
+          href="/login"
           target="_blank"
           rel="noopener noreferrer"
           style={{ backgroundColor: brandColor }}
