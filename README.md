@@ -1,3 +1,4 @@
+<a name="top"></a>
 <div align="center">
 
 # 🩺 MED GENIE
@@ -1210,6 +1211,11 @@ You’re free to use, modify, and distribute this software with proper attributi
 © 2025 Med Genie — Built with ❤️ by Aayush Raj and contributors.
 
 
+
+
+<p align="center">
+  <a href="#top" style="font-size: 14px; text-decoration: none;">⬆️ Back to Top</a>
+</p>
 
 
 
