@@ -3,17 +3,21 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { Prisma } from "../../../../../prisma/prisma";
 import { signToken } from "@/lib/jwt";
+import { withRateLimit, authRateLimits } from "@/lib/rate-limit";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required")
 });
 
-export async function POST(req: NextRequest) {
+// Apply rate limiting to login endpoint
+const rateLimitedLogin = withRateLimit(authRateLimits.login);
+
+export const POST = rateLimitedLogin(async (req: NextRequest) => {
   try {
     const body = await req.json();
     const parsed = loginSchema.safeParse(body);
-    
+
     if (!parsed.success) {
       return NextResponse.json({
         success: false,
@@ -24,7 +28,7 @@ export async function POST(req: NextRequest) {
     const { email, password } = parsed.data;
 
     // Find user by email
-    const user = await Prisma.user.findUnique({ 
+    const user = await Prisma.user.findUnique({
       where: { email },
       select: {
         id: true,
@@ -77,4 +81,4 @@ export async function POST(req: NextRequest) {
       message: error.message || "Internal server error"
     }, { status: 500 });
   }
-}
+});

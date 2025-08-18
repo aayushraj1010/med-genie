@@ -3,10 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from 'bcryptjs';
 import { Prisma } from "../../../../../prisma/prisma";
 import { signToken } from "@/lib/jwt";
+import { withRateLimit, authRateLimits } from "@/lib/rate-limit";
 
-export async function POST(req: NextRequest) {
+// Apply rate limiting to register endpoint
+const rateLimitedRegister = withRateLimit(authRateLimits.register);
+
+export const POST = rateLimitedRegister(async (req: NextRequest) => {
   try {
-    
+
     const body = await req.json();
     const parsed = registerSchema.safeParse(body);
     if (!parsed.success) {
@@ -40,7 +44,7 @@ export async function POST(req: NextRequest) {
         name,
         email,
         password: hashed,
-        confirmpassword : hashed
+        confirmpassword: hashed
       }
     });
 
@@ -68,4 +72,4 @@ export async function POST(req: NextRequest) {
       message: error.message || "Internal server error"
     }, { status: 500 });
   }
-}
+});

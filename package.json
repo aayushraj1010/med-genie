@@ -11,6 +11,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "generate-og": "node scripts/generate-og-image.js",
+    "test:rate-limit": "node scripts/test-rate-limiting.js",
     "postinstall": "prisma generate"
   },
   "dependencies": {
