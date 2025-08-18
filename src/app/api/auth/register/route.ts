@@ -2,6 +2,7 @@ import { registerSchema } from "@/validation/userRegister";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from 'bcryptjs';
 import { Prisma } from "../../../../../prisma/prisma";
+import { signToken } from "@/lib/jwt";
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,10 +44,22 @@ export async function POST(req: NextRequest) {
       }
     });
 
+    // Generate JWT token for immediate login
+    const token = signToken({
+      userId: newUser.id,
+      email: newUser.email,
+      name: newUser.name
+    });
+
     return NextResponse.json({
       success: true,
       message: "User registered successfully",
-      user: newUser
+      token,
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email
+      }
     }, { status: 201 });
 
   } catch (error: any) {
