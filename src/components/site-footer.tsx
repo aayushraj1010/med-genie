@@ -22,6 +22,9 @@ export function SiteFooter() {
                     <Link href="/contribute" className="hover:underline">
                         Contribute
                     </Link>
+                    <Link href="/Privacy Policy" className="hover:underline">
+                        Privacy Policy
+                    </Link>
                     <Link
                         href="https://github.com/aayushraj1010/med-genie"
                         target="_blank"

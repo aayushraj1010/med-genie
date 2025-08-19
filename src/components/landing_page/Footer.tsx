@@ -46,26 +46,27 @@ const Footer = () => {
         <div className="space-y-2">
           <h3 className="font-semibold text-sm">Quick Links</h3>
           <ul className="text-sm space-y-1 text-white/80">
-            <li><a href="#" className="hover:text-white hover:underline">Home</a></li>
-            <li><a href="#" className="hover:text-white hover:underline">How it Works</a></li>
-            <li><a href="#" className="hover:text-white hover:underline">FAQs</a></li>
+            <li><a href="/" className="hover:text-white hover:underline">Home</a></li>
+            <li><a href="/#how-it-works" className="hover:text-white hover:underline">How it Works</a></li>
+            <li><a href="/#faqs" className="hover:text-white hover:underline">FAQs</a></li>
           </ul>
         </div>
 
         <div className="space-y-2">
           <h3 className="font-semibold text-sm">Community & Support</h3>
           <ul className="text-sm space-y-1 text-white/80">
-            <li><a href="#" className="hover:text-white hover:underline">Join our Discord</a></li>
-            <li><a href="#" className="hover:text-white hover:underline">Follow us on X</a></li>
-            <li><a href="#" className="hover:text-white hover:underline">Join our Telegram</a></li>
+            <li><a href="https://discord.gg/medgenie" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline">Join our Discord</a></li>
+            <li><a href="https://twitter.com/medgenie" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline">Follow us on X</a></li>
+            <li><a href="https://t.me/medgenie" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline">Join our Telegram</a></li>
           </ul>
         </div>
 
         <div className="space-y-2">
           <h3 className="font-semibold text-sm">Legal & Policy</h3>
           <ul className="text-sm space-y-1 text-white/80">
-            <li><a href="#" className="hover:text-white hover:underline">Privacy Policy</a></li>
-            <li><a href="#" className="hover:text-white hover:underline">Terms of Use</a></li>
+            <li><a href="/privacypolicy.html" className="hover:text-white hover:underline">Privacy Policy</a></li>
+            <li><a href="/terms.html" className="hover:text-white hover:underline">Terms of Use</a></li>
+            <li><a href="/cookies.html" className="hover:text-white hover:underline">Cookie Policy</a></li>
           </ul>
         </div>
       </div>
