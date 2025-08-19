@@ -4,6 +4,8 @@ import { useEffect, useState, Suspense } from "react";
 import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import Lottie from "lottie-react";
+import ecgAnimation from "@/assets/animations/ECG.json";
 
 function MedGenieRegisterForm() {
   const [username, setUsername] = useState("");
@@ -23,7 +25,7 @@ function MedGenieRegisterForm() {
     // Check if user came from login page and pre-fill email if provided
     const emailFromParams = searchParams.get('email');
     const fromLogin = searchParams.get('from') === 'login';
-    
+
     if (emailFromParams) {
       // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -31,11 +33,11 @@ function MedGenieRegisterForm() {
         setEmail(emailFromParams);
       }
     }
-    
+
     if (fromLogin) {
       setIsFromLogin(true);
     }
-    
+
     // Trigger animation after mount
     const timer = setTimeout(() => setShowForm(true), 50);
     return () => clearTimeout(timer);
@@ -51,7 +53,7 @@ function MedGenieRegisterForm() {
     }
 
     const result = await register(username, email, password, confirmPassword);
-    
+
     if (result.success) {
       router.push("/homepage");
     } else {
@@ -66,12 +68,18 @@ function MedGenieRegisterForm() {
           showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
+        {/*Added the heart rate animation to look decent signup page*/}
+        <Lottie
+          animationData={ecgAnimation}
+          loop={true}
+          className="w-32 h-32 mx-auto"
+        />
         <h2 className="text-3xl font-bold text-center mb-2 text-white">
           {isFromLogin ? "Create Your Account" : "Create MedGenie Account"}
         </h2>
         <p className="text-white/70 text-center mb-8 text-sm">
-          {isFromLogin 
-            ? "It looks like you don't have an account yet. Let's create one!" 
+          {isFromLogin
+            ? "It looks like you don't have an account yet. Let's create one!"
             : "Join us and start using your AI-powered health assistant"
           }
         </p>
