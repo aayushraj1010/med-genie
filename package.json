@@ -13,8 +13,6 @@
     "generate-og": "node scripts/generate-og-image.js",
     "test:jwt": "node scripts/test-jwt-security.js",
     "setup-env": "node scripts/setup-env.js",
-    "validate-env": "tsx scripts/validate-env.ts",
-    "generate-secrets": "tsx scripts/generate-secrets.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
