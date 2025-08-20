@@ -5,6 +5,8 @@ import { User, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { PasswordStrengthIndicator } from "@/components/password-strength-indicator";
+import Lottie from "lottie-react";
+import ecgAnimation from "@/assets/animations/ECG.json";
 
 function MedGenieRegisterForm() {
   const [username, setUsername] = useState("");
@@ -24,7 +26,7 @@ function MedGenieRegisterForm() {
     // Check if user came from login page and pre-fill email if provided
     const emailFromParams = searchParams.get('email');
     const fromLogin = searchParams.get('from') === 'login';
-    
+
     if (emailFromParams) {
       // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,11 +34,11 @@ function MedGenieRegisterForm() {
         setEmail(emailFromParams);
       }
     }
-    
+
     if (fromLogin) {
       setIsFromLogin(true);
     }
-    
+
     // Trigger animation after mount
     const timer = setTimeout(() => setShowForm(true), 50);
     return () => clearTimeout(timer);
@@ -52,7 +54,7 @@ function MedGenieRegisterForm() {
     }
 
     const result = await register(username, email, password, confirmPassword);
-    
+
     if (result.success) {
       router.push("/homepage");
     } else {
@@ -62,17 +64,25 @@ function MedGenieRegisterForm() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-black via-[#0a0f14] to-black p-4">
+      {/* ECG Animation */}
+      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 opacity-20">
+        <Lottie
+          animationData={ecgAnimation}
+          loop={true}
+          style={{ width: 200, height: 100 }}
+        />
+      </div>
+
       <div
-        className={`w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg transform transition-all duration-700 ease-out ${
-          showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={`w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg transform transition-all duration-700 ease-out ${showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
       >
         <h2 className="text-3xl font-bold text-center mb-2 text-white">
           {isFromLogin ? "Create Your Account" : "Create MedGenie Account"}
         </h2>
         <p className="text-white/70 text-center mb-8 text-sm">
-          {isFromLogin 
-            ? "It looks like you don't have an account yet. Let's create one!" 
+          {isFromLogin
+            ? "It looks like you don't have an account yet. Let's create one!"
             : "Join us and start using your AI-powered health assistant"
           }
         </p>
