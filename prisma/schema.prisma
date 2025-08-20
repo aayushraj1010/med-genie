@@ -2,9 +2,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 // migrate cmnd : npx prisma migrate dev --name your_migration_name
-
 
 datasource db {
   provider = "postgresql"
@@ -13,9 +11,172 @@ datasource db {
 
 model User {
   id              Int      @id @default(autoincrement())
-  name            String
-  email           String   @unique
-  password        String
-  confirmpassword String
+  name            String   @db.VarChar(100)
+  email           String   @unique @db.VarChar(254)
+  password        String   @db.VarChar(255)
+  confirmpassword String   @db.VarChar(255)
   createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  lastLoginAt     DateTime?
+  isActive        Boolean  @default(true)
+  role            String   @default("user") @db.VarChar(20)
+  failedLoginAttempts Int  @default(0)
+  lockedUntil     DateTime?
+  lastPasswordChange DateTime @default(now())
+  passwordVersion Int      @default(1)
+
+  // Relations
+  auditLogs       AuditLog[]
+  sessions        Session[]
+
+  @@map("users")
+  @@index([email])
+  @@index([createdAt])
+  @@index([isActive])
+  @@index([role])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       Int
+  token        String   @unique @db.VarChar(500)
+  refreshToken String   @unique @db.VarChar(500)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  lastUsedAt   DateTime @default(now())
+  ipAddress    String?  @db.VarChar(45)
+  userAgent    String?  @db.Text
+  isActive     Boolean  @default(true)
+
+  // Relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+  @@index([userId])
+  @@index([token])
+  @@index([refreshToken])
+  @@index([expiresAt])
+  @@index([isActive])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  action    String   @db.VarChar(100)
+  table     String   @db.VarChar(50)
+  details   String?  @db.Text
+  ipAddress String?  @db.VarChar(45)
+  userAgent String?  @db.Text
+  query     String?  @db.Text
+  params    String?  @db.Text
+  duration  Int?     // Query duration in milliseconds
+  success   Boolean  @default(true)
+  error     String?  @db.Text
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+  @@index([userId])
+  @@index([action])
+  @@index([table])
+  @@index([createdAt])
+  @@index([ipAddress])
+  @@index([success])
+}
+
+model HealthProfile {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique
+  medicalHistory String? @db.Text
+  lifestyle     String?  @db.Text
+  symptoms      String?  @db.Text
+  allergies     String?  @db.Text
+  medications   String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isActive      Boolean  @default(true)
+
+  // Relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("health_profiles")
+  @@index([userId])
+  @@index([createdAt])
+  @@index([isActive])
+}
+
+model ChatSession {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  sessionId String   @unique @db.VarChar(100)
+  title     String?  @db.VarChar(200)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+
+  @@map("chat_sessions")
+  @@index([userId])
+  @@index([sessionId])
+  @@index([createdAt])
+  @@index([isActive])
+}
+
+model ChatMessage {
+  id          Int      @id @default(autoincrement())
+  sessionId   Int
+  content     String   @db.Text
+  sender      String   @db.VarChar(20) // 'user' or 'ai'
+  timestamp   DateTime @default(now())
+  isFollowUp  Boolean  @default(false)
+  metadata    String?  @db.Text // JSON string for additional data
+
+  // Relations
+  session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+  @@index([sessionId])
+  @@index([sender])
+  @@index([timestamp])
+  @@index([isFollowUp])
+}
+
+model RateLimit {
+  id        Int      @id @default(autoincrement())
+  key       String   @db.VarChar(200)
+  count     Int      @default(1)
+  resetTime DateTime
+  createdAt DateTime @default(now())
+
+  @@map("rate_limits")
+  @@unique([key])
+  @@index([resetTime])
+  @@index([createdAt])
+}
+
+model SecurityEvent {
+  id        Int      @id @default(autoincrement())
+  type      String   @db.VarChar(100) // 'sql_injection', 'rate_limit', 'suspicious_ip', etc.
+  severity  String   @db.VarChar(20)  // 'low', 'medium', 'high', 'critical'
+  details   String   @db.Text
+  ipAddress String?  @db.VarChar(45)
+  userAgent String?  @db.Text
+  userId    Int?
+  metadata  String?  @db.Text // JSON string for additional data
+  createdAt DateTime @default(now())
+  resolved  Boolean  @default(false)
+  resolvedAt DateTime?
+  resolvedBy Int?
+
+  @@map("security_events")
+  @@index([type])
+  @@index([severity])
+  @@index([createdAt])
+  @@index([ipAddress])
+  @@index([resolved])
 }
