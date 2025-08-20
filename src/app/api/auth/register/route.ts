@@ -4,13 +4,22 @@ import bcrypt from 'bcryptjs';
 import { Prisma } from "../../../../../prisma/prisma";
 import { signToken } from "@/lib/jwt";
 import { withRateLimit, RATE_LIMIT_CONFIGS } from "@/lib/rate-limit";
+import { InputSanitizer } from "@/lib/input-sanitizer";
 
 // Apply rate limiting: 3 attempts per hour
 const registerHandler = async (req: NextRequest) => {
   try {
-
     const body = await req.json();
-    const parsed = registerSchema.safeParse(body);
+    
+    // Sanitize inputs before validation
+    const sanitizedBody = {
+      name: InputSanitizer.sanitizeString(body.name),
+      email: InputSanitizer.sanitizeEmail(body.email),
+      password: body.password, // Don't sanitize password
+      confirmPassword: body.confirmPassword
+    };
+
+    const parsed = registerSchema.safeParse(sanitizedBody);
     if (!parsed.success) {
       return NextResponse.json({
         success: false,
@@ -27,6 +36,31 @@ const registerHandler = async (req: NextRequest) => {
       }, { status: 400 });
     }
 
+    // Additional password strength check
+    const passwordCheck = InputSanitizer.validatePasswordStrength(password);
+    if (!passwordCheck.isValid) {
+      return NextResponse.json({
+        success: false,
+        message: `Weak password: ${passwordCheck.errors.join(', ')}`
+      }, { status: 400 });
+    }
+
+    // Check for common patterns
+    if (!InputSanitizer.checkCommonPatterns(password)) {
+      return NextResponse.json({
+        success: false,
+        message: "Password contains common patterns that are easily guessable"
+      }, { status: 400 });
+    }
+
+    // Check for sequential characters
+    if (!InputSanitizer.checkSequentialCharacters(password)) {
+      return NextResponse.json({
+        success: false,
+        message: "Password contains sequential characters"
+      }, { status: 400 });
+    }
+
     const existing = await Prisma.user.findUnique({ where: { email } });
     if (existing) {
       return NextResponse.json({
@@ -35,7 +69,7 @@ const registerHandler = async (req: NextRequest) => {
       }, { status: 400 });
     }
 
-    const hashed = await bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, 12); // Increased salt rounds for better security
 
     const newUser = await Prisma.user.create({
       data: {

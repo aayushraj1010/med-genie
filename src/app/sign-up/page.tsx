@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { PasswordStrengthIndicator } from "@/components/password-strength-indicator";
 
 function MedGenieRegisterForm() {
   const [username, setUsername] = useState("");
@@ -135,6 +136,25 @@ function MedGenieRegisterForm() {
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
+          </div>
+
+          {/* Password Strength Indicator */}
+          {password && <PasswordStrengthIndicator password={password} />}
+
+          {/* Password Requirements */}
+          <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertCircle className="w-4 h-4 text-[#3FB5F4]" />
+              <span className="text-sm font-medium text-white/80">Password Requirements</span>
+            </div>
+            <ul className="text-xs text-white/60 space-y-1">
+              <li>• At least 12 characters long</li>
+              <li>• One uppercase letter (A-Z)</li>
+              <li>• One lowercase letter (a-z)</li>
+              <li>• One number (0-9)</li>
+              <li>• One special character (!@#$%^&*)</li>
+              <li>• No common patterns or sequences</li>
+            </ul>
           </div>
 
           {/* Confirm Password */}

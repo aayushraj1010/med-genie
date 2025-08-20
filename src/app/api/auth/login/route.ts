@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { Prisma } from "../../../../../prisma/prisma";
 import { signToken } from "@/lib/jwt";
 import { withRateLimit, RATE_LIMIT_CONFIGS } from "@/lib/rate-limit";
+import { InputSanitizer } from "@/lib/input-sanitizer";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -14,7 +15,14 @@ const loginSchema = z.object({
 const loginHandler = async (req: NextRequest) => {
   try {
     const body = await req.json();
-    const parsed = loginSchema.safeParse(body);
+
+    // Sanitize inputs before validation
+    const sanitizedBody = {
+      email: InputSanitizer.sanitizeEmail(body.email),
+      password: body.password // Don't sanitize password
+    };
+
+    const parsed = loginSchema.safeParse(sanitizedBody);
 
     if (!parsed.success) {
       return NextResponse.json({
