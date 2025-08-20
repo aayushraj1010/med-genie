@@ -138,3 +138,4 @@ describe('Password Security Requirements', () => {
         expect(hasSpecial).toBe(true);
     });
 });
+
