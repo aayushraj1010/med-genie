@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { User, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { PasswordStrengthIndicator } from "@/components/password-strength-indicator";
 import Lottie from "lottie-react";
 import ecgAnimation from "@/assets/animations/ECG.json";
 
@@ -21,6 +20,15 @@ function MedGenieRegisterForm() {
   const { register, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Password validation states
+  const [passwordChecks, setPasswordChecks] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false
+  });
 
   useEffect(() => {
     // Check if user came from login page and pre-fill email if provided
@@ -43,6 +51,27 @@ function MedGenieRegisterForm() {
     const timer = setTimeout(() => setShowForm(true), 50);
     return () => clearTimeout(timer);
   }, [searchParams]);
+
+  // Password validation effect
+  useEffect(() => {
+    if (password) {
+      setPasswordChecks({
+        length: password.length >= 12,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        special: /[^A-Za-z0-9]/.test(password)
+      });
+    } else {
+      setPasswordChecks({
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        special: false
+      });
+    }
+  }, [password]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,8 +103,9 @@ function MedGenieRegisterForm() {
       </div>
 
       <div
-        className={`w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg transform transition-all duration-700 ease-out ${showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+        className={`w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg transform transition-all duration-700 ease-out ${
+          showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
       >
         <h2 className="text-3xl font-bold text-center mb-2 text-white">
           {isFromLogin ? "Create Your Account" : "Create MedGenie Account"}
@@ -148,8 +178,67 @@ function MedGenieRegisterForm() {
             </button>
           </div>
 
-          {/* Password Strength Indicator */}
-          {password && <PasswordStrengthIndicator password={password} />}
+          {/* Built-in Password Strength Indicator */}
+          {password && (
+            <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
+              <div className="flex items-center gap-2 mb-3">
+                <AlertCircle className="w-4 h-4 text-[#3FB5F4]" />
+                <span className="text-sm font-medium text-white/80">Password Strength</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  {passwordChecks.length ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
+                  <span className={`text-xs ${passwordChecks.length ? 'text-green-400' : 'text-red-400'}`}>
+                    At least 12 characters long
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {passwordChecks.uppercase ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
+                  <span className={`text-xs ${passwordChecks.uppercase ? 'text-green-400' : 'text-red-400'}`}>
+                    One uppercase letter (A-Z)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {passwordChecks.lowercase ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
+                  <span className={`text-xs ${passwordChecks.lowercase ? 'text-green-400' : 'text-red-400'}`}>
+                    One lowercase letter (a-z)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {passwordChecks.number ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
+                  <span className={`text-xs ${passwordChecks.number ? 'text-green-400' : 'text-red-400'}`}>
+                    One number (0-9)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {passwordChecks.special ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
+                  <span className={`text-xs ${passwordChecks.special ? 'text-green-400' : 'text-red-400'}`}>
+                    One special character (!@#$%^&*)
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Password Requirements */}
           <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
