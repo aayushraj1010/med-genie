@@ -65,11 +65,11 @@ function MedGenieRegisterForm() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-black via-[#0a0f14] to-black p-4">
       {/* ECG Animation */}
-      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 opacity-20">
+      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 opacity-30">
         <Lottie
           animationData={ecgAnimation}
           loop={true}
-          style={{ width: 200, height: 100 }}
+          style={{ width: 264, height: 126 }}
         />
       </div>
 
