@@ -103,9 +103,8 @@ function MedGenieRegisterForm() {
       </div>
 
       <div
-        className={`w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg transform transition-all duration-700 ease-out ${
-          showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={`w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg transform transition-all duration-700 ease-out ${showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
       >
         <h2 className="text-3xl font-bold text-center mb-2 text-white">
           {isFromLogin ? "Create Your Account" : "Create MedGenie Account"}
