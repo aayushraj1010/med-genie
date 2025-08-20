@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { Prisma } from "../../../../../prisma/prisma";
-import { signToken } from "@/lib/jwt";
+import { signTokenPair } from "@/lib/jwt";
 import { withRateLimit, RATE_LIMIT_CONFIGS } from "@/lib/rate-limit";
+import { InputSanitizer } from "@/lib/input-sanitizer";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -14,7 +15,14 @@ const loginSchema = z.object({
 const loginHandler = async (req: NextRequest) => {
   try {
     const body = await req.json();
-    const parsed = loginSchema.safeParse(body);
+
+    // Sanitize inputs before validation
+    const sanitizedBody = {
+      email: InputSanitizer.sanitizeEmail(body.email),
+      password: body.password // Don't sanitize password
+    };
+
+    const parsed = loginSchema.safeParse(sanitizedBody);
 
     if (!parsed.success) {
       return NextResponse.json({
@@ -53,18 +61,16 @@ const loginHandler = async (req: NextRequest) => {
       }, { status: 401 });
     }
 
-    // Generate JWT token
-    const token = signToken({
-      userId: user.id,
-      email: user.email,
-      name: user.name
-    });
+    // Generate JWT token pair
+    const tokenPair = signTokenPair(user.id, user.email, user.name);
 
-    // Return success response with token and user data
+    // Return success response with token pair and user data
     return NextResponse.json({
       success: true,
       message: "Login successful",
-      token,
+      accessToken: tokenPair.accessToken,
+      refreshToken: tokenPair.refreshToken,
+      expiresIn: tokenPair.expiresIn,
       user: {
         id: user.id,
         name: user.name,
