@@ -3,9 +3,14 @@ import crypto from 'crypto';
 
 // Ensure JWT_SECRET is always set - no fallback secrets!
 const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is required');
-}
+
+// Function to check JWT_SECRET at runtime instead of module load time
+const getJWTSecret = (): string => {
+  if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is required');
+  }
+  return JWT_SECRET;
+};
 
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '15m'; // Short-lived access tokens
 const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || '7d';
@@ -37,7 +42,7 @@ export const generateTokenId = (): string => {
 };
 
 export const signAccessToken = (payload: Omit<JWTPayload, 'iat' | 'exp'>): string => {
-  return jwt.sign(payload, JWT_SECRET, {
+  return jwt.sign(payload, getJWTSecret(), {
     expiresIn: JWT_EXPIRES_IN,
     algorithm: 'HS256',
     issuer: 'med-genie',
@@ -46,7 +51,7 @@ export const signAccessToken = (payload: Omit<JWTPayload, 'iat' | 'exp'>): strin
 };
 
 export const signRefreshToken = (payload: Omit<RefreshTokenPayload, 'iat' | 'exp'>): string => {
-  return jwt.sign(payload, JWT_SECRET, {
+  return jwt.sign(payload, getJWTSecret(), {
     expiresIn: REFRESH_TOKEN_EXPIRES_IN,
     algorithm: 'HS256',
     issuer: 'med-genie',
@@ -78,7 +83,7 @@ export const signTokenPair = (userId: number, email: string, name: string): Toke
 
 export const verifyToken = (token: string): JWTPayload | null => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET, {
+    const decoded = jwt.verify(token, getJWTSecret(), {
       algorithms: ['HS256'],
       issuer: 'med-genie',
       audience: 'med-genie-users',
@@ -97,7 +102,7 @@ export const verifyToken = (token: string): JWTPayload | null => {
 
 export const verifyRefreshToken = (token: string): RefreshTokenPayload | null => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET, {
+    const decoded = jwt.verify(token, getJWTSecret(), {
       algorithms: ['HS256'],
       issuer: 'med-genie',
       audience: 'med-genie-refresh',
