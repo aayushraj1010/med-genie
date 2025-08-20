@@ -28,6 +28,8 @@ model User {
   // Relations
   auditLogs       AuditLog[]
   sessions        Session[]
+  healthProfile   HealthProfile?
+  chatSessions    ChatSession[]
 
   @@map("users")
   @@index([email])
