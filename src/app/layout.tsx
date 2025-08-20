@@ -116,6 +116,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Security Meta Tags */}
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
+        <meta name="robots" content="index, follow" />
+        
+        {/* CSP Meta Tag (fallback) */}
+        <meta httpEquiv="Content-Security-Policy" 
+          content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';" 
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
           <AuthProvider>

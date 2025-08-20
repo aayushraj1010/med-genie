@@ -7,6 +7,7 @@ export interface ChatMessage {
   feedback?: 'good' | 'bad';
   isFollowUpPrompt?: boolean;
   originalQuestion?: string; // Store original question for context with AI's follow-up
+  imageUrl?: string; // Optional URL for uploaded images
 }
 
 export interface UserProfile {

@@ -90,7 +90,7 @@ function getClientIP(req: NextRequest): string {
     }
 
     // Fallback to connection remote address
-    return req.ip || 'unknown';
+    return 'unknown';
 }
 
 // Generate rate limit key
