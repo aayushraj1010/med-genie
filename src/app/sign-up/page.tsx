@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import Lottie from "lottie-react";
+import ecgAnimation from "@/assets/animations/ECG.json";
 
 function MedGenieRegisterForm() {
   const [username, setUsername] = useState("");
@@ -19,11 +21,20 @@ function MedGenieRegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Password validation states
+  const [passwordChecks, setPasswordChecks] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false
+  });
+
   useEffect(() => {
     // Check if user came from login page and pre-fill email if provided
     const emailFromParams = searchParams.get('email');
     const fromLogin = searchParams.get('from') === 'login';
-    
+
     if (emailFromParams) {
       // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -31,15 +42,36 @@ function MedGenieRegisterForm() {
         setEmail(emailFromParams);
       }
     }
-    
+
     if (fromLogin) {
       setIsFromLogin(true);
     }
-    
+
     // Trigger animation after mount
     const timer = setTimeout(() => setShowForm(true), 50);
     return () => clearTimeout(timer);
   }, [searchParams]);
+
+  // Password validation effect
+  useEffect(() => {
+    if (password) {
+      setPasswordChecks({
+        length: password.length >= 12,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        special: /[^A-Za-z0-9]/.test(password)
+      });
+    } else {
+      setPasswordChecks({
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        special: false
+      });
+    }
+  }, [password]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +83,7 @@ function MedGenieRegisterForm() {
     }
 
     const result = await register(username, email, password, confirmPassword);
-    
+
     if (result.success) {
       router.push("/homepage");
     } else {
@@ -61,17 +93,31 @@ function MedGenieRegisterForm() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-black via-[#0a0f14] to-black p-4">
+      {/* ECG Animation */}
+      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 opacity-30">
+        <Lottie
+          animationData={ecgAnimation}
+          loop={true}
+          style={{ width: 264, height: 126 }}
+        />
+      </div>
+
       <div
-        className={`w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg transform transition-all duration-700 ease-out ${
-          showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={`w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg transform transition-all duration-700 ease-out ${showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
       >
+        {/*Added the heart rate animation to look decent signup page*/}
+        <Lottie
+          animationData={ecgAnimation}
+          loop={true}
+          className="w-32 h-32 mx-auto"
+        />
         <h2 className="text-3xl font-bold text-center mb-2 text-white">
           {isFromLogin ? "Create Your Account" : "Create MedGenie Account"}
         </h2>
         <p className="text-white/70 text-center mb-8 text-sm">
-          {isFromLogin 
-            ? "It looks like you don't have an account yet. Let's create one!" 
+          {isFromLogin
+            ? "It looks like you don't have an account yet. Let's create one!"
             : "Join us and start using your AI-powered health assistant"
           }
         </p>
@@ -135,6 +181,84 @@ function MedGenieRegisterForm() {
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
+          </div>
+
+          {/* Built-in Password Strength Indicator */}
+          {password && (
+            <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
+              <div className="flex items-center gap-2 mb-3">
+                <AlertCircle className="w-4 h-4 text-[#3FB5F4]" />
+                <span className="text-sm font-medium text-white/80">Password Strength</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  {passwordChecks.length ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
+                  <span className={`text-xs ${passwordChecks.length ? 'text-green-400' : 'text-red-400'}`}>
+                    At least 12 characters long
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {passwordChecks.uppercase ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
+                  <span className={`text-xs ${passwordChecks.uppercase ? 'text-green-400' : 'text-red-400'}`}>
+                    One uppercase letter (A-Z)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {passwordChecks.lowercase ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
+                  <span className={`text-xs ${passwordChecks.lowercase ? 'text-green-400' : 'text-red-400'}`}>
+                    One lowercase letter (a-z)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {passwordChecks.number ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
+                  <span className={`text-xs ${passwordChecks.number ? 'text-green-400' : 'text-red-400'}`}>
+                    One number (0-9)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {passwordChecks.special ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-400" />
+                  )}
+                  <span className={`text-xs ${passwordChecks.special ? 'text-green-400' : 'text-red-400'}`}>
+                    One special character (!@#$%^&*)
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Password Requirements */}
+          <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertCircle className="w-4 h-4 text-[#3FB5F4]" />
+              <span className="text-sm font-medium text-white/80">Password Requirements</span>
+            </div>
+            <ul className="text-xs text-white/60 space-y-1">
+              <li>• At least 12 characters long</li>
+              <li>• One uppercase letter (A-Z)</li>
+              <li>• One lowercase letter (a-z)</li>
+              <li>• One number (0-9)</li>
+              <li>• One special character (!@#$%^&*)</li>
+              <li>• No common patterns or sequences</li>
+            </ul>
           </div>
 
           {/* Confirm Password */}
@@ -210,3 +334,4 @@ export default function SignUpPage() {
     </Suspense>
   );
 }
+
