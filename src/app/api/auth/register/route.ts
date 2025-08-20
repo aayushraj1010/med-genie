@@ -2,7 +2,7 @@ import { registerSchema } from "@/validation/userRegister";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from 'bcryptjs';
 import { Prisma } from "../../../../../prisma/prisma";
-import { signToken } from "@/lib/jwt";
+import { signTokenPair } from "@/lib/jwt";
 import { withRateLimit, RATE_LIMIT_CONFIGS } from "@/lib/rate-limit";
 import { InputSanitizer } from "@/lib/input-sanitizer";
 
@@ -10,7 +10,7 @@ import { InputSanitizer } from "@/lib/input-sanitizer";
 const registerHandler = async (req: NextRequest) => {
   try {
     const body = await req.json();
-    
+
     // Sanitize inputs before validation
     const sanitizedBody = {
       name: InputSanitizer.sanitizeString(body.name),
@@ -80,17 +80,15 @@ const registerHandler = async (req: NextRequest) => {
       }
     });
 
-    // Generate JWT token for immediate login
-    const token = signToken({
-      userId: newUser.id,
-      email: newUser.email,
-      name: newUser.name
-    });
+    // Generate JWT token pair for immediate login
+    const tokenPair = signTokenPair(newUser.id, newUser.email, newUser.name);
 
     return NextResponse.json({
       success: true,
       message: "User registered successfully",
-      token,
+      accessToken: tokenPair.accessToken,
+      refreshToken: tokenPair.refreshToken,
+      expiresIn: tokenPair.expiresIn,
       user: {
         id: newUser.id,
         name: newUser.name,

@@ -9,7 +9,7 @@ export function withAuth(handler: (req: AuthenticatedRequest) => Promise<NextRes
   return async (req: AuthenticatedRequest): Promise<NextResponse> => {
     try {
       const token = getTokenFromRequest(req);
-      
+
       if (!token) {
         return NextResponse.json(
           { success: false, message: 'Access token is required' },
@@ -17,8 +17,8 @@ export function withAuth(handler: (req: AuthenticatedRequest) => Promise<NextRes
         );
       }
 
-      const user = verifyToken(token);
-      
+      const user = await verifyToken(token);
+
       if (!user) {
         return NextResponse.json(
           { success: false, message: 'Invalid or expired token' },
@@ -28,7 +28,7 @@ export function withAuth(handler: (req: AuthenticatedRequest) => Promise<NextRes
 
       // Attach user to request
       req.user = user;
-      
+
       return handler(req);
     } catch (error) {
       return NextResponse.json(
@@ -43,14 +43,14 @@ export function optionalAuth(handler: (req: AuthenticatedRequest) => Promise<Nex
   return async (req: AuthenticatedRequest): Promise<NextResponse> => {
     try {
       const token = getTokenFromRequest(req);
-      
+
       if (token) {
-        const user = verifyToken(token);
+        const user = await verifyToken(token);
         if (user) {
           req.user = user;
         }
       }
-      
+
       return handler(req);
     } catch (error) {
       // Continue without authentication if optional
