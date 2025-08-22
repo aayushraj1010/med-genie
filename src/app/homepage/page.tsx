@@ -32,6 +32,20 @@ import { ChatHistoryButton } from "@/components/chat-history-button";
 import { QuickReplyGrid } from "@/components/QuickReplyGrid";
 
 const VoiceSearch = dynamic(() => import("@/components/VoiceSearch"), {
+} from '@/ai/flows/personalized-health-question-answering';
+import type { ChatMessage, UserProfile, AISuggestedKey } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
+import { useChatHistory } from '@/hooks/use-chat-history';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { AlertCircle, ArrowUp, Info, History, Plus, Camera } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+import { ChatHistorySidebar } from '@/components/chat-history-sidebar';
+import { ChatHistoryButton } from '@/components/chat-history-button';
+import { QuickReplyGrid } from '@/components/QuickReplyGrid';
+import { InputSanitizer } from '@/lib/input-sanitizer';
+
+const VoiceSearch = dynamic(() => import('@/components/VoiceSearch'), {
   ssr: false,
 });
 
@@ -62,6 +76,10 @@ function HomePage() {
   const [lastUserQuestionForFollowUp, setLastUserQuestionForFollowUp] =
     useState<string | undefined>(undefined);
   const [input, setInput] = useState("");
+  const [currentAiFollowUpKey, setCurrentAiFollowUpKey] = useState<AISuggestedKey | undefined>(undefined);
+  const [lastUserQuestionForFollowUp, setLastUserQuestionForFollowUp] = useState<string | undefined>(undefined);
+  const [input, setInput] = useState('');
+  const [inputError, setInputError] = useState<string>('');
   const [showHistorySidebar, setShowHistorySidebar] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -299,12 +317,50 @@ function HomePage() {
     }
   }, [isInitialized, createSession]);
 
+  const handleInputChange = (value: string) => {
+    // Clear any previous errors
+    setInputError("");
+
+    // Validate input in real-time
+    const validation = InputSanitizer.validateInput(value, 5000);
+
+    if (!validation.isValid) {
+      setInputError(validation.errors[0] || "Invalid input detected");
+      // Still allow typing but show warning
+    }
+
+    setInput(value);
+  };
+
   const handleFormSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (!input.trim() || isLoading || !isInitialized) return;
+
       const currentInput = input;
       setInput("");
+
+
+      // Sanitize input before processing
+      const sanitizedInput = InputSanitizer.sanitizeChatMessage(input);
+
+      // Final validation before submission
+      const validation = InputSanitizer.validateInput(sanitizedInput, 5000);
+
+      if (!validation.isValid) {
+        setInputError(validation.errors[0] || "Input contains potentially dangerous content");
+        return;
+      }
+
+      // Log security event if original input was different from sanitized
+      if (input !== sanitizedInput) {
+        InputSanitizer.logSecurityEvent("Homepage chat input sanitized", input, sanitizedInput);
+      }
+
+      const currentInput = sanitizedInput;
+      setInput('');
+      setInputError('');
+
       if (!activeSessionId) {
         createSession(initialWelcomeMessage);
         requestAnimationFrame(() => handleSubmitQuestion(currentInput));
@@ -553,13 +609,20 @@ function HomePage() {
               <QuickReplyGrid onPromptClick={handlePromptClick} />
 
               <form onSubmit={handleFormSubmit} className="relative">
-                <Input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask anything about your health..."
-                  disabled={isLoading}
-                  className="pr-24"
-                />
+                <div className="relative">
+                  <Input
+                    value={input}
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    placeholder="Ask anything about your health..."
+                    disabled={isLoading}
+                    className={`pr-24 ${inputError ? 'border-red-500 focus:border-red-500' : ''}`}
+                  />
+                  {inputError && (
+                    <div className="absolute -bottom-6 left-0 text-red-500 text-xs">
+                      ⚠️ {inputError}
+                    </div>
+                  )}
+                </div>
                 <VoiceSearch setInput={setInput} />
                 <label className="cursor-pointer flex items-center justify-center h-8 w-8 bg-muted rounded absolute right-20 top-1/2 -translate-y-1/2">
                   <Camera className="h-4 w-4 text-muted-foreground" />
@@ -589,7 +652,7 @@ function HomePage() {
                 <Button
                   type="submit"
                   size="icon"
-                  disabled={isLoading || !input.trim()}
+                  disabled={isLoading || !input.trim() || !!inputError}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 h-8 w-8"
                 >
                   <ArrowUp className="h-4 w-4" />

@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Stethoscope, MapPin, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { InputSanitizer } from '@/lib/input-sanitizer';
 
 interface SpecialistRecommendation {
   specialty: string;
@@ -40,21 +41,73 @@ export default function SpecialistRecommendationPage() {
     duration: '',
     severity: ''
   });
-  
+
   const [recommendations, setRecommendations] = useState<SpecialistRecommendation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
   const handleInputChange = (field: keyof UserInput, value: string) => {
+    // Clear field error
+    setFieldErrors(prev => ({ ...prev, [field]: '' }));
+
+    // Validate input for XSS patterns
+    if (field === 'symptoms' || field === 'medicalHistory' || field === 'location') {
+      const validation = InputSanitizer.validateInput(value, 2000);
+      if (!validation.isValid) {
+        setFieldErrors(prev => ({ ...prev, [field]: validation.errors[0] || 'Invalid input detected' }));
+        // Still allow typing but show warning
+      }
+    }
+
     setUserInput(prev => ({ ...prev, [field]: value }));
   };
 
-  const getRecommendations = async () => {
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+    let hasErrors = false;
+
+    // Validate required fields
     if (!userInput.symptoms.trim()) {
+      errors.symptoms = 'Symptoms are required';
+      hasErrors = true;
+    }
+
+    // Validate text fields for XSS
+    if (userInput.symptoms.trim()) {
+      const symptomsValidation = InputSanitizer.validateInput(userInput.symptoms, 2000);
+      if (!symptomsValidation.isValid) {
+        errors.symptoms = symptomsValidation.errors[0] || 'Invalid input detected';
+        hasErrors = true;
+      }
+    }
+
+    if (userInput.medicalHistory.trim()) {
+      const medicalHistoryValidation = InputSanitizer.validateInput(userInput.medicalHistory, 2000);
+      if (!medicalHistoryValidation.isValid) {
+        errors.medicalHistory = medicalHistoryValidation.errors[0] || 'Invalid input detected';
+        hasErrors = true;
+      }
+    }
+
+    if (userInput.location.trim()) {
+      const locationValidation = InputSanitizer.validateInput(userInput.location, 500);
+      if (!locationValidation.isValid) {
+        errors.location = locationValidation.errors[0] || 'Invalid input detected';
+        hasErrors = true;
+      }
+    }
+
+    setFieldErrors(errors);
+    return !hasErrors;
+  };
+
+  const getRecommendations = async () => {
+    if (!validateForm()) {
       toast({
-        title: "Missing Information",
-        description: "Please describe your symptoms to get recommendations.",
+        title: "Validation Error",
+        description: "Please fix the input errors before submitting.",
         variant: "destructive"
       });
       return;
@@ -62,12 +115,36 @@ export default function SpecialistRecommendationPage() {
 
     setIsLoading(true);
     try {
+      // Sanitize all input data before sending to API
+      const sanitizedInput = {
+        symptoms: InputSanitizer.sanitizeString(userInput.symptoms, 2000),
+        age: userInput.age,
+        gender: userInput.gender,
+        location: InputSanitizer.sanitizeString(userInput.location, 500),
+        medicalHistory: InputSanitizer.sanitizeString(userInput.medicalHistory, 2000),
+        duration: userInput.duration,
+        severity: userInput.severity
+      };
+
+      // Log security events if any sanitization occurred
+      Object.keys(sanitizedInput).forEach((key) => {
+        const originalValue = userInput[key as keyof UserInput];
+        const sanitizedValue = sanitizedInput[key as keyof UserInput];
+        if (originalValue !== sanitizedValue) {
+          InputSanitizer.logSecurityEvent(
+            `Specialist recommendation field ${key} sanitized`,
+            originalValue,
+            sanitizedValue
+          );
+        }
+      });
+
       const response = await fetch('/api/specialist-recommendation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userInput),
+        body: JSON.stringify(sanitizedInput),
       });
 
       if (!response.ok) {
@@ -77,7 +154,7 @@ export default function SpecialistRecommendationPage() {
       const data = await response.json();
       setRecommendations(data.recommendations);
       setHasSearched(true);
-      
+
       toast({
         title: "Recommendations Generated",
         description: "We've found the best specialists for your condition.",
@@ -115,6 +192,7 @@ export default function SpecialistRecommendationPage() {
     });
     setRecommendations([]);
     setHasSearched(false);
+    setFieldErrors({});
   };
 
   return (
@@ -151,8 +229,13 @@ export default function SpecialistRecommendationPage() {
                   placeholder="Describe your symptoms, pain, or health concerns in detail..."
                   value={userInput.symptoms}
                   onChange={(e) => handleInputChange('symptoms', e.target.value)}
-                  className="min-h-[100px]"
+                  className={`min-h-[100px] ${fieldErrors.symptoms ? 'border-red-500 focus:border-red-500' : ''}`}
                 />
+                {fieldErrors.symptoms && (
+                  <div className="text-red-500 text-xs">
+                    ⚠️ {fieldErrors.symptoms}
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -191,9 +274,14 @@ export default function SpecialistRecommendationPage() {
                     placeholder="City, State or Country"
                     value={userInput.location}
                     onChange={(e) => handleInputChange('location', e.target.value)}
-                    className="pl-10"
+                    className={`pl-10 ${fieldErrors.location ? 'border-red-500 focus:border-red-500' : ''}`}
                   />
                 </div>
+                {fieldErrors.location && (
+                  <div className="text-red-500 text-xs">
+                    ⚠️ {fieldErrors.location}
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -237,14 +325,19 @@ export default function SpecialistRecommendationPage() {
                   placeholder="Any relevant medical conditions, allergies, medications..."
                   value={userInput.medicalHistory}
                   onChange={(e) => handleInputChange('medicalHistory', e.target.value)}
-                  className="min-h-[80px]"
+                  className={`min-h-[80px] ${fieldErrors.medicalHistory ? 'border-red-500 focus:border-red-500' : ''}`}
                 />
+                {fieldErrors.medicalHistory && (
+                  <div className="text-red-500 text-xs">
+                    ⚠️ {fieldErrors.medicalHistory}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3 pt-4">
-                <Button 
-                  onClick={getRecommendations} 
-                  disabled={isLoading}
+                <Button
+                  onClick={getRecommendations}
+                  disabled={isLoading || Object.keys(fieldErrors).some(key => fieldErrors[key])}
                   className="flex-1"
                 >
                   {isLoading ? (
@@ -268,7 +361,7 @@ export default function SpecialistRecommendationPage() {
             <CardHeader>
               <CardTitle>Recommended Specialists</CardTitle>
               <CardDescription>
-                {hasSearched ? 
+                {hasSearched ?
                   "Based on your symptoms and profile, here are our recommendations:" :
                   "Your specialist recommendations will appear here after submission."
                 }
@@ -332,7 +425,7 @@ export default function SpecialistRecommendationPage() {
         {/* Disclaimer */}
         <Alert className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-900/20">
           <AlertDescription className="text-amber-800 dark:text-amber-200">
-            <strong>Medical Disclaimer:</strong> This tool provides general guidance only and should not replace professional medical advice. 
+            <strong>Medical Disclaimer:</strong> This tool provides general guidance only and should not replace professional medical advice.
             Always consult with a healthcare provider for proper diagnosis and treatment. In case of emergency, call your local emergency number immediately.
           </AlertDescription>
         </Alert>

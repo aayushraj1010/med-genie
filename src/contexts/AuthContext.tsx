@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import { SecureTokenStorage } from '@/lib/token-storage';
 
 export interface User {
   id: number;
@@ -11,10 +12,10 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
+  accessToken: string | null;
   login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
   register: (name: string, email: string, password: string, confirmPassword: string) => Promise<{ success: boolean; message: string }>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
@@ -27,32 +28,81 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // Load user data from localStorage on mount
+  // Auto-refresh token before expiration
+  useEffect(() => {
+    if (accessToken) {
+      try {
+        const tokenData = JSON.parse(atob(accessToken.split('.')[1]));
+        const expiresAt = tokenData.exp * 1000;
+        const now = Date.now();
+        const timeUntilExpiry = expiresAt - now;
+
+        // Refresh token 1 minute before expiration
+        if (timeUntilExpiry > 60000) {
+          const refreshTimer = setTimeout(() => {
+            refreshAccessToken();
+          }, timeUntilExpiry - 60000);
+
+          return () => clearTimeout(refreshTimer);
+        } else {
+          // Token already expired, refresh immediately
+          refreshAccessToken();
+        }
+      } catch (error) {
+        console.error('Error parsing token:', error);
+      }
+    }
+  }, [accessToken]);
+
+  // Load user data from secure storage on mount
   useEffect(() => {
     const loadUserData = () => {
       try {
-        const savedToken = localStorage.getItem('medgenie_token');
-        const savedUser = localStorage.getItem('medgenie_user');
-        
-        if (savedToken && savedUser) {
-          setToken(savedToken);
+        const savedAccessToken = SecureTokenStorage.getAccessToken();
+        const savedUser = sessionStorage.getItem('medgenie_user');
+
+        if (savedAccessToken && savedUser) {
+          setAccessToken(savedAccessToken);
           setUser(JSON.parse(savedUser));
         }
       } catch (error) {
         console.error('Error loading user data:', error);
         // Clear invalid data
-        localStorage.removeItem('medgenie_token');
-        localStorage.removeItem('medgenie_user');
+        SecureTokenStorage.clearTokens();
+        sessionStorage.removeItem('medgenie_user');
       }
       setIsLoading(false);
     };
 
     loadUserData();
   }, []);
+
+  const refreshAccessToken = async (): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const { accessToken: newAccessToken } = await response.json();
+        setAccessToken(newAccessToken);
+        SecureTokenStorage.setTokens(newAccessToken, ''); // Refresh token in cookie
+        return true;
+      } else {
+        // Refresh failed, logout user
+        await logout();
+        return false;
+      }
+    } catch (error) {
+      await logout();
+      return false;
+    }
+  };
 
   const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
     try {
@@ -67,14 +117,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const data = await response.json();
 
-      if (data.success && data.token && data.user) {
-        setToken(data.token);
+      if (data.success && data.accessToken && data.user) {
+        setAccessToken(data.accessToken);
         setUser(data.user);
-        
-        // Store in localStorage
-        localStorage.setItem('medgenie_token', data.token);
-        localStorage.setItem('medgenie_user', JSON.stringify(data.user));
-        
+
+        // Store in secure storage
+        SecureTokenStorage.setTokens(data.accessToken, data.refreshToken || '');
+        sessionStorage.setItem('medgenie_user', JSON.stringify(data.user));
+
         return { success: true, message: data.message };
       } else {
         return { success: false, message: data.message || 'Login failed' };
@@ -100,14 +150,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const data = await response.json();
 
-      if (data.success && data.token && data.user) {
-        setToken(data.token);
+      if (data.success && data.accessToken && data.user) {
+        setAccessToken(data.accessToken);
         setUser(data.user);
-        
-        // Store in localStorage
-        localStorage.setItem('medgenie_token', data.token);
-        localStorage.setItem('medgenie_user', JSON.stringify(data.user));
-        
+
+        // Store in secure storage
+        SecureTokenStorage.setTokens(data.accessToken, data.refreshToken || '');
+        sessionStorage.setItem('medgenie_user', JSON.stringify(data.user));
+
         return { success: true, message: data.message };
       } else {
         return { success: false, message: data.message || 'Registration failed' };
@@ -120,22 +170,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('medgenie_token');
-    localStorage.removeItem('medgenie_user');
-    router.push('/login');
+  const logout = async (): Promise<void> => {
+    try {
+      // Call logout API to blacklist tokens
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+      setAccessToken(null);
+      SecureTokenStorage.clearTokens();
+      sessionStorage.removeItem('medgenie_user');
+      router.push('/login');
+    }
   };
 
   const value: AuthContextType = {
     user,
-    token,
+    accessToken,
     login,
     register,
     logout,
     isLoading,
-    isAuthenticated: !!user && !!token,
+    isAuthenticated: !!user && !!accessToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

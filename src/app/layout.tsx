@@ -10,6 +10,7 @@ import type { Metadata } from 'next';
 import { AOSProvider } from '@/components/aos-provider';
 import './globals.css';
 import { StructuredData } from './structured-data';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -111,16 +112,53 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Extension conflict protection
+              window.addEventListener('error', function(e) {
+                if (e.message.includes('Cannot read properties of null') && 
+                    e.filename && e.filename.includes('chrome-extension')) {
+                  console.warn('Browser extension conflict detected:', e.message);
+                  e.preventDefault();
+                  return false;
+                }
+              });
+              
+              // Prevent extension scripts from breaking the page
+              window.addEventListener('unhandledrejection', function(e) {
+                if (e.reason && e.reason.message && 
+                    e.reason.message.includes('Cannot read properties of null')) {
+                  console.warn('Extension promise rejection caught:', e.reason.message);
+                  e.preventDefault();
+                  return false;
+                }
+              });
+            `
+          }}
+        />
+        {/* Security Meta Tags */}
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
+        <meta name="robots" content="index, follow" />
+
+        {/* CSP Meta Tag (fallback) */}
+        <meta httpEquiv="Content-Security-Policy"
+          content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
           <AuthProvider>
             <AOSProvider>
-              {children}
+              <ErrorBoundary>
+                {children}
+              </ErrorBoundary>
               <Toaster />
             </AOSProvider>
           </AuthProvider>
