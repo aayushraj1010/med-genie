@@ -350,7 +350,7 @@ export default function SpecialistRecommendationPage() {
                   )}
                 </Button>
                 <Button variant="outline" onClick={clearForm}>
-                  Clear
+                  Reset
                 </Button>
               </div>
             </CardContent>
