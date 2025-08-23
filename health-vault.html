@@ -56,7 +56,6 @@
         }
     </script>
     <style>
-
         :root {
             --background: 0 0% 100%;
             --foreground: 222.2 84% 4.9%;
@@ -279,7 +278,15 @@
 
         let currentCategory = 'all';
         let filteredTips = [...healthTips];
-       
+
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100,
+            delay: 0,
+        });
 
         // DOM elements
         const loadingEl = document.getElementById('loading');
@@ -371,13 +378,5 @@
             renderTips(filteredTips);
         }, 1000);
     </script>
-    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-<script>
-  AOS.init({
-    duration: 1000,  
-    once: true      
-  });
-</script>
-    
 </body>
 </html> 
