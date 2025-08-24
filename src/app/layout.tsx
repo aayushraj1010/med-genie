@@ -11,6 +11,7 @@ import { AOSProvider } from '@/components/aos-provider';
 import './globals.css';
 import { StructuredData } from './structured-data';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import Preloader from "../components/Preloader";
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -153,6 +154,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
+        <Preloader />
         <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
           <AuthProvider>
             <AOSProvider>

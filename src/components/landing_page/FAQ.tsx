@@ -45,11 +45,11 @@ export default function FAQs() {
 
   return (
     <div id="faq" className="w-full h-auto bg-[#090909] py-16 px-[6%] fade-in">
-      <h1 className="text-[32px] text-center text-[#FBFBFB] font-normal leading-[120%] mb-12">
+      <h1 data-aos="fade-up" className="text-[32px] text-center text-[#FBFBFB] font-normal leading-[120%] mb-12">
         Frequently Asked Questions
       </h1>
 
-      <div className="w-full mx-auto space-y-[24px]">
+      <div data-aos="fade-up" className="w-full mx-auto space-y-[24px]">
         {faqs.map((faq, index) => {
           const isOpen = openIndex === index;
 
