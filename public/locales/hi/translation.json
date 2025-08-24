@@ -1,0 +1,15 @@
+{
+  "language": "भाषा",
+  "welcome": "मेड‑जिनी में आपका स्वागत है",
+  "tagline": "आपका एआई हेल्थ साथी — अब कई भाषाओं में।",
+  "rich_example": "इसमें <strong>समृद्ध</strong> सामग्री है।",
+  "nav.home": "मुख पृष्ठ",
+  "nav.about": "हमारे बारे में",
+  "nav.contact": "संपर्क करें",
+  "nav.chat": "चैट",
+  "cta.get_started": "शुरू करें",
+  "cta.submit": "जमा करें",
+  "cta.cancel": "रद्द करें",
+  "form.search_placeholder": "लक्षण, दवाएँ, बीमारियाँ खोजें…",
+  "footer.rights": "सर्वाधिकार सुरक्षित।"
+}

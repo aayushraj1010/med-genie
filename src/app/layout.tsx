@@ -1,3 +1,8 @@
+import "../i18n";
+
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+
+
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import { Toaster } from '@/components/ui/toaster';

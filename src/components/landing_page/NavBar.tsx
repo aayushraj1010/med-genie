@@ -1,9 +1,11 @@
 "use client";
 
+
 import { useState } from "react";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
 import { Menu, X } from "lucide-react";
+import LanguageSwitcher from '@/components/LanguageSwitcher'; // Adjust path if needed
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -31,7 +33,7 @@ export default function Navbar() {
           MedGenie
         </span>
       </Link>
-
+<LanguageSwitcher />
       {/* Desktop Links */}
       <div
         className={`hidden md:flex gap-[40px] text-[18px] font-normal leading-[150%] ${montserrat.className}`}

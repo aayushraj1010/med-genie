@@ -1,0 +1,15 @@
+{
+  "language": "Langue",
+  "welcome": "Bienvenue chez Med‑Genie",
+  "tagline": "Votre compagnon santé IA — maintenant en plusieurs langues.",
+  "rich_example": "Cela contient du contenu <strong>riche</strong>.",
+  "nav.home": "Accueil",
+  "nav.about": "À propos",
+  "nav.contact": "Contact",
+  "nav.chat": "Chat",
+  "cta.get_started": "Commencer",
+  "cta.submit": "Soumettre",
+  "cta.cancel": "Annuler",
+  "form.search_placeholder": "Rechercher des symptômes, des médicaments, des conditions…",
+  "footer.rights": "Tous droits réservés."
+}
