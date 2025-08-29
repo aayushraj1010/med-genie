@@ -12,8 +12,8 @@ const montserrat = Montserrat({
 });
 
 const links = [
-  { name: "About Us", href: "#about" },
-  { name: "Services", href: "#services" },
+  { name: "About Us", href: "/about" },
+  { name: "Services", href: "/services" },
   { name: "Our Process", href: "#process" },
   { name: "Find Specialist", href: "/specialist-recommendation" },
   { name: "Contact Us", href: "#contact" },
