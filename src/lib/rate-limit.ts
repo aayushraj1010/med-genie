@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { config } from './config';
 
 interface RateLimitConfig {
     maxRequests: number;
@@ -179,8 +180,8 @@ export function withRateLimit(config: RateLimitConfig) {
 export const RATE_LIMIT_CONFIGS = {
     // Login: 5 attempts per 15 minutes
     LOGIN: {
-        maxRequests: parseInt(process.env.RATE_LIMIT_LOGIN_MAX || '5'),
-        windowMs: parseInt(process.env.RATE_LIMIT_LOGIN_WINDOW || '900000'), // 15 minutes
+        maxRequests: config.rateLimitMaxRequests,
+        windowMs: config.rateLimitWindowMs,
         keyPrefix: 'login',
         skipSuccessfulRequests: false,
         skipFailedRequests: false
@@ -188,8 +189,8 @@ export const RATE_LIMIT_CONFIGS = {
 
     // Register: 3 attempts per hour
     REGISTER: {
-        maxRequests: parseInt(process.env.RATE_LIMIT_REGISTER_MAX || '3'),
-        windowMs: parseInt(process.env.RATE_LIMIT_REGISTER_WINDOW || '3600000'), // 1 hour
+        maxRequests: Math.max(3, Math.floor(config.rateLimitMaxRequests * 0.6)), // 60% of general limit
+        windowMs: config.rateLimitWindowMs * 4, // 4x longer window for registration
         keyPrefix: 'register',
         skipSuccessfulRequests: false,
         skipFailedRequests: false
@@ -197,17 +198,17 @@ export const RATE_LIMIT_CONFIGS = {
 
     // Check Email: 10 attempts per 15 minutes
     CHECK_EMAIL: {
-        maxRequests: parseInt(process.env.RATE_LIMIT_CHECK_EMAIL_MAX || '10'),
-        windowMs: parseInt(process.env.RATE_LIMIT_CHECK_EMAIL_WINDOW || '900000'), // 15 minutes
+        maxRequests: Math.max(10, config.rateLimitMaxRequests * 2), // 2x general limit
+        windowMs: config.rateLimitWindowMs,
         keyPrefix: 'check_email',
         skipSuccessfulRequests: false,
         skipFailedRequests: false
     },
 
-    // General API: 100 requests per 15 minutes
+    // General API: Use configured values
     GENERAL: {
-        maxRequests: parseInt(process.env.RATE_LIMIT_GENERAL_MAX || '100'),
-        windowMs: parseInt(process.env.RATE_LIMIT_GENERAL_WINDOW || '900000'), // 15 minutes
+        maxRequests: config.rateLimitMaxRequests,
+        windowMs: config.rateLimitWindowMs,
         keyPrefix: 'general',
         skipSuccessfulRequests: true,
         skipFailedRequests: false

@@ -1,19 +1,11 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import { config } from './config';
 
-// Ensure JWT_SECRET is always set - no fallback secrets!
-const JWT_SECRET = process.env.JWT_SECRET;
-
-// Function to check JWT_SECRET at runtime instead of module load time
-const getJWTSecret = (): string => {
-  if (!JWT_SECRET) {
-    throw new Error('JWT_SECRET environment variable is required');
-  }
-  return JWT_SECRET;
-};
-
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '15m'; // Short-lived access tokens
-const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || '7d';
+// Validate JWT secret on import
+if (!config.jwtSecret || config.jwtSecret.length < 32) {
+  throw new Error('JWT_SECRET must be at least 32 characters long');
+}
 
 export interface JWTPayload {
   userId: number;
@@ -42,8 +34,8 @@ export const generateTokenId = (): string => {
 };
 
 export const signAccessToken = (payload: Omit<JWTPayload, 'iat' | 'exp'>): string => {
-  return jwt.sign(payload, getJWTSecret(), {
-    expiresIn: JWT_EXPIRES_IN,
+  return jwt.sign(payload, config.jwtSecret, {
+    expiresIn: config.jwtExpiresIn,
     algorithm: 'HS256',
     issuer: 'med-genie',
     audience: 'med-genie-users',
@@ -51,8 +43,8 @@ export const signAccessToken = (payload: Omit<JWTPayload, 'iat' | 'exp'>): strin
 };
 
 export const signRefreshToken = (payload: Omit<RefreshTokenPayload, 'iat' | 'exp'>): string => {
-  return jwt.sign(payload, getJWTSecret(), {
-    expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+  return jwt.sign(payload, config.jwtSecret, {
+    expiresIn: config.refreshTokenExpiresIn,
     algorithm: 'HS256',
     issuer: 'med-genie',
     audience: 'med-genie-refresh',
@@ -83,7 +75,7 @@ export const signTokenPair = (userId: number, email: string, name: string): Toke
 
 export const verifyToken = (token: string): JWTPayload | null => {
   try {
-    const decoded = jwt.verify(token, getJWTSecret(), {
+    const decoded = jwt.verify(token, config.jwtSecret, {
       algorithms: ['HS256'],
       issuer: 'med-genie',
       audience: 'med-genie-users',
@@ -102,7 +94,7 @@ export const verifyToken = (token: string): JWTPayload | null => {
 
 export const verifyRefreshToken = (token: string): RefreshTokenPayload | null => {
   try {
-    const decoded = jwt.verify(token, getJWTSecret(), {
+    const decoded = jwt.verify(token, config.jwtSecret, {
       algorithms: ['HS256'],
       issuer: 'med-genie',
       audience: 'med-genie-refresh',
@@ -146,4 +138,34 @@ export const getTokenFromRequest = (request: Request): string | null => {
     return null;
   }
   return authHeader.substring(7);
+};
+
+// Generate cryptographically secure random strings
+export const generateSecureSecret = (length: number = 64): string => {
+  return crypto.randomBytes(length).toString('hex');
+};
+
+// Validate secret strength
+export const validateSecretStrength = (secret: string): {
+  isValid: boolean;
+  score: number;
+  feedback: string[];
+} => {
+  const feedback: string[] = [];
+  let score = 0;
+
+  if (secret.length >= 32) score += 2;
+  else feedback.push('Secret should be at least 32 characters long');
+
+  if (secret.length >= 64) score += 1;
+  if (/[A-Z]/.test(secret)) score += 1;
+  if (/[a-z]/.test(secret)) score += 1;
+  if (/[0-9]/.test(secret)) score += 1;
+  if (/[^A-Za-z0-9]/.test(secret)) score += 1;
+
+  return {
+    isValid: score >= 4,
+    score: Math.min(score, 7),
+    feedback
+  };
 };
