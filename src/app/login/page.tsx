@@ -29,10 +29,12 @@ export default function MedGenieLoginForm() {
       setError(result.message);
 
       // Check if the error suggests the user doesn't exist
-      if (result.message.toLowerCase().includes('invalid email') || 
-          result.message.toLowerCase().includes('user not found') ||
-          result.message.toLowerCase().includes('no user found') ||
-          result.message.toLowerCase().includes('account not found')) {
+      if (
+        result.message.toLowerCase().includes("invalid email") ||
+        result.message.toLowerCase().includes("user not found") ||
+        result.message.toLowerCase().includes("no user found") ||
+        result.message.toLowerCase().includes("account not found")
+      ) {
         setShowSignupSuggestion(true);
       }
     }
@@ -42,9 +44,9 @@ export default function MedGenieLoginForm() {
     // Pass the email and a flag to indicate they came from login
     const params = new URLSearchParams();
     if (email) {
-      params.set('email', email);
+      params.set("email", email);
     }
-    params.set('from', 'login');
+    params.set("from", "login");
     router.push(`/sign-up?${params.toString()}`);
   };
 
@@ -52,7 +54,6 @@ export default function MedGenieLoginForm() {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-black via-[#0a0f14] to-black p-4">
       <div className="w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg">
         <div className="flex justify-center mb-6">
-
           {/*Added the heart rate animation to look decent login page*/}
           <Lottie
             animationData={ecgAnimation}
@@ -117,9 +118,23 @@ export default function MedGenieLoginForm() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-3 text-white/50 hover:text-white transition"
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
             </button>
           </div>
+
+          {/* Forgot Password Link */}
+          <p className="text-right text-sm mt-2">
+            <a
+              href="/forgot-password"
+              className="text-[#3FB5F4] hover:underline"
+            >
+              Forgot Password?
+            </a>
+          </p>
 
           {/* Submit */}
           <button
