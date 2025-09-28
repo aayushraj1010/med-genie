@@ -22,7 +22,7 @@ export function SiteFooter() {
                     <Link href="/contribute" className="hover:underline">
                         Contribute
                     </Link>
-                    <Link href="/Privacy Policy" className="hover:underline">
+                    <Link href="/privacy Policy" className="hover:underline">
                         Privacy Policy
                     </Link>
                     <Link
@@ -34,6 +34,13 @@ export function SiteFooter() {
                         <Github className="h-4 w-4" />
                         GitHub
                     </Link>
+                    <Link href="/cookie-policy" className="hover:underline">
+    Cookie Policy
+</Link>
+<Link href="/terms-of-use" className="hover:underline">
+    Terms of Use
+</Link>
+
                 </div>
             </div>
         </footer>
