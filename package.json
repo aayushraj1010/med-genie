@@ -13,7 +13,20 @@
     "generate-og": "node scripts/generate-og-image.js",
     "test:jwt": "node scripts/test-jwt-security.js",
     "setup-env": "node scripts/setup-env.js",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "validate-api": "node .github/scripts/validate-apis.js",
+    "validate:pinecone": "node .github/scripts/validate-apis.js pinecone",
+    "validate:github": "node .github/scripts/validate-apis.js github",
+    "validate:gemini": "node .github/scripts/validate-apis.js gemini",
+    "populate-issues": "node .github/scripts/populate-existing-issues.js",
+    "cleanup-issue": "node .github/scripts/cleanup-closed-issue.js",
+    "cleanup-specific": "node .github/scripts/cleanup-specific-issue.js",
+    "cleanup-duplicates": "node .github/scripts/cleanup-duplicates.js",
+    "debug-db": "node .github/scripts/debug-pinecone.js",
+    "clear-all": "echo '⚠️  Use: npm run clear-all:force' && exit 1",
+    "clear-all:force": "node .github/scripts/clear-all-vectors.js --force",
+    "check-duplicates": "node .github/scripts/check-duplicates.js"
+
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
