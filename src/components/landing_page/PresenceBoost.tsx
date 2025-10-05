@@ -47,7 +47,7 @@ const steps = [
 
 const PresenceBoostGuide = () => {
   return (
-    <div className="relative z-10 w-full px-6 py-16 bg-black/10 border border-[#3FB5F440] rounded-2xl backdrop-blur-md">
+    <div data-aos="fade-up" className="relative z-10 w-full px-6 py-16 bg-black/10 border border-[#3FB5F440] rounded-2xl backdrop-blur-md">
       <div className="max-w-5xl mx-auto text-center mb-12">
         <h2 className="text-4xl font-bold mb-4 text-white">
           Your Guide to MedGenie
@@ -58,7 +58,7 @@ const PresenceBoostGuide = () => {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
+      <div data-aos="fade-up" className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
         {steps.map((step, index) => (
           <div
             key={index}
@@ -68,7 +68,7 @@ const PresenceBoostGuide = () => {
               animationFillMode: "both",
             }}
           >
-            <div className="flex items-start gap-4">
+            <div data-aos="fade-up" className="flex items-start gap-4">
               <CheckCircle className="text-[#3FB5F4] w-6 h-6 mt-1" />
               <div>
                 <h3 className="text-xl font-semibold mb-1 text-white">

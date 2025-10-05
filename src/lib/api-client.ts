@@ -1,4 +1,5 @@
 // HTTP client utility with automatic authentication
+import { SecureTokenStorage } from '@/lib/token-storage';
 
 interface RequestConfig extends RequestInit {
   headers?: Record<string, string>;
@@ -13,7 +14,7 @@ class ApiClient {
 
   private getAuthToken(): string | null {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('medgenie_token');
+      return SecureTokenStorage.getAccessToken();
     }
     return null;
   }
@@ -48,12 +49,12 @@ class ApiClient {
       if (response.status === 401) {
         // Clear invalid token
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('medgenie_token');
-          localStorage.removeItem('medgenie_user');
+          SecureTokenStorage.clearTokens();
+          sessionStorage.removeItem('medgenie_user');
           window.location.href = '/login';
         }
       }
-      
+
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }

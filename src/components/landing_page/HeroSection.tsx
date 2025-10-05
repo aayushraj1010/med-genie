@@ -14,12 +14,12 @@ export default function Hero() {
 
   return (
     <section className="w-full bg-[#090909] px-[6%] pt-[175px] flex flex-col items-center gap-[60px] max-[768px]:pt-[120px] max-[640px]:gap-[40px]">
-      <div
+      <div data-aos="fade-up"
         className={`flex flex-col items-center gap-[32px] max-[640px]:gap-[24px] w-full text-center transition-all duration-700 ${
           visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
       >
-        <h1
+        <h1 data-aos="fade-up"
           className="font-medium leading-[110%] tracking-[0px] text-white
           text-[45px] max-[1024px]:text-[36px] max-[768px]:text-[30px]
           max-[480px]:text-[24px] max-[380px]:text-[22px]"
@@ -29,7 +29,7 @@ export default function Hero() {
           <span style={{ color: brandColor }}>MedGenie</span> – Care at Your Fingertips
         </h1>
 
-        <p
+        <p data-aos="fade-up"
           className="text-[#939393] text-[20px] font-normal leading-[150%]
           max-[768px]:text-[16px] max-[768px]:leading-[140%]"
         >
@@ -38,7 +38,7 @@ export default function Hero() {
           Privacy-first, accessible anywhere, anytime.
         </p>
 
-        <a
+        <a data-aos="fade-up"
           href="/login"
           target="_blank"
           rel="noopener noreferrer"
@@ -53,12 +53,12 @@ export default function Hero() {
         </a>
       </div>
 
-      <div
+      <div data-aos="fade-up"
         className={`flex flex-col items-center gap-[16px] py-[20px] w-full transition-all duration-700 delay-200 ${
           visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
         }`}
       >
-        <p className="text-[#939393] text-[18px] font-normal leading-[150%]
+        <p  className="text-[#939393] text-[18px] font-normal leading-[150%]
           max-[768px]:text-[14px] max-[768px]:leading-[130%]">
           Helping users during health emergencies, trusted by the open-source community
         </p>

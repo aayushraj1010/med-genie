@@ -65,7 +65,7 @@ export default function FeatureSection() {
   return (
     <section className="w-full bg-gradient-to-br px-[6%] py-[100px] flex flex-col items-center gap-[100px] max-md:gap-[60px] max-md:py-[60px]">
       {/* Animated Heading */}
-      <h2
+      <h2 data-aos="fade-up"
         className={`text-white text-[42px] font-extrabold text-center max-md:text-[28px] transition-all duration-700 ease-out transform ${
           visibleIndexes.includes(-1)
             ? "opacity-100 translate-y-0"
@@ -75,7 +75,7 @@ export default function FeatureSection() {
         How Med Genie Helps You
       </h2>
 
-      <div className="w-full flex flex-col gap-[80px]">
+      <div data-aos="fade-up" className="w-full flex flex-col gap-[80px]">
         {features.map((f, index) => (
           <div
             key={f.id}
@@ -86,8 +86,8 @@ export default function FeatureSection() {
             } ${index % 2 === 0 ? "flex-row" : "flex-row-reverse"}`}
           >
             {/* Step Indicator */}
-            <div className="flex flex-col items-center gap-4 min-w-[60px]">
-              <div
+            <div data-aos="fade-up" className="flex flex-col items-center gap-4 min-w-[60px]">
+              <div data-aos="fade-up"
                 className="text-black text-[20px] font-bold w-[45px] h-[45px] rounded-full flex items-center justify-center shadow-lg ring-2 ring-white/10"
                 style={{ backgroundColor: themeColor }}
               >
@@ -102,7 +102,7 @@ export default function FeatureSection() {
             </div>
 
             {/* Glass Card */}
-            <div
+            <div data-aos="fade-up"
               className="bg-white/5 border border-white/10 rounded-2xl p-8 max-w-[600px] backdrop-blur-md transition-all duration-300 hover:scale-[1.02]"
               style={{
                 boxShadow: `0 0 30px rgba(63, 181, 244, 0.15)`,
@@ -114,7 +114,7 @@ export default function FeatureSection() {
                 (e.currentTarget.style.boxShadow = `0 0 30px rgba(63, 181, 244, 0.15)`)
               }
             >
-              <div className="flex items-center gap-4 mb-4">
+              <div data-aos="fade-up" className="flex items-center gap-4 mb-4">
                 {f.icon}
                 <h3 className="text-white text-[26px] font-bold max-md:text-[22px]">
                   {f.title}
