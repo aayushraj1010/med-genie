@@ -7,6 +7,8 @@ import Lottie from "lottie-react";
 import ecgAnimation from "@/assets/animations/ECG.json";
 import { useAuth } from "@/contexts/AuthContext";
 
+export const dynamic = "force-dynamic";
+
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -41,14 +43,12 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      // Pass 4 separate arguments to match AuthContext
       const result = await resetPassword(
         token,
         email,
         newPassword,
         confirmPassword
       );
-
       if (result.success) {
         setMessage(
           result.message ||
@@ -91,7 +91,6 @@ export default function ResetPasswordPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* New Password */}
           <div className="relative">
             <Lock className="absolute left-3 top-3 text-[#3FB5F4] w-5 h-5" />
             <input
@@ -115,7 +114,6 @@ export default function ResetPasswordPage() {
             </button>
           </div>
 
-          {/* Confirm Password */}
           <div className="relative">
             <Lock className="absolute left-3 top-3 text-[#3FB5F4] w-5 h-5" />
             <input
