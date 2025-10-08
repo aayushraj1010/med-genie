@@ -7,9 +7,7 @@ import Lottie from "lottie-react";
 import ecgAnimation from "@/assets/animations/ECG.json";
 import { useAuth } from "@/contexts/AuthContext";
 
-export const dynamic = "force-dynamic";
-
-export default function ResetPasswordPage() {
+export default function ResetPasswordClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { resetPassword } = useAuth();
@@ -50,10 +48,7 @@ export default function ResetPasswordPage() {
         confirmPassword
       );
       if (result.success) {
-        setMessage(
-          result.message ||
-            "Password successfully reset! Redirecting to login..."
-        );
+        setMessage(result.message || "Password successfully reset! Redirecting...");
         setTimeout(() => router.push("/login"), 2000);
       } else {
         setError(result.message || "Something went wrong");
