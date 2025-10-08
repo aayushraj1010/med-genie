@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { User, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle, XCircle } from "lucide-react";
+import {
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import Lottie from "lottie-react";
@@ -27,13 +36,13 @@ function MedGenieRegisterForm() {
     uppercase: false,
     lowercase: false,
     number: false,
-    special: false
+    special: false,
   });
 
   useEffect(() => {
     // Check if user came from login page and pre-fill email if provided
-    const emailFromParams = searchParams.get('email');
-    const fromLogin = searchParams.get('from') === 'login';
+    const emailFromParams = searchParams.get("email");
+    const fromLogin = searchParams.get("from") === "login";
 
     if (emailFromParams) {
       // Basic email validation
@@ -60,7 +69,7 @@ function MedGenieRegisterForm() {
         uppercase: /[A-Z]/.test(password),
         lowercase: /[a-z]/.test(password),
         number: /[0-9]/.test(password),
-        special: /[^A-Za-z0-9]/.test(password)
+        special: /[^A-Za-z0-9]/.test(password),
       });
     } else {
       setPasswordChecks({
@@ -68,10 +77,14 @@ function MedGenieRegisterForm() {
         uppercase: false,
         lowercase: false,
         number: false,
-        special: false
+        special: false,
       });
     }
   }, [password]);
+
+  const handleGoogleLogin = () => {
+    router.push("/api/auth/google"); // redirect to Google auth
+  };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,8 +116,9 @@ function MedGenieRegisterForm() {
       </div>
 
       <div
-        className={`w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg transform transition-all duration-700 ease-out ${showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+        className={`w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg transform transition-all duration-700 ease-out ${
+          showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
       >
         {/*Added the heart rate animation to look decent signup page*/}
         <Lottie
@@ -118,14 +132,14 @@ function MedGenieRegisterForm() {
         <p className="text-white/70 text-center mb-8 text-sm">
           {isFromLogin
             ? "It looks like you don't have an account yet. Let's create one!"
-            : "Join us and start using your AI-powered health assistant"
-          }
+            : "Join us and start using your AI-powered health assistant"}
         </p>
 
         {isFromLogin && (
           <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
             <p className="text-blue-400 text-sm text-center">
-              💡 We couldn't find an account with that email. Create a new account to get started!
+              💡 We couldn't find an account with that email. Create a new
+              account to get started!
             </p>
           </div>
         )}
@@ -179,7 +193,11 @@ function MedGenieRegisterForm() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-3 text-white/50 hover:text-white transition"
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
             </button>
           </div>
 
@@ -188,7 +206,9 @@ function MedGenieRegisterForm() {
             <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
               <div className="flex items-center gap-2 mb-3">
                 <AlertCircle className="w-4 h-4 text-[#3FB5F4]" />
-                <span className="text-sm font-medium text-white/80">Password Strength</span>
+                <span className="text-sm font-medium text-white/80">
+                  Password Strength
+                </span>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
@@ -197,7 +217,11 @@ function MedGenieRegisterForm() {
                   ) : (
                     <XCircle className="w-4 h-4 text-red-400" />
                   )}
-                  <span className={`text-xs ${passwordChecks.length ? 'text-green-400' : 'text-red-400'}`}>
+                  <span
+                    className={`text-xs ${
+                      passwordChecks.length ? "text-green-400" : "text-red-400"
+                    }`}
+                  >
                     At least 12 characters long
                   </span>
                 </div>
@@ -207,7 +231,13 @@ function MedGenieRegisterForm() {
                   ) : (
                     <XCircle className="w-4 h-4 text-red-400" />
                   )}
-                  <span className={`text-xs ${passwordChecks.uppercase ? 'text-green-400' : 'text-red-400'}`}>
+                  <span
+                    className={`text-xs ${
+                      passwordChecks.uppercase
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
+                  >
                     One uppercase letter (A-Z)
                   </span>
                 </div>
@@ -217,7 +247,13 @@ function MedGenieRegisterForm() {
                   ) : (
                     <XCircle className="w-4 h-4 text-red-400" />
                   )}
-                  <span className={`text-xs ${passwordChecks.lowercase ? 'text-green-400' : 'text-red-400'}`}>
+                  <span
+                    className={`text-xs ${
+                      passwordChecks.lowercase
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
+                  >
                     One lowercase letter (a-z)
                   </span>
                 </div>
@@ -227,7 +263,11 @@ function MedGenieRegisterForm() {
                   ) : (
                     <XCircle className="w-4 h-4 text-red-400" />
                   )}
-                  <span className={`text-xs ${passwordChecks.number ? 'text-green-400' : 'text-red-400'}`}>
+                  <span
+                    className={`text-xs ${
+                      passwordChecks.number ? "text-green-400" : "text-red-400"
+                    }`}
+                  >
                     One number (0-9)
                   </span>
                 </div>
@@ -237,7 +277,11 @@ function MedGenieRegisterForm() {
                   ) : (
                     <XCircle className="w-4 h-4 text-red-400" />
                   )}
-                  <span className={`text-xs ${passwordChecks.special ? 'text-green-400' : 'text-red-400'}`}>
+                  <span
+                    className={`text-xs ${
+                      passwordChecks.special ? "text-green-400" : "text-red-400"
+                    }`}
+                  >
                     One special character (!@#$%^&*)
                   </span>
                 </div>
@@ -249,7 +293,9 @@ function MedGenieRegisterForm() {
           <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
             <div className="flex items-center gap-2 mb-2">
               <AlertCircle className="w-4 h-4 text-[#3FB5F4]" />
-              <span className="text-sm font-medium text-white/80">Password Requirements</span>
+              <span className="text-sm font-medium text-white/80">
+                Password Requirements
+              </span>
             </div>
             <ul className="text-xs text-white/60 space-y-1">
               <li>• At least 12 characters long</li>
@@ -277,7 +323,11 @@ function MedGenieRegisterForm() {
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-3 top-3 text-white/50 hover:text-white transition"
             >
-              {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showConfirmPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
             </button>
           </div>
 
@@ -290,6 +340,26 @@ function MedGenieRegisterForm() {
             {isLoading ? "Creating account..." : "Register"}
           </button>
         </form>
+
+        {/* Divider */}
+        <div className="flex items-center my-6">
+          <div className="flex-grow border-t border-white/10"></div>
+          <span className="px-3 text-white/50 text-xs">OR</span>
+          <div className="flex-grow border-t border-white/10"></div>
+        </div>
+
+        {/* Google Login */}
+        <button
+          onClick={handleGoogleLogin}
+          className="w-full py-3 flex items-center justify-center gap-2 bg-white text-black font-semibold rounded-xl shadow-lg hover:bg-gray-200 transition"
+        >
+          <img
+            src="/images/google-color.svg"
+            alt="Google"
+            className="w-5 h-5"
+          />
+          Continue with Google
+        </button>
 
         {/* Footer */}
         <p className="text-center text-white/60 text-sm mt-6">
@@ -334,4 +404,3 @@ export default function SignUpPage() {
     </Suspense>
   );
 }
-
