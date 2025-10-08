@@ -2,36 +2,34 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// migrate cmnd : npx prisma migrate dev --name your_migration_name
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id                 Int       @id @default(autoincrement())
-  name               String    @db.VarChar(100)
-  email              String    @unique @db.VarChar(254)
-  password           String    @db.VarChar(255)
-  confirmpassword    String    @db.VarChar(255)
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  lastLoginAt        DateTime?
-  isActive           Boolean   @default(true)
-  role               String    @default("user") @db.VarChar(20)
-  failedLoginAttempts Int      @default(0)
-  lockedUntil        DateTime?
-  lastPasswordChange DateTime  @default(now())
-  passwordVersion    Int       @default(1)
-
-  // 🔑 Added fields for password reset
-  resetToken         String?   @db.VarChar(255)
-  resetTokenExpiry   DateTime?
+  id              Int      @id @default(autoincrement())
+  name            String   @db.VarChar(100)
+  email           String   @unique @db.VarChar(254)
+  password        String   @db.VarChar(255)
+  confirmpassword String   @db.VarChar(255)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  lastLoginAt     DateTime?
+  isActive        Boolean  @default(true)
+  role            String   @default("user") @db.VarChar(20)
+  failedLoginAttempts Int  @default(0)
+  lockedUntil     DateTime?
+  lastPasswordChange DateTime @default(now())
+  passwordVersion Int      @default(1)
 
   // Relations
-  auditLogs          AuditLog[]
-  sessions           Session[]
-  healthProfile      HealthProfile?
-  chatSessions       ChatSession[]
+  auditLogs       AuditLog[]
+  sessions        Session[]
+  healthProfile   HealthProfile?
+  chatSessions    ChatSession[]
 
   @@map("users")
   @@index([email])
@@ -52,6 +50,7 @@ model Session {
   userAgent    String?  @db.Text
   isActive     Boolean  @default(true)
 
+  // Relations
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
@@ -72,11 +71,12 @@ model AuditLog {
   userAgent String?  @db.Text
   query     String?  @db.Text
   params    String?  @db.Text
-  duration  Int?
+  duration  Int?     // Query duration in milliseconds
   success   Boolean  @default(true)
   error     String?  @db.Text
   createdAt DateTime @default(now())
 
+  // Relations
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("audit_logs")
@@ -89,18 +89,19 @@ model AuditLog {
 }
 
 model HealthProfile {
-  id             Int      @id @default(autoincrement())
-  userId         Int      @unique
-  medicalHistory String?  @db.Text
-  lifestyle      String?  @db.Text
-  symptoms       String?  @db.Text
-  allergies      String?  @db.Text
-  medications    String?  @db.Text
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  isActive       Boolean  @default(true)
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique
+  medicalHistory String? @db.Text
+  lifestyle     String?  @db.Text
+  symptoms      String?  @db.Text
+  allergies     String?  @db.Text
+  medications   String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isActive      Boolean  @default(true)
 
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("health_profiles")
   @@index([userId])
@@ -117,6 +118,7 @@ model ChatSession {
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
 
+  // Relations
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages  ChatMessage[]
 
@@ -131,12 +133,13 @@ model ChatMessage {
   id          Int      @id @default(autoincrement())
   sessionId   Int
   content     String   @db.Text
-  sender      String   @db.VarChar(20)
+  sender      String   @db.VarChar(20) // 'user' or 'ai'
   timestamp   DateTime @default(now())
   isFollowUp  Boolean  @default(false)
-  metadata    String?  @db.Text
+  metadata    String?  @db.Text // JSON string for additional data
 
-  session     ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  // Relations
+  session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@map("chat_messages")
   @@index([sessionId])
@@ -159,18 +162,18 @@ model RateLimit {
 }
 
 model SecurityEvent {
-  id          Int      @id @default(autoincrement())
-  type        String   @db.VarChar(100)
-  severity    String   @db.VarChar(20)
-  details     String   @db.Text
-  ipAddress   String?  @db.VarChar(45)
-  userAgent   String?  @db.Text
-  userId      Int?
-  metadata    String?  @db.Text
-  createdAt   DateTime @default(now())
-  resolved    Boolean  @default(false)
-  resolvedAt  DateTime?
-  resolvedBy  Int?
+  id        Int      @id @default(autoincrement())
+  type      String   @db.VarChar(100) // 'sql_injection', 'rate_limit', 'suspicious_ip', etc.
+  severity  String   @db.VarChar(20)  // 'low', 'medium', 'high', 'critical'
+  details   String   @db.Text
+  ipAddress String?  @db.VarChar(45)
+  userAgent String?  @db.Text
+  userId    Int?
+  metadata  String?  @db.Text // JSON string for additional data
+  createdAt DateTime @default(now())
+  resolved  Boolean  @default(false)
+  resolvedAt DateTime?
+  resolvedBy Int?
 
   @@map("security_events")
   @@index([type])
