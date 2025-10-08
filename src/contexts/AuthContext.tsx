@@ -13,6 +13,8 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   accessToken: string | null;
+  setAccessToken: (token: string) => void; 
+  setUser: (user: User | null) => void;
   login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
   register: (name: string, email: string, password: string, confirmPassword: string) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
@@ -191,6 +193,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     user,
     accessToken,
+    setAccessToken, 
+    setUser,  
     login,
     register,
     logout,
