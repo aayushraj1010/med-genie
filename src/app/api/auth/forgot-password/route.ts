@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SecurePrisma } from "@/lib/secure-prisma";
 import { sendEmail } from "@/lib/email";
+import { Prisma } from "../../../../../prisma/prisma";
 import crypto from "crypto";
 
 export async function POST(req: NextRequest) {
@@ -12,10 +13,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Find user
-    const user = await SecurePrisma.user.findUnique({
-      where: { email },
-    });
+    // Find user safely
+    let user;
+    try {
+      user = await Prisma.user.findUnique({
+        where: { email },
+      });
+    } catch (dbErr) {
+      console.error("Database error:", dbErr);
+      return NextResponse.json(
+        { error: "Database temporarily unavailable" },
+        { status: 503 }
+      );
+    }
 
     if (!user) {
       return NextResponse.json(
@@ -28,14 +38,22 @@ export async function POST(req: NextRequest) {
     const token = crypto.randomBytes(32).toString("hex");
     const expiry = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
 
-    // Save token and expiry in DB
-    await SecurePrisma.user.update({
-      where: { email },
-      data: {
-        resetToken: token,
-        resetTokenExpiry: expiry,
-      },
-    });
+    // Save token safely
+    try {
+      await Prisma.user.update({
+        where: { email },
+        data: {
+          resetToken: token,
+          resetTokenExpiry: expiry,
+        },
+      });
+    } catch (dbErr) {
+      console.error("Database error on update:", dbErr);
+      return NextResponse.json(
+        { error: "Failed to save reset token" },
+        { status: 503 }
+      );
+    }
 
     // Build reset URL
     const resetUrl = `${
