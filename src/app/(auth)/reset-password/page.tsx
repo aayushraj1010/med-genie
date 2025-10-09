@@ -1,20 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Lock, Eye, EyeOff } from "lucide-react";
 import Lottie from "lottie-react";
 import ecgAnimation from "@/assets/animations/ECG.json";
 import { useAuth } from "@/contexts/AuthContext";
 
-export default function ResetPasswordClient() {
-  const searchParams = useSearchParams();
+export const dynamic = "force-dynamic";
+
+function ResetPasswordInner() {
+  const [params, setParams] = useState<{ token: string; email: string }>({
+    token: "",
+    email: "",
+  });
+
   const router = useRouter();
   const { resetPassword } = useAuth();
+  const searchParams = useSearchParams();
 
-  const token = searchParams.get("token") || "";
-  const email = searchParams.get("email") || "";
+  useEffect(() => {
+    const token = searchParams.get("token") || "";
+    const email = searchParams.get("email") || "";
+    setParams({ token, email });
+  }, [searchParams]);
 
+  const { token, email } = params;
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -48,12 +59,14 @@ export default function ResetPasswordClient() {
         confirmPassword
       );
       if (result.success) {
-        setMessage(result.message || "Password successfully reset! Redirecting...");
+        setMessage(
+          result.message || "Password successfully reset! Redirecting..."
+        );
         setTimeout(() => router.push("/login"), 2000);
       } else {
         setError(result.message || "Something went wrong");
       }
-    } catch (err) {
+    } catch {
       setError("Something went wrong");
     } finally {
       setIsLoading(false);
@@ -138,5 +151,15 @@ export default function ResetPasswordClient() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordClient() {
+  return (
+    <Suspense
+      fallback={<div className="text-white text-center">Loading...</div>}
+    >
+      <ResetPasswordInner />
+    </Suspense>
   );
 }

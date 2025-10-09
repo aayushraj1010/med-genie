@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SecurePrisma } from "@/lib/secure-prisma";
 import { sendEmail } from "@/lib/email";
 import { Prisma } from "../../../../../prisma/prisma";
 import crypto from "crypto";
