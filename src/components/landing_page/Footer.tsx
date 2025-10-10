@@ -10,11 +10,11 @@ const Footer = () => {
         
         {/* Left - Logo + Tagline + Socials */}
         <div className="col-span-1">
-          <h2 className="text-2xl font-bold mb-2">MedGenie</h2>
-          <p className="text-sm mb-4 opacity-90">
+          <h2 data-aos="fade-up" className="text-2xl font-bold mb-2">MedGenie</h2>
+          <p data-aos="fade-up" className="text-sm mb-4 opacity-90">
             The Future of Healthcare Collaboration
           </p>
-          <div className="flex space-x-4 text-lg">
+          <div data-aos="fade-up" className="flex space-x-4 text-lg">
             <a
               href="https://twitter.com"
               target="_blank"
@@ -44,8 +44,8 @@ const Footer = () => {
 
         {/* Links */}
         <div className="space-y-2">
-          <h3 className="font-semibold text-sm">Quick Links</h3>
-          <ul className="text-sm space-y-1 text-white/80">
+          <h3 data-aos="fade-up" className="font-semibold text-sm">Quick Links</h3>
+          <ul data-aos="fade-up" className="text-sm space-y-1 text-white/80">
             <li><a href="/" className="hover:text-white hover:underline">Home</a></li>
             <li><a href="/#how-it-works" className="hover:text-white hover:underline">How it Works</a></li>
             <li><a href="/#faqs" className="hover:text-white hover:underline">FAQs</a></li>
@@ -53,8 +53,8 @@ const Footer = () => {
         </div>
 
         <div className="space-y-2">
-          <h3 className="font-semibold text-sm">Community & Support</h3>
-          <ul className="text-sm space-y-1 text-white/80">
+          <h3 data-aos="fade-up" className="font-semibold text-sm">Community & Support</h3>
+          <ul data-aos="fade-up" className="text-sm space-y-1 text-white/80">
             <li><a href="https://discord.gg/medgenie" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline">Join our Discord</a></li>
             <li><a href="https://twitter.com/medgenie" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline">Follow us on X</a></li>
             <li><a href="https://t.me/medgenie" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline">Join our Telegram</a></li>
@@ -62,8 +62,8 @@ const Footer = () => {
         </div>
 
         <div className="space-y-2">
-          <h3 className="font-semibold text-sm">Legal & Policy</h3>
-          <ul className="text-sm space-y-1 text-white/80">
+          <h3 data-aos="fade-up" className="font-semibold text-sm">Legal & Policy</h3>
+          <ul data-aos="fade-up" className="text-sm space-y-1 text-white/80">
             <li><a href="/privacypolicy.html" className="hover:text-white hover:underline">Privacy Policy</a></li>
             <li><a href="/terms.html" className="hover:text-white hover:underline">Terms of Use</a></li>
             <li><a href="/cookies.html" className="hover:text-white hover:underline">Cookie Policy</a></li>

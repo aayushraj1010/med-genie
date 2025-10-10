@@ -350,7 +350,7 @@ export default function SpecialistRecommendationPage() {
                   )}
                 </Button>
                 <Button variant="outline" onClick={clearForm}>
-                  Clear
+                  Reset
                 </Button>
               </div>
             </CardContent>
@@ -411,7 +411,7 @@ export default function SpecialistRecommendationPage() {
                       </div>
                       {rec.additionalInfo && (
                         <div className="mt-3 p-3 bg-primary/10 rounded-md">
-                          <p className="text-sm text-primary">{rec.additionalInfo}</p>
+                          <p className="text-sm text-muted-foreground">{rec.additionalInfo}</p>
                         </div>
                       )}
                     </CardContent>

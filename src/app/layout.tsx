@@ -11,6 +11,20 @@ import { AOSProvider } from "@/components/aos-provider";
 import "./globals.css";
 import { StructuredData } from "./structured-data";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { SiteFooter } from '@/components/site-footer';
+import { SiteHeader } from '@/components/site-header';
+import { Toaster } from '@/components/ui/toaster';
+import { ThemeProvider } from '@/hooks/use-theme';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { Analytics } from '@vercel/analytics/react';
+import { GeistMono } from 'geist/font/mono';
+import { GeistSans } from 'geist/font/sans';
+import type { Metadata } from 'next';
+import { AOSProvider } from '@/components/aos-provider';
+import './globals.css';
+import { StructuredData } from './structured-data';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import Preloader from "../components/Preloader";
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -154,6 +168,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
+      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
+        <Preloader />
         <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
           <AuthProvider>
             <AOSProvider>
