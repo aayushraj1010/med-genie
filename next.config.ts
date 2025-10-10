@@ -3,13 +3,8 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   /* config options here */
   env: {
-    JWT_SECRET: process.env.JWT_SECRET || 'your-super-secure-jwt-secret-minimum-64-characters-long-change-this-in-production',
-    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '15m',
-    REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN || '7d',
-    DATABASE_URL: process.env.DATABASE_URL || 'file:./dev.db',
-    RATE_LIMIT_ENABLED: process.env.RATE_LIMIT_ENABLED || 'true',
-    RATE_LIMIT_MAX_REQUESTS: process.env.RATE_LIMIT_MAX_REQUESTS || '100',
-    RATE_LIMIT_WINDOW_MS: process.env.RATE_LIMIT_WINDOW_MS || '900000',
+    // Environment variables are now validated by the secure config system
+    // No hardcoded fallbacks - all values must be properly set
   },
   typescript: {
     ignoreBuildErrors: true,
