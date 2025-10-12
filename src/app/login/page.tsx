@@ -130,6 +130,16 @@ export default function MedGenieLoginForm() {
             </button>
           </div>
 
+          {/* Forgot Password Link */}
+          <p className="text-right text-sm mt-2">
+            <a
+              href="/forgot-password"
+              className="text-[#3FB5F4] hover:underline"
+            >
+              Forgot Password?
+            </a>
+          </p>
+
           {/* Submit */}
           <button
             type="submit"

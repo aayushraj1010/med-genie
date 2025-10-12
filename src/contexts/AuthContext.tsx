@@ -1,8 +1,14 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
-import { SecureTokenStorage } from '@/lib/token-storage';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import { useRouter } from "next/navigation";
+import { SecureTokenStorage } from "@/lib/token-storage";
 
 export interface User {
   id: number;
@@ -17,6 +23,13 @@ interface AuthContextType {
   setUser: (user: User | null) => void;
   login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
   register: (name: string, email: string, password: string, confirmPassword: string) => Promise<{ success: boolean; message: string }>;
+  resetPassword: (
+    token: string,
+    email: string,
+    newPassword: string,
+    confirmPassword: string
+  ) => Promise<{ success: boolean; message: string }>;
+  requestPasswordReset: (email: string) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -38,12 +51,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     if (accessToken) {
       try {
-        const tokenData = JSON.parse(atob(accessToken.split('.')[1]));
+        const tokenData = JSON.parse(atob(accessToken.split(".")[1]));
         const expiresAt = tokenData.exp * 1000;
         const now = Date.now();
         const timeUntilExpiry = expiresAt - now;
 
-        // Refresh token 1 minute before expiration
         if (timeUntilExpiry > 60000) {
           const refreshTimer = setTimeout(() => {
             refreshAccessToken();
@@ -51,11 +63,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
           return () => clearTimeout(refreshTimer);
         } else {
-          // Token already expired, refresh immediately
           refreshAccessToken();
         }
       } catch (error) {
-        console.error('Error parsing token:', error);
+        console.error("Error parsing token:", error);
       }
     }
   }, [accessToken]);
@@ -65,17 +76,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const loadUserData = () => {
       try {
         const savedAccessToken = SecureTokenStorage.getAccessToken();
-        const savedUser = sessionStorage.getItem('medgenie_user');
+        const savedUser = sessionStorage.getItem("medgenie_user");
 
         if (savedAccessToken && savedUser) {
           setAccessToken(savedAccessToken);
           setUser(JSON.parse(savedUser));
         }
       } catch (error) {
-        console.error('Error loading user data:', error);
-        // Clear invalid data
+        console.error("Error loading user data:", error);
         SecureTokenStorage.clearTokens();
-        sessionStorage.removeItem('medgenie_user');
+        sessionStorage.removeItem("medgenie_user");
       }
       setIsLoading(false);
     };
@@ -85,18 +95,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const refreshAccessToken = async (): Promise<boolean> => {
     try {
-      const response = await fetch('/api/auth/refresh', {
-        method: 'POST',
-        credentials: 'include',
+      const response = await fetch("/api/auth/refresh", {
+        method: "POST",
+        credentials: "include",
       });
-
       if (response.ok) {
         const { accessToken: newAccessToken } = await response.json();
         setAccessToken(newAccessToken);
-        SecureTokenStorage.setTokens(newAccessToken, ''); // Refresh token in cookie
+        SecureTokenStorage.setTokens(newAccessToken, "");
         return true;
       } else {
-        // Refresh failed, logout user
         await logout();
         return false;
       }
@@ -106,87 +114,123 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
+  const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
       const data = await response.json();
 
       if (data.success && data.accessToken && data.user) {
         setAccessToken(data.accessToken);
         setUser(data.user);
-
-        // Store in secure storage
-        SecureTokenStorage.setTokens(data.accessToken, data.refreshToken || '');
-        sessionStorage.setItem('medgenie_user', JSON.stringify(data.user));
-
+        SecureTokenStorage.setTokens(data.accessToken, data.refreshToken || "");
+        sessionStorage.setItem("medgenie_user", JSON.stringify(data.user));
         return { success: true, message: data.message };
       } else {
-        return { success: false, message: data.message || 'Login failed' };
+        return { success: false, message: data.message || "Login failed" };
       }
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, message: 'Network error. Please try again.' };
+      console.error("Login error:", error);
+      return { success: false, message: "Network error. Please try again." };
     } finally {
       setIsLoading(false);
     }
   };
 
-  const register = async (name: string, email: string, password: string, confirmPassword: string): Promise<{ success: boolean; message: string }> => {
+  const register = async (
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string
+  ) => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, confirmPassword }),
       });
-
       const data = await response.json();
 
       if (data.success && data.accessToken && data.user) {
         setAccessToken(data.accessToken);
         setUser(data.user);
-
-        // Store in secure storage
-        SecureTokenStorage.setTokens(data.accessToken, data.refreshToken || '');
-        sessionStorage.setItem('medgenie_user', JSON.stringify(data.user));
-
+        SecureTokenStorage.setTokens(data.accessToken, data.refreshToken || "");
+        sessionStorage.setItem("medgenie_user", JSON.stringify(data.user));
         return { success: true, message: data.message };
       } else {
-        return { success: false, message: data.message || 'Registration failed' };
+        return {
+          success: false,
+          message: data.message || "Registration failed",
+        };
       }
     } catch (error) {
-      console.error('Registration error:', error);
-      return { success: false, message: 'Network error. Please try again.' };
+      console.error("Registration error:", error);
+      return { success: false, message: "Network error. Please try again." };
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logout = async (): Promise<void> => {
+  const logout = async () => {
     try {
-      // Call logout API to blacklist tokens
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
       });
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
       setUser(null);
       setAccessToken(null);
       SecureTokenStorage.clearTokens();
-      sessionStorage.removeItem('medgenie_user');
-      router.push('/login');
+      sessionStorage.removeItem("medgenie_user");
+      router.push("/login");
+    }
+  };
+
+  const resetPassword = async (
+    token: string,
+    email: string,
+    newPassword: string,
+    confirmPassword: string
+  ) => {
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, email, newPassword, confirmPassword }),
+      });
+      const data = await res.json();
+      return { success: res.ok, message: data.message || data.error };
+    } catch (error) {
+      console.error("Reset password error:", error);
+      return { success: false, message: "Something went wrong" };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const requestPasswordReset = async (email: string) => {
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      return { success: res.ok, message: data.message || data.error };
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      return { success: false, message: "Something went wrong" };
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -197,6 +241,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser,  
     login,
     register,
+    resetPassword,
+    requestPasswordReset,
     logout,
     isLoading,
     isAuthenticated: !!user && !!accessToken,
@@ -207,8 +253,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };
