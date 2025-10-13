@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense,useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { SecureTokenStorage } from "@/lib/token-storage";
 
-export default function GoogleRedirect() {
+function GoogleRedirect() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { setAccessToken, setUser } = useAuth(); 
@@ -29,4 +29,13 @@ export default function GoogleRedirect() {
   }, [searchParams, router, setAccessToken, setUser]);
 
   return <div className="text-black font-lg m-8">Logging you in…</div>;
+}
+
+// This is the component Next.js attempts to pre-render.
+export default function GoogleRedirectPage() {
+  return (
+    <Suspense fallback={<div className="text-black font-lg m-8">Preparing redirect...</div>}>
+      <GoogleRedirect /> 
+    </Suspense>
+  );
 }
