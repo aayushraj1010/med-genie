@@ -40,6 +40,10 @@ export default function MedGenieLoginForm() {
     }
   };
 
+  const handleGoogleLogin = () => {
+    router.push("/api/auth/google"); // redirect to Google auth
+  };
+
   const handleSignupRedirect = () => {
     // Pass the email and a flag to indicate they came from login
     const params = new URLSearchParams();
@@ -145,6 +149,26 @@ export default function MedGenieLoginForm() {
             {isLoading ? "Signing in..." : "Login"}
           </button>
         </form>
+
+        {/* Divider */}
+        <div className="flex items-center my-6">
+          <div className="flex-grow border-t border-white/10"></div>
+          <span className="px-3 text-white/50 text-xs">OR</span>
+          <div className="flex-grow border-t border-white/10"></div>
+        </div>
+
+        {/* Google Login */}
+        <button
+          onClick={handleGoogleLogin}
+          className="w-full py-3 flex items-center justify-center gap-2 bg-white text-black font-semibold rounded-xl shadow-lg hover:bg-gray-200 transition"
+        >
+          <img
+            src="/images/google-color.svg"
+            alt="Google"
+            className="w-5 h-5"
+          />
+          Continue with Google
+        </button>
 
         {/* Footer */}
         <p className="text-center text-white/60 text-sm mt-6">

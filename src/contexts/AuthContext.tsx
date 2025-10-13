@@ -19,25 +19,17 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   accessToken: string | null;
-  login: (
-    email: string,
-    password: string
-  ) => Promise<{ success: boolean; message: string }>;
-  register: (
-    name: string,
-    email: string,
-    password: string,
-    confirmPassword: string
-  ) => Promise<{ success: boolean; message: string }>;
+  setAccessToken: (token: string) => void; 
+  setUser: (user: User | null) => void;
+  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  register: (name: string, email: string, password: string, confirmPassword: string) => Promise<{ success: boolean; message: string }>;
   resetPassword: (
     token: string,
     email: string,
     newPassword: string,
     confirmPassword: string
   ) => Promise<{ success: boolean; message: string }>;
-  requestPasswordReset: (
-    email: string
-  ) => Promise<{ success: boolean; message: string }>;
+  requestPasswordReset: (email: string) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -245,6 +237,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     user,
     accessToken,
+    setAccessToken, 
+    setUser,  
     login,
     register,
     resetPassword,
