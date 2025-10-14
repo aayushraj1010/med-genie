@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = (req: NextRequest) => {
-  const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`;
+  const redirectUri = `${process.env.APP_URL}/api/auth/google/callback`;
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const scope = encodeURIComponent("openid email profile");
   const responseType = "code";
