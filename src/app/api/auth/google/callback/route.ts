@@ -107,6 +107,7 @@ const GOOGLE_CALLBACK_HANDLER = async (req: NextRequest) => {
     });
 
     // redirect to frontend route with accessToken
+    console.log(process.env.APP_URL)
     const redirectUrl = `${
       process.env.APP_URL
     }/google-redirect?accessToken=${
