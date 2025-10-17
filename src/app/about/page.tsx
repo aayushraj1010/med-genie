@@ -293,5 +293,7 @@ export default function AboutPage() {
             </div>
             <Footer />
         </div>
+        <SiteFooter />
+        </>
     );
 }
