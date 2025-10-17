@@ -26,11 +26,15 @@ import {
   AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
+import { SiteHeader } from '@/components/site-header';
+import { SiteFooter } from '@/components/site-footer';
 
 export default function AboutPage() {
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            <div className="container mx-auto px-4 py-8 space-y-8">
+        <>
+            <SiteHeader />
+            <div className="min-h-screen bg-background text-foreground">
+                <div className="container mx-auto px-4 py-8 space-y-8">
                 {/* Hero Section */}
                 <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
                     <CardHeader className="text-center pb-8">
@@ -289,5 +293,7 @@ export default function AboutPage() {
                 </Card>
             </div>
         </div>
+        <SiteFooter />
+        </>
     );
 }
