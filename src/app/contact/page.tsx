@@ -9,6 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import emailjs from '@emailjs/browser';
 import { Mail } from 'lucide-react';
 import { FormEvent, useRef, useState } from 'react';
+import { SiteHeader } from '@/components/site-header';
+import { SiteFooter } from '@/components/site-footer';
 
 interface Status {
     type: 'success' | 'error';
@@ -48,8 +50,10 @@ export default function ContactPage() {
     };
 
     return (
-        <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
-            <Card className="w-full max-w-xl shadow-xl">
+        <>
+            <SiteHeader />
+            <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
+                <Card className="w-full max-w-xl shadow-xl">
                 <CardHeader>
                     <div className="flex items-center gap-2 mb-2">
                         <Mail className="h-7 w-7 text-primary" />
@@ -108,5 +112,7 @@ export default function ContactPage() {
                 </div>
             </Card>
         </div>
+        <SiteFooter />
+        </>
     );
 }
