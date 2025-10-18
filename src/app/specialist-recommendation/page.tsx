@@ -12,7 +12,12 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Stethoscope, MapPin, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { InputSanitizer } from '@/lib/input-sanitizer';
+<<<<<<< HEAD
 import Layout from '@/components/layout';
+=======
+import { SiteHeader } from '@/components/site-header';
+import { SiteFooter } from '@/components/site-footer';
+>>>>>>> upstream/main
 
 interface SpecialistRecommendation {
   specialty: string;
@@ -200,6 +205,7 @@ export default function SpecialistRecommendationPage() {
     <Layout>
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-6xl mx-auto space-y-6">
+
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-3">
@@ -433,6 +439,11 @@ export default function SpecialistRecommendationPage() {
         </Alert>
       </div>
     </div>
+<<<<<<< HEAD
     </Layout>
+=======
+    <SiteFooter />
+    </>
+>>>>>>> upstream/main
   );
 }

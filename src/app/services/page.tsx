@@ -34,6 +34,7 @@ import {
   UserPlus
 } from 'lucide-react';
 import Link from 'next/link';
+
 import Layout from '@/components/layout';
 
 export default function ServicesPage() {
@@ -41,6 +42,7 @@ export default function ServicesPage() {
         <Layout>
         <div className="min-h-screen bg-background text-foreground">
             <div className="container mx-auto px-4 py-12 space-y-16">
+
                 {/* Hero Section */}
                 <div className="text-center space-y-8">
                     <div className="relative">
@@ -302,6 +304,11 @@ export default function ServicesPage() {
                 </Card>
             </div>
         </div>
+<<<<<<< HEAD
         </Layout>
+=======
+        <SiteFooter />
+        </>
+>>>>>>> upstream/main
     );
 }
