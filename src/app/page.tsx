@@ -12,6 +12,7 @@ import FeatureSection from "@/components/landing_page/Features";
 import PresenceBoostGuide from "@/components/landing_page/PresenceBoost";
 import FAQs from "@/components/landing_page/FAQ";
 import Footer from "@/components/landing_page/Footer";
+import ContactSection from "@/components/landing_page/ContactSection";
 import Preloader from "@/components/Preloader";
 
 export default function App(){
@@ -33,6 +34,7 @@ export default function App(){
     <FeatureSection/>
     <PresenceBoostGuide/>
     <FAQs/>
+  <ContactSection />
     <Footer/>
     </main>
   </>)
