@@ -26,13 +26,16 @@ import {
   AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
+import Layout from '@/components/layout';
 
 export default function AboutPage() {
     return (
+        <Layout>
         <div className="min-h-screen bg-background text-foreground">
             <div className="container mx-auto px-4 py-8 space-y-8">
+                
                 {/* Hero Section */}
-                <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+                <Card className="mt-13 relative overflow-hidden border-0 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
                     <CardHeader className="text-center pb-8">
                         <div className="flex items-center justify-center mb-4">
                             <div className="p-3 rounded-full bg-primary/10 border-2 border-primary/20">
@@ -287,7 +290,9 @@ export default function AboutPage() {
                         </div>
                     </CardContent>
                 </Card>
+                
             </div>
         </div>
+        </Layout>
     );
 }

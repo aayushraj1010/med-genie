@@ -13,6 +13,7 @@ import PresenceBoostGuide from "@/components/landing_page/PresenceBoost";
 import FAQs from "@/components/landing_page/FAQ";
 import Footer from "@/components/landing_page/Footer";
 import Preloader from "@/components/Preloader";
+import Layout from "@/components/layout";
 
 export default function App(){
    useEffect(() => {
@@ -28,12 +29,12 @@ export default function App(){
   return (<>
   <Preloader />
   <main>
-   <Navbar/>
+   <Layout>
     <Hero/>
     <FeatureSection/>
     <PresenceBoostGuide/>
     <FAQs/>
-    <Footer/>
+    </Layout>
     </main>
   </>)
 }
