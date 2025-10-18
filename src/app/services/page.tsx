@@ -304,11 +304,7 @@ export default function ServicesPage() {
                 </Card>
             </div>
         </div>
-<<<<<<< HEAD
         </Layout>
-=======
-        <SiteFooter />
-        </>
->>>>>>> upstream/main
+
     );
 }

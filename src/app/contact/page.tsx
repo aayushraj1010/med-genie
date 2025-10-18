@@ -11,6 +11,7 @@ import { Mail } from 'lucide-react';
 import { FormEvent, useRef, useState } from 'react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import Layout from '@/components/layout';
 
 interface Status {
     type: 'success' | 'error';
@@ -51,7 +52,7 @@ export default function ContactPage() {
 
     return (
         <>
-            <SiteHeader />
+            <Layout>
             <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
                 <Card className="w-full max-w-xl shadow-xl">
                 <CardHeader>
@@ -112,7 +113,7 @@ export default function ContactPage() {
                 </div>
             </Card>
         </div>
-        <SiteFooter />
+        </Layout>
         </>
     );
 }

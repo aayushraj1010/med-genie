@@ -293,11 +293,7 @@ export default function AboutPage() {
                 
             </div>
         </div>
-<<<<<<< HEAD
         </Layout>
-=======
-        <SiteFooter />
-        </>
->>>>>>> upstream/main
+
     );
 }
