@@ -165,7 +165,13 @@ export default function RootLayout({
             </AOSProvider>
           </AuthProvider>
         </ThemeProvider>
+        <BackToTopButton />
       </body>
     </html>
   );
 }
+
+
+import BackToTopButton from '@/components/BackToTopButton';
+
+
