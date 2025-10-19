@@ -14,6 +14,7 @@ import FAQs from "@/components/landing_page/FAQ";
 import Footer from "@/components/landing_page/Footer";
 import ContactSection from "@/components/landing_page/ContactSection";
 import Preloader from "@/components/Preloader";
+import Layout from "@/components/layout";
 
 export default function App(){
    useEffect(() => {
@@ -29,13 +30,13 @@ export default function App(){
   return (<>
   <Preloader />
   <main>
-   <Navbar/>
+   <Layout>
     <Hero/>
     <FeatureSection/>
     <PresenceBoostGuide/>
     <FAQs/>
-  <ContactSection />
-    <Footer/>
+    </Layout>
+
     </main>
   </>)
 }

@@ -35,7 +35,7 @@ export default function AboutPage() {
             <Navbar />
             <div className="container mx-auto px-4 py-8 space-y-8 mt-24">
                 {/* Hero Section */}
-                <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+                <Card className="mt-13 relative overflow-hidden border-0 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
                     <CardHeader className="text-center pb-8">
                         <div className="flex items-center justify-center mb-4">
                             <div className="p-3 rounded-full bg-primary/10 border-2 border-primary/20">
@@ -290,10 +290,11 @@ export default function AboutPage() {
                         </div>
                     </CardContent>
                 </Card>
+                
             </div>
             <Footer />
         </div>
-        <SiteFooter />
-        </>
+        </Layout>
+
     );
 }
