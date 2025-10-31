@@ -182,3 +182,15 @@ model SecurityEvent {
   @@index([ipAddress])
   @@index([resolved])
 }
+// prisma/schema.prisma
+// Add this model to your existing schema
+
+model NewsletterSubscription {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  active    Boolean  @default(true)
+
+  @@map("newsletter_subscriptions")
+}
