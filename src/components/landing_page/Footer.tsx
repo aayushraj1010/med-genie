@@ -139,7 +139,7 @@ const Footer = () => {
             <ul className="space-y-3 text-sm text-white/80">
               <li>
                 <a
-                  href="/privacypolicy.html"
+                  href="/privacy-policy"
                   className="hover:text-white transition-colors"
                 >
                   Privacy Policy
