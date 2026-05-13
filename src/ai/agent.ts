@@ -12,7 +12,7 @@ const memory = new MemorySaver();
 const llm = new ChatGoogleGenerativeAI({
   model: "gemini-1.5-flash",
   temperature: 0.7,
-  apiKey: process.env.GEMINI_API_KEY,  // Ensure this is in .env.local
+  apiKey: process.env.GOOGLE_API_KEY,  // Ensure this is in .env.local
 });
 
 // Lazy-load the agent (avoids top-level await issues)
