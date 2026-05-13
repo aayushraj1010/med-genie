@@ -38,19 +38,35 @@ export default function Hero() {
           Privacy-first, accessible anywhere, anytime.
         </p>
 
-        <a data-aos="fade-up"
-          href="/login"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ backgroundColor: brandColor }}
-          className="text-black text-[21px] font-medium rounded-[7px]
-            px-[28px] py-[14px] w-[250px] h-[53px] flex justify-center items-center gap-[9px]
-            max-[768px]:text-[16px] max-[768px]:px-[16px] max-[768px]:py-[10px]
-            max-[768px]:w-auto max-[768px]:h-auto min-w-[200px] whitespace-nowrap
-            hover:scale-105 active:scale-95 transition-transform"
-        >
-          Try MedGenie
-        </a>
+        <div data-aos="fade-up" className="flex gap-[16px] flex-wrap justify-center">
+          <a
+            href="/login"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ backgroundColor: brandColor }}
+            className="text-black text-[21px] font-medium rounded-[7px]
+              px-[28px] py-[14px] w-[250px] h-[53px] flex justify-center items-center gap-[9px]
+              max-[768px]:text-[16px] max-[768px]:px-[16px] max-[768px]:py-[10px]
+              max-[768px]:w-auto max-[768px]:h-auto min-w-[200px] whitespace-nowrap
+              hover:scale-105 active:scale-95 transition-transform"
+          >
+            Try MedGenie
+          </a>
+          <a
+            href="/sign-up"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ borderColor: brandColor, color: brandColor }}
+            className="text-[21px] font-medium rounded-[7px]
+              px-[28px] py-[14px] w-[250px] h-[53px] flex justify-center items-center gap-[9px]
+              border-2 bg-transparent
+              max-[768px]:text-[16px] max-[768px]:px-[16px] max-[768px]:py-[10px]
+              max-[768px]:w-auto max-[768px]:h-auto min-w-[200px] whitespace-nowrap
+              hover:scale-105 active:scale-95 transition-transform"
+          >
+            Create Account
+          </a>
+        </div>
       </div>
 
       <div data-aos="fade-up"
