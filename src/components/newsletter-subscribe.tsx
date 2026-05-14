@@ -56,7 +56,7 @@ export function NewsletterSubscribe() {
         <Button 
           type="submit" 
           disabled={status === "loading"}
-          className="whitespace-nowrap bg-white text-sky-600 hover:bg-white/90 hover:text-sky-700 border border-white"
+className="whitespace-nowrap bg-white text-sky-700 hover:bg-white/90 hover:text-sky-800 border border-white"
         >
           {status === "loading" ? (
             <>

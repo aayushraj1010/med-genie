@@ -28,9 +28,9 @@ export function SiteFooter() {
             <span>© {new Date().getFullYear()}</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link href="mailto:demo@gmail.com">
-              <Mail className="h-4 w-4" />
-            </Link>
+            <Link href="mailto:demo@gmail.com" aria-label="Send email to demo@gmail.com">
+  <Mail className="h-4 w-4" aria-hidden="true" />
+</Link>
             <Link href="/contact" className="hover:underline hover:text-primary transition-colors flex items-center gap-1">
               Contact
             </Link>

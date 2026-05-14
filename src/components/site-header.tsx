@@ -6,7 +6,7 @@ import { UserMenu } from "@/components/UserMenu";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from '@/components/ui/button';
 import { UserPlus, LogIn } from "lucide-react";
-
+import { SOSButton } from './sos-button';
 export function SiteHeader() {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -21,8 +21,7 @@ export function SiteHeader() {
           </Link>
 
           {/* Navigation Links */}
-          <nav className="flex items-center space-x-4">
-            <Link href="/about" className="hover:underline">About</Link>
+<nav className="flex items-center space-x-4" aria-label="Main navigation">            <Link href="/about" className="hover:underline">About</Link>
             <Link href="/contact" className="hover:underline">Contact</Link>
             <Link href="/health-vault" className="hover:underline">Health Vault</Link>
             <Link href="/specialist-recommendation" className="hover:underline">Find Specialist</Link>
@@ -34,6 +33,7 @@ export function SiteHeader() {
 
         {/* Theme Toggle and Authentication */}
         <div className="flex items-center space-x-2">
+          <SOSButton />
           <ThemeToggle />
           
           {!isLoading && (
@@ -55,20 +55,21 @@ export function SiteHeader() {
                 </>
               ) : (
                 <>
-                  <Link 
-                    href="/login" 
-                    className="p-2 hover:text-primary transition-colors"
-                    title="Login"
-                  >
-                    <LogIn className="h-5 w-5" />
-                  </Link>
-                  <Link 
-                    href="/sign-up" 
-                    className="p-2 hover:text-primary transition-colors"
-                    title="Register"
-                  >
-                    <UserPlus className="h-5 w-5" />
-                  </Link>
+               <Link 
+  href="/login" 
+  className="p-2 hover:text-primary transition-colors"
+  aria-label="Login to your account"  // ADD THIS
+>
+  <LogIn className="h-5 w-5" aria-hidden="true" />  // ADD aria-hidden
+</Link>
+                <Link 
+  href="/sign-up" 
+  className="p-2 hover:text-primary transition-colors"
+  aria-label="Create a new account"  // ADD THIS
+>
+  <UserPlus className="h-5 w-5" aria-hidden="true" />  // ADD aria-hidden
+</Link>
+
                 </>
               )}
             </>

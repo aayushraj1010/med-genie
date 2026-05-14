@@ -433,7 +433,8 @@ function HomePage() {
           </aside>
         )}
 
-        <main className="flex flex-col flex-1 p-4 overflow-hidden" role="main" aria-label="Chat with Med Genie">
+       <main id="main-content" tabIndex={-1} className="flex flex-col flex-1 p-4 overflow-hidden" role="main" aria-label="Chat with Med Genie">
+
           <header className="flex justify-between mb-4 shrink-0">
             <div className="flex space-x-2">
               {isMobile ? (
@@ -467,14 +468,19 @@ function HomePage() {
             </Button>
           </header>
 
-          <ScrollArea
-            className="flex-grow min-h-0 mb-4 rounded-lg"
-            viewportRef={viewportRef}
-            role="log"
-            aria-label="Chat conversation"
-          >
-            <div className="space-y-4 max-w-3xl mx-auto pr-4">
-              {/* NOTE: The QuickReplyGrid is no longer here */}
+         <ScrollArea
+  className="flex-grow min-h-0 mb-4 rounded-lg"
+  viewportRef={viewportRef}
+  role="log"
+  aria-live="polite"
+  aria-label="Chat conversation"
+  aria-atomic="false"
+>
+<div className="space-y-4 max-w-3xl mx-auto pr-4">
+  <div role="note" aria-label="AI disclaimer" className="flex items-start gap-2 rounded-lg border border-yellow-500/40 bg-yellow-500/10 px-4 py-2 text-xs text-yellow-700 dark:text-yellow-300">
+    <span>⚠️</span>
+    <span>MedGenie is an AI assistant, not a doctor. Always consult a healthcare professional.</span>
+  </div>              {/* NOTE: The QuickReplyGrid is no longer here */}
               {messages.map((msg) => (
                 <ChatMessageItem key={msg.id} message={msg} onFeedback={handleFeedback} />
               ))}
@@ -489,22 +495,28 @@ function HomePage() {
 
               <form onSubmit={handleFormSubmit} className="relative">
                 <div className="relative">
-                  <Input
-                    value={input}
-                    onChange={(e) => handleInputChange(e.target.value)}
-                    placeholder="Ask anything about your health..."
-                    disabled={isLoading}
-                    className={`pr-24 ${inputError ? 'border-red-500 focus:border-red-500' : ''}`}
-                  />
+                <Input
+  value={input}
+  onChange={(e) => handleInputChange(e.target.value)}
+  placeholder="Ask anything about your health..."
+  disabled={isLoading}
+  aria-label="Type your health question"
+  aria-describedby={inputError ? "input-error" : undefined}
+  className={`pr-24 ${inputError ? 'border-red-500 focus:border-red-500' : ''}`}
+/>
                   {inputError && (
-                    <div className="absolute -bottom-6 left-0 text-red-500 text-xs">
+                   <div id="input-error" role="alert" className="absolute -bottom-6 left-0 text-red-500 text-xs">
+
                       ⚠️ {inputError}
                     </div>
                   )}
                 </div>
                 <VoiceSearch setInput={setInput} />
-                <label className="cursor-pointer flex items-center justify-center h-8 w-8 bg-muted rounded absolute right-20 top-1/2 -translate-y-1/2">
-                  <Camera className="h-4 w-4 text-muted-foreground" />
+              <label
+  aria-label="Upload medical image"
+  className="cursor-pointer flex items-center justify-center h-8 w-8 bg-muted rounded absolute right-20 top-1/2 -translate-y-1/2"
+>
+  <Camera className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <input
                     type="file"
                     accept="image/*"
