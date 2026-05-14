@@ -44,7 +44,7 @@ export default function FAQs() {
   };
 
   return (
-    <div id="faq" className="w-full h-auto bg-[#090909] py-16 px-[6%] fade-in">
+    <div id="faq" className="min-h-screen flex flex-col justify-center w-full h-auto bg-[#090909] py-16 px-[6%] fade-in">
       <h1 data-aos="fade-up" className="text-[32px] text-center text-[#FBFBFB] font-normal leading-[120%] mb-12">
         Frequently Asked Questions
       </h1>

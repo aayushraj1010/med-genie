@@ -47,7 +47,7 @@ const steps = [
 
 const PresenceBoostGuide = () => {
   return (
-    <div data-aos="fade-up" className="relative z-10 w-full px-6 py-16 bg-black/10 border border-[#3FB5F440] rounded-2xl backdrop-blur-md">
+    <div data-aos="fade-up" className="min-h-screen flex flex-col justify-center relative z-10 w-full px-6 py-16 bg-black/10 border border-[#3FB5F440] rounded-2xl backdrop-blur-md">
       <div className="max-w-5xl mx-auto text-center mb-12">
         <h2 className="text-4xl font-bold mb-4 text-white">
           Your Guide to MedGenie
