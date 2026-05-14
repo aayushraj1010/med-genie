@@ -13,7 +13,7 @@ const montserrat = Montserrat({
 
 const links = [
   { name: "About Us", href: "/about" },
-  { name: "Services", href: "/services" },
+  { name: "Services", href: "#features" },
   { name: "Our Process", href: "#process" },
   { name: "Find Specialist", href: "/specialist-recommendation" },
   { name: "Contact Us", href: "#contact" },
@@ -70,11 +70,10 @@ export default function Navbar() {
 
       {/* Mobile Menu (Tailwind Animation) */}
       <div
-        className={`absolute top-full left-0 w-full bg-black/90 rounded-[10px] py-4 px-6 flex flex-col gap-4 md:hidden z-[99] transition-all duration-300 ease-in-out ${
-          menuOpen
+        className={`absolute top-full left-0 w-full bg-black/90 rounded-[10px] py-4 px-6 flex flex-col gap-4 md:hidden z-[99] transition-all duration-300 ease-in-out ${menuOpen
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 -translate-y-2 pointer-events-none"
-        }`}
+          }`}
       >
         {links.map(({ name, href }, i) => (
           <Link

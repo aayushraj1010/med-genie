@@ -31,7 +31,7 @@ const steps = [
   {
     title: "Privacy First",
     description:
-      "We don’t store your data. Your conversations stay private between you and MedGenie.",
+      "We don't store your data. Your conversations stay private between you and MedGenie.",
   },
   {
     title: "Upcoming: AI Diagnosis Engine",
@@ -47,7 +47,11 @@ const steps = [
 
 const PresenceBoostGuide = () => {
   return (
-    <div data-aos="fade-up" className="relative z-10 w-full px-6 py-16 bg-black/10 border border-[#3FB5F440] rounded-2xl backdrop-blur-md">
+    <section
+      id="process"
+      data-aos="fade-up"
+      className="scroll-mt-[100px] relative z-10 w-full px-6 py-16 bg-black/10 border border-[#3FB5F440] rounded-2xl backdrop-blur-md"
+    >
       <div className="max-w-5xl mx-auto text-center mb-12">
         <h2 className="text-4xl font-bold mb-4 text-white">
           Your Guide to MedGenie
@@ -62,7 +66,7 @@ const PresenceBoostGuide = () => {
         {steps.map((step, index) => (
           <div
             key={index}
-            className={`bg-white/5 rounded-2xl p-6 shadow-lg backdrop-blur-lg border border-white/10 hover:shadow-xl hover:border-[#3FB5F4] transition duration-300 animate-fadeInUp`}
+            className="bg-white/5 rounded-2xl p-6 shadow-lg backdrop-blur-lg border border-white/10 hover:shadow-xl hover:border-[#3FB5F4] transition duration-300 animate-fadeInUp"
             style={{
               animationDelay: `${index * 0.15}s`,
               animationFillMode: "both",
@@ -82,7 +86,7 @@ const PresenceBoostGuide = () => {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 
