@@ -24,6 +24,8 @@ import { ChatHistorySidebar } from '@/components/chat-history-sidebar';
 import { ChatHistoryButton } from '@/components/chat-history-button';
 import { QuickReplyGrid } from '@/components/QuickReplyGrid';
 import { InputSanitizer } from '@/lib/input-sanitizer';
+import { MedicalIntake, type MedicalIntakeData } from '@/components/medical-intake';
+import { SOSButton } from '@/components/sos-button';
 
 const VoiceSearch = dynamic(() => import('@/components/VoiceSearch'), {
   ssr: false,
@@ -31,7 +33,7 @@ const VoiceSearch = dynamic(() => import('@/components/VoiceSearch'), {
 
 const initialWelcomeMessage: ChatMessage = {
   id: 'welcome-message',
-  text: "Hello! I'm Med Genie, your AI health assistant. How can I help you today? For more personalized answers, you can provide some optional health information.",
+  text: "Hello! I'm Med Genie, your AI health assistant. For personalized answers, please complete your health profile.",
   sender: 'ai',
   timestamp: Date.now(),
 };
@@ -52,6 +54,9 @@ function HomePage() {
   const [input, setInput] = useState('');
   const [inputError, setInputError] = useState<string>('');
   const [showHistorySidebar, setShowHistorySidebar] = useState(false);
+  const [showMedicalIntake, setShowMedicalIntake] = useState(true);
+  const [medicalIntakeData, setMedicalIntakeData] = useState<MedicalIntakeData | null>(null);
+  const [hasCompletedIntake, setHasCompletedIntake] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -138,6 +143,20 @@ function HomePage() {
       setMessages((prev) => [...prev, aiLoadingMessage]);
 
       try {
+        // Check for emergency keywords first
+        if (/seizure|convulsions|chest pain|can\'t breathe|severe bleeding|allergic reaction|anaphylaxis|overdose|heart attack|stroke|unresponsive|not breathing/i.test(question)) {
+          const aiEmergencyMessage: ChatMessage = {
+            id: `ai-emergency-${Date.now()}`,
+            text: `⚠️ This sounds serious. Please use the SOS button (🆘 bottom right) to alert emergency services, or call 911 immediately.\n\nFor immediate help:\n- 🏥 Find nearby hospitals: "hospitals near [location]"\n- 📞 Call 911 for life-threatening emergencies\n\nDo not wait - your safety is the priority.`,
+            sender: 'ai',
+            timestamp: Date.now(),
+          };
+          setMessages((prev) => [...prev.filter((msg) => msg.id !== aiLoadingMessage.id), aiEmergencyMessage]);
+          addMessage(activeSessionId, aiEmergencyMessage);
+          setIsLoading(false);
+          return;
+        }
+
         if (/hospital|emergency/i.test(question)) {
           const locationMatch = question.match(/(?:in|near|nearby|around)\s+([A-Za-z ]+)/i);
           const location = locationMatch?.[1]?.trim();
@@ -250,6 +269,42 @@ function HomePage() {
     }
   }, [isInitialized, createSession]);
 
+  // Medical Intake handlers
+  const handleIntakeComplete = (data: MedicalIntakeData) => {
+    setMedicalIntakeData(data);
+    setShowMedicalIntake(false);
+    setHasCompletedIntake(true);
+    
+    // Convert intake data to user profile
+    const conditionsText = data.conditions.length > 0 
+      ? data.conditions.filter((c: string) => c !== 'None of the above').join(', ') || 'None'
+      : 'None';
+    
+    const profileData: UserProfile = {
+      medicalHistory: conditionsText,
+      lifestyle: data.lifestyle,
+      symptoms: data.currentMedications || '',
+    };
+    setUserProfile(profileData);
+    
+    // Show welcome message after intake
+    const welcomeWithIntakeMsg: ChatMessage = {
+      id: `system-welcome-${Date.now()}`,
+      text: "Thanks! I've saved your health information. This helps me give you better personalized advice. How can I help you today?",
+      sender: 'ai',
+      timestamp: Date.now(),
+    };
+    
+    if (activeSessionId) {
+      addMessage(activeSessionId, welcomeWithIntakeMsg);
+    }
+    setMessages((prev) => [...prev, welcomeWithIntakeMsg]);
+  };
+
+  const handleIntakeSkip = () => {
+    setShowMedicalIntake(false);
+  };
+
   const handleInputChange = (value: string) => {
     // Clear any previous errors
     setInputError("");
@@ -305,6 +360,9 @@ function HomePage() {
       const oldProfile = { ...userProfile };
       setUserProfile(newProfileData);
       setIsProfileModalOpen(false);
+      // Mark intake as completed
+      setHasCompletedIntake(true);
+      setShowMedicalIntake(false);
       if (!activeSessionId) return;
 
       if (lastUserQuestionForFollowUp) {
@@ -474,7 +532,15 @@ function HomePage() {
             aria-label="Chat conversation"
           >
             <div className="space-y-4 max-w-3xl mx-auto pr-4">
-              {/* NOTE: The QuickReplyGrid is no longer here */}
+              {/* Medical Intake - Show on first visit */}
+              {showMedicalIntake && (
+                <MedicalIntake 
+                  onComplete={handleIntakeComplete}
+                  onSkip={handleIntakeSkip}
+                />
+              )}
+              
+              {/* Chat Messages */}
               {messages.map((msg) => (
                 <ChatMessageItem key={msg.id} message={msg} onFeedback={handleFeedback} />
               ))}
@@ -575,6 +641,17 @@ function HomePage() {
         onSave={handleSaveProfile}
         currentProfile={userProfile}
         aiSuggestedKey={currentAiFollowUpKey}
+      />
+      
+      {/* SOS Emergency Button - Always visible */}
+      <SOSButton 
+        emergencyContact={medicalIntakeData?.emergencyContact}
+        onAlertTriggered={(reason) => {
+          toast({ 
+            title: '🚨 Emergency Alert', 
+            description: 'Emergency services have been notified.' 
+          });
+        }}
       />
     </div>
   );
