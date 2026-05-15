@@ -24,6 +24,7 @@ import { ChatHistorySidebar } from '@/components/chat-history-sidebar';
 import { ChatHistoryButton } from '@/components/chat-history-button';
 import { QuickReplyGrid } from '@/components/QuickReplyGrid';
 import { InputSanitizer } from '@/lib/input-sanitizer';
+import { classifySymptomSeverity } from '@/lib/symptom-severity';
 
 const VoiceSearch = dynamic(() => import('@/components/VoiceSearch'), {
   ssr: false,
@@ -184,12 +185,34 @@ function HomePage() {
             .slice(-10)
             .map((msg) => `${msg.sender === 'user' ? 'User' : 'Med Genie'}: ${msg.text}`)
             .join('\n');
+        const severityCheck = classifySymptomSeverity(
+          [question, userProfile.symptoms].filter(Boolean).join(' ')
+        );
+
+        if (severityCheck.severity === 'severe' && severityCheck.redFlagSymptoms.length > 0) {
+          const urgentMessage: ChatMessage = {
+            id: `ai-urgent-${Date.now()}`,
+            text:
+              `I noticed possible urgent warning signs: ${severityCheck.redFlagSymptoms.join(', ')}. ` +
+              'Please seek immediate medical care or contact emergency services right away. ' +
+              'Med Genie can provide general information, but urgent symptoms should be evaluated by a licensed professional now.',
+            sender: 'ai',
+            timestamp: Date.now(),
+          };
+          setMessages((prev) => [...prev.filter((msg) => msg.id !== aiLoadingMessage.id), urgentMessage]);
+          addMessage(activeSessionId, urgentMessage);
+          setIsLoading(false);
+          return;
+        }
+
         const input: PersonalizedHealthQuestionAnsweringInput = {
           question,
           medicalHistory: userProfile.medicalHistory,
           lifestyle: userProfile.lifestyle,
           symptoms: userProfile.symptoms,
           conversationHistory: formatConversationHistory(messages),
+          symptomSeverity: severityCheck.severity,
+          redFlagSymptoms: severityCheck.redFlagSymptoms,
         };
         const result: PersonalizedHealthQuestionAnsweringOutput = await personalizedHealthQuestionAnswering(input);
 
@@ -308,9 +331,14 @@ function HomePage() {
       if (!activeSessionId) return;
 
       if (lastUserQuestionForFollowUp) {
+        const severityCheck = classifySymptomSeverity(
+          [lastUserQuestionForFollowUp, newProfileData.symptoms].filter(Boolean).join(' ')
+        );
         const updatedInput: PersonalizedHealthQuestionAnsweringInput = {
           question: lastUserQuestionForFollowUp,
           ...newProfileData,
+          symptomSeverity: severityCheck.severity,
+          redFlagSymptoms: severityCheck.redFlagSymptoms,
         };
         const profileUpdatedMessage: ChatMessage = {
           id: `system-profile-updated-${Date.now()}`,
@@ -333,6 +361,21 @@ function HomePage() {
         setIsLoading(true);
 
         try {
+          if (severityCheck.severity === 'severe' && severityCheck.redFlagSymptoms.length > 0) {
+            setMessages((prev) => prev.filter((msg) => msg.id !== loadingId));
+            const urgentMessage: ChatMessage = {
+              id: `ai-refined-urgent-${Date.now()}`,
+              text:
+                `Your updated information includes possible urgent warning signs: ${severityCheck.redFlagSymptoms.join(', ')}. ` +
+                'Please seek immediate medical attention or contact emergency services right away.',
+              sender: 'ai',
+              timestamp: Date.now(),
+            };
+            setMessages((prev) => [...prev, urgentMessage]);
+            addMessage(activeSessionId, urgentMessage);
+            return;
+          }
+
           const result = await personalizedHealthQuestionAnswering(updatedInput);
           setMessages((prev) => prev.filter((msg) => msg.id !== loadingId));
           const refinedResponseMessage: ChatMessage = {

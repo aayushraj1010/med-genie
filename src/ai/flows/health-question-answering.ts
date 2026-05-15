@@ -40,6 +40,12 @@ export async function healthQuestionAnswering(
   return healthQuestionAnsweringFlow(input);
 }
 
+const HEALTH_QUESTION_FALLBACK: HealthQuestionAnsweringOutput = {
+  answer:
+    "I'm sorry, I ran into a temporary issue while processing your question. Please try again in a moment.",
+  additionalQuestions: [],
+};
+
 const needsMoreInformation = ai.defineTool({
   name: 'needsMoreInformation',
   description: 'Use this to ask the user to provide more information to provide a better answer.',
@@ -89,7 +95,27 @@ const healthQuestionAnsweringFlow = ai.defineFlow(
     outputSchema: HealthQuestionAnsweringOutputSchema,
   },
   async input => {
-    const {output} = await healthQuestionAnsweringPrompt(input);
-    return output!;
+    try {
+      const {output} = await healthQuestionAnsweringPrompt(input);
+
+      if (!output?.answer?.trim()) {
+        console.error('HealthQuestionAnsweringFlow: Missing or invalid model output.', {
+          input,
+          output,
+        });
+        return HEALTH_QUESTION_FALLBACK;
+      }
+
+      return {
+        answer: output.answer,
+        additionalQuestions: output.additionalQuestions ?? [],
+      };
+    } catch (error) {
+      console.error('HealthQuestionAnsweringFlow: Runtime failure.', {
+        input,
+        error,
+      });
+      return HEALTH_QUESTION_FALLBACK;
+    }
   }
 );
