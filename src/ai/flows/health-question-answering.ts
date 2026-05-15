@@ -89,7 +89,33 @@ const healthQuestionAnsweringFlow = ai.defineFlow(
     outputSchema: HealthQuestionAnsweringOutputSchema,
   },
   async input => {
-    const {output} = await healthQuestionAnsweringPrompt(input);
-    return output!;
+    try {
+      const { output } = await healthQuestionAnsweringPrompt(input);
+
+      if (!output) {
+        console.error(
+          'Health Question Answering Flow: No valid output received from AI model.'
+        );
+
+        return {
+          answer:
+            'I’m sorry, I could not generate a response at the moment. Please try again later.',
+          additionalQuestions: [],
+        };
+      }
+
+      return output;
+    } catch (error) {
+      console.error(
+        'Health Question Answering Flow Error:',
+        error
+      );
+
+      return {
+        answer:
+          'I’m sorry, an unexpected error occurred while processing your request. Please try again later.',
+        additionalQuestions: [],
+      };
+    }
   }
 );
