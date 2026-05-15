@@ -46,6 +46,12 @@ export async function personalizedHealthQuestionAnswering(
   return personalizedHealthQuestionAnsweringFlow(input);
 }
 
+const PERSONALIZED_HEALTH_FALLBACK: PersonalizedHealthQuestionAnsweringOutput = {
+  answer:
+    "I'm sorry, I encountered an issue processing your request. Please try again.",
+  followUpQuestion: undefined,
+};
+
 const prompt = ai.definePrompt({
   name: 'personalizedHealthQuestionAnsweringPrompt',
   input: {schema: PersonalizedHealthQuestionAnsweringInputSchema},
@@ -107,22 +113,30 @@ const personalizedHealthQuestionAnsweringFlow = ai.defineFlow(
     outputSchema: PersonalizedHealthQuestionAnsweringOutputSchema,
   },
   async input => {
-    const result = await prompt(input);
+    try {
+      const result = await prompt(input);
 
-    if (!result.output) {
-      // This case should be rare if the LLM adheres to the prompt and schema.
-      // Genkit's validation against outputSchema would likely throw an error before this.
-      console.error('Personalized Health QA Flow: No valid output from AI model matching the expected schema.', result);
-      // Fallback to a generic error response that fits the schema
+      if (!result.output?.answer?.trim()) {
+        console.error(
+          'Personalized Health QA Flow: No valid output from AI model matching expected schema.',
+          {
+            input,
+            result,
+          }
+        );
+        return PERSONALIZED_HEALTH_FALLBACK;
+      }
+
       return {
-        answer: "I'm sorry, I encountered an issue processing your request. Please try again.",
-        followUpQuestion: undefined,
+        answer: result.output.answer,
+        followUpQuestion: result.output.followUpQuestion?.trim() || undefined,
       };
+    } catch (error) {
+      console.error('Personalized Health QA Flow: Runtime failure.', {
+        input,
+        error,
+      });
+      return PERSONALIZED_HEALTH_FALLBACK;
     }
-    
-    // `result.output` is guaranteed by Genkit (if no error during prompt execution) 
-    // to conform to PersonalizedHealthQuestionAnsweringOutputSchema.
-    // So, result.output.answer exists, and result.output.followUpQuestion is optional.
-    return result.output;
   }
 );

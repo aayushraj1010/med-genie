@@ -48,6 +48,24 @@ export async function specialistRecommendation(
   return specialistRecommendationFlow(input);
 }
 
+const SPECIALIST_RECOMMENDATION_FALLBACK: SpecialistRecommendationOutput = {
+  recommendations: [
+    {
+      specialty: 'Primary Care Physician',
+      description: 'General doctor for initial evaluation and next-step guidance.',
+      urgency: 'medium',
+      reason:
+        'Specialist recommendation service had a temporary issue, so primary care is safest general next step.',
+      additionalInfo:
+        'Seek urgent or emergency care immediately if symptoms are severe, sudden, or worsening.',
+    },
+  ],
+  disclaimers: [
+    'This is general information, not a diagnosis.',
+    'Please consult a licensed healthcare professional for medical advice.',
+  ],
+};
+
 const prompt = ai.definePrompt({
   name: 'specialistRecommendationPrompt',
   input: { schema: SpecialistRecommendationInputSchema },
@@ -113,7 +131,27 @@ const specialistRecommendationFlow = ai.defineFlow(
     outputSchema: SpecialistRecommendationOutputSchema,
   },
   async input => {
-    const { output } = await prompt(input);
-    return output!;
+    try {
+      const { output } = await prompt(input);
+
+      if (!output?.recommendations?.length) {
+        console.error('SpecialistRecommendationFlow: Missing or invalid model output.', {
+          input,
+          output,
+        });
+        return SPECIALIST_RECOMMENDATION_FALLBACK;
+      }
+
+      return {
+        recommendations: output.recommendations,
+        disclaimers: output.disclaimers ?? SPECIALIST_RECOMMENDATION_FALLBACK.disclaimers,
+      };
+    } catch (error) {
+      console.error('SpecialistRecommendationFlow: Runtime failure.', {
+        input,
+        error,
+      });
+      return SPECIALIST_RECOMMENDATION_FALLBACK;
+    }
   }
 );
