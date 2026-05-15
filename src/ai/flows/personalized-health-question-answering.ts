@@ -24,6 +24,8 @@ const PersonalizedHealthQuestionAnsweringInputSchema = z.object({
   lifestyle: z.string().optional().describe('The user\u0027s lifestyle information.'),
   symptoms: z.string().optional().describe('The user\u0027s symptoms.'),
   conversationHistory: z.string().optional().describe('Previous messages in the conversation for context.'),
+  symptomSeverity: z.enum(['mild', 'moderate', 'severe']).optional().describe('Rule-based symptom severity label used as extra context.'),
+  redFlagSymptoms: z.array(z.string()).optional().describe('Detected emergency or red-flag symptoms from the rule-based precheck.'),
 });
 export type PersonalizedHealthQuestionAnsweringInput = z.infer<
   typeof PersonalizedHealthQuestionAnsweringInputSchema
@@ -92,6 +94,8 @@ Medical History: {{{medicalHistory}}}
 Lifestyle: {{{lifestyle}}}
 Symptoms: {{{symptoms}}}
 Previous Conversation: {{{conversationHistory}}}
+Rule-Based Severity: {{{symptomSeverity}}}
+Detected Red Flags: {{{redFlagSymptoms}}}
 
 Based on this, decide if you can answer directly or if a follow-up question is necessary, and then generate the JSON response as described.
 You should avoid providing medical advice or diagnoses. Instead, provide general information. If you are unsure, politely suggest that the user consult a healthcare professional.
@@ -102,6 +106,8 @@ Medical History: {{{medicalHistory}}}
 Lifestyle: {{{lifestyle}}}
 Symptoms: {{{symptoms}}}
 Previous Conversation: {{{conversationHistory}}}
+Rule-Based Severity: {{{symptomSeverity}}}
+Detected Red Flags: {{{redFlagSymptoms}}}
 
 Generate your JSON response:`,
 });
