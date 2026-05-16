@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useRef } from "react";
 import {
   User,
   Mail,
@@ -27,6 +27,16 @@ function MedGenieRegisterForm() {
   const [error, setError] = useState("");
   const [isFromLogin, setIsFromLogin] = useState(false);
   const { register, isLoading } = useAuth();
+  const errorContainerRef = useRef<HTMLDivElement>(null);
+  // 2. ADD THIS EFFECT:
+  useEffect(() => {
+    if (error) {
+      errorContainerRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [error]);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -92,8 +102,8 @@ function MedGenieRegisterForm() {
 
     if (password !== confirmPassword) {
       setError("Passwords do not match!");
-      return;
-    }
+  return;
+}
 
     const result = await register(username, email, password, confirmPassword);
 
@@ -145,10 +155,10 @@ function MedGenieRegisterForm() {
         )}
 
         {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
-            <p className="text-red-400 text-sm text-center">{error}</p>
-          </div>
-        )}
+  <div ref={errorContainerRef} className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+    <p className="text-red-400 text-sm text-center">{error}</p>
+  </div>
+)}
 
         <form onSubmit={handleRegister} className="space-y-6">
           {/* Username */}
