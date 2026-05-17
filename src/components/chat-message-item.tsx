@@ -3,6 +3,7 @@
 import { UserCircle2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import type { ChatMessage } from "@/lib/types";
 import { FeedbackButtons } from "./feedback-buttons";
@@ -59,13 +60,19 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
         <CardContent className="p-3">
           {message.isLoading ? (
             <div
-              className="flex items-center space-x-2"
+              className="flex flex-col space-y-3 min-w-[200px] sm:min-w-[250px] py-1"
               role="status"
               aria-label="Med Genie is thinking"
             >
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-75"></div>
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-150"></div>
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-300"></div>
+              <div className="flex items-center space-x-2 text-primary/80 mb-1">
+                <div className="h-3.5 w-3.5 rounded-full border-2 border-current border-t-transparent animate-spin"></div>
+                <span className="text-xs font-semibold animate-pulse uppercase tracking-wider">Generating Response</span>
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full bg-primary/10 rounded-sm" />
+                <Skeleton className="h-4 w-[90%] bg-primary/10 rounded-sm" />
+                <Skeleton className="h-4 w-[75%] bg-primary/10 rounded-sm" />
+              </div>
               <span className="sr-only">
                 Med Genie is processing your question
               </span>

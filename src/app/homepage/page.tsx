@@ -229,13 +229,19 @@ function HomePage() {
         setMessages((prev) => prev.filter((msg) => msg.id !== aiLoadingMessage.id));
         const aiErrorMessage: ChatMessage = {
           id: `ai-error-${Date.now()}`,
-          text: '😔 Sorry, I encountered an error. Please try again later.',
+          text: '😔 Sorry, I encountered an error generating the response. Please try again later.',
           sender: 'ai',
           timestamp: Date.now(),
         };
         setMessages((prev) => [...prev, aiErrorMessage]);
         addMessage(activeSessionId, aiErrorMessage);
-        toast({ variant: 'destructive', title: 'Error', description: 'Failed to get response from AI.' });
+        
+        const errorDetails = error instanceof Error ? error.message : "Unknown server error.";
+        toast({ 
+          variant: 'destructive', 
+          title: 'AI Generation Failed', 
+          description: `Med Genie could not complete the request. Details: ${errorDetails}` 
+        });
       } finally {
         setIsLoading(false);
       }
@@ -359,13 +365,19 @@ function HomePage() {
           setMessages((prev) => prev.filter((msg) => msg.id !== loadingId));
           const errorMessage: ChatMessage = {
             id: `ai-error-refine-${Date.now()}`,
-            text: '😔 Error refining the answer. Try again later.',
+            text: '😔 Error refining the answer. Please try again later.',
             sender: 'ai',
             timestamp: Date.now(),
           };
           setMessages((prev) => [...prev, errorMessage]);
           addMessage(activeSessionId, errorMessage);
-          toast({ variant: 'destructive', title: 'Refinement Error', description: 'AI failed to refine the response.' });
+          
+          const errorDetails = error instanceof Error ? error.message : "Unknown refinement error.";
+          toast({ 
+            variant: 'destructive', 
+            title: 'Profile Refinement Error', 
+            description: `Med Genie failed to refine the response with your new profile. Details: ${errorDetails}` 
+          });
         } finally {
           setIsLoading(false);
           setLastUserQuestionForFollowUp(undefined);

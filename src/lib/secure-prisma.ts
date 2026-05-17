@@ -1,7 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { DatabaseSecurity, DatabaseQueryLog } from './database-security';
 
-class SecurePrismaClient extends PrismaClient {
+class SecurePrismaClient extends PrismaClient<
+    Prisma.PrismaClientOptions,
+    'query' | 'error' | 'info' | 'warn'
+> {
     constructor() {
         super({
             log: [
