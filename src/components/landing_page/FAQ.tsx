@@ -44,8 +44,11 @@ export default function FAQs() {
   };
 
   return (
-    <div id="faq" className="w-full h-auto bg-[#090909] py-16 px-[6%] fade-in">
-      <h1 data-aos="fade-up" className="text-[32px] text-center text-[#FBFBFB] font-normal leading-[120%] mb-12">
+    <div id="faq" className="scroll-mt-[100px] w-full h-auto bg-[#090909] py-16 px-[6%] fade-in">
+      <h1
+        data-aos="fade-up"
+        className="text-[32px] text-center text-[#FBFBFB] font-normal leading-[120%] mb-12"
+      >
         Frequently Asked Questions
       </h1>
 
@@ -56,12 +59,10 @@ export default function FAQs() {
           return (
             <div
               key={index}
-              className={`w-full rounded-[8px] px-6 py-4 bg-[#1a1a1a] border border-[#2C2C2C] transition-all duration-300 ease-in-out ${
-                isOpen ? "max-h-[1000px]" : "max-h-[70px] overflow-hidden"
-              }`}
+              className={`w-full rounded-[8px] px-6 py-4 bg-[#1a1a1a] border border-[#2C2C2C] transition-all duration-300 ease-in-out ${isOpen ? "max-h-[1000px]" : "max-h-[70px] overflow-hidden"
+                }`}
               style={{
-                transition:
-                  "max-height 0.4s ease-in-out, background-color 0.3s ease",
+                transition: "max-height 0.4s ease-in-out, background-color 0.3s ease",
               }}
             >
               <button
@@ -72,18 +73,16 @@ export default function FAQs() {
                   {faq.question}
                 </span>
                 <span
-                  className={`text-white transition-transform duration-300 ease-in-out ${
-                    isOpen ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`text-white transition-transform duration-300 ease-in-out ${isOpen ? "rotate-180" : "rotate-0"
+                    }`}
                 >
                   {isOpen ? <FaChevronUp /> : <FaChevronDown />}
                 </span>
               </button>
 
               <div
-                className={`text-[15px] leading-[150%] text-[#ADADAD] font-normal overflow-hidden transition-all duration-300 ease-in-out ${
-                  isOpen ? "opacity-100 pt-3" : "opacity-0 pt-0"
-                }`}
+                className={`text-[15px] leading-[150%] text-[#ADADAD] font-normal overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "opacity-100 pt-3" : "opacity-0 pt-0"
+                  }`}
               >
                 {faq.answer}
               </div>
@@ -92,7 +91,6 @@ export default function FAQs() {
         })}
       </div>
 
-      {/* Simple CSS fade-in animation for the whole section */}
       <style jsx>{`
         .fade-in {
           animation: fadeInUp 0.6s ease-out forwards;
