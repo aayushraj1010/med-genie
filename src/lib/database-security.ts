@@ -12,6 +12,7 @@ export interface DatabaseAuditLog {
     duration?: number;
     success: boolean;
     error?: string;
+    timestamp?: Date;
 }
 
 export interface DatabaseQueryLog {

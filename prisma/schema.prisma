@@ -24,6 +24,8 @@ model User {
   lockedUntil     DateTime?
   lastPasswordChange DateTime @default(now())
   passwordVersion Int      @default(1)
+  resetToken      String?  @db.VarChar(255)
+  resetTokenExpiry DateTime?
 
   // Relations
   auditLogs       AuditLog[]

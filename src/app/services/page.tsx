@@ -83,8 +83,8 @@ export default function ServicesPage() {
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <CardHeader className="relative pb-4">
                             <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-100 to-primary/20 group-hover:from-blue-300 group-hover:to-primary/10 transition-all duration-300">
-                                    <Bot className="h-8 w-8 text-primary" />
+                                <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-500/20 group-hover:from-blue-500/20 group-hover:to-blue-500/30 transition-all duration-300">
+                                    <Bot className="h-8 w-8 text-blue-600" />
                                 </div>
                                 <Badge className="bg-primary/10 text-blue-200 border-blue-100 hover:bg-primary/20">
                                     <Brain className="h-3 w-3 mr-1" />
@@ -106,8 +106,8 @@ export default function ServicesPage() {
                                 { icon: Pill, title: "Medication Lookup", desc: "Comprehensive drug information database" }
                             ].map((item, index) => (
                                 <div key={index} className="flex items-center space-x-4 p-3 rounded-xl bg-muted/30 border hover:bg-muted/50 transition-all duration-300 hover:shadow-md">
-                                    <div className="p-2 rounded-lg bg-blue-200">
-                                        <item.icon className="h-5 w-5 text-primary" />
+                                    <div className="p-2 rounded-lg bg-blue-500/10">
+                                        <item.icon className="h-5 w-5 text-blue-600" />
                                     </div>
                                     <div className="flex-1">
                                         <h4 className="font-semibold">{item.title}</h4>
@@ -294,7 +294,7 @@ export default function ServicesPage() {
                                 </Link>
                             </Button>
                             <Button variant="outline" size="lg" className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary font-semibold px-8 py-4 text-lg rounded-2xl transition-all duration-300 transform hover:-translate-y-1" asChild>
-                                <Link href="/chat">
+                                <Link href="/homepage">
                                     Try Demo
                                     <MessageSquare className="h-5 w-5 ml-2" />
                                 </Link>
