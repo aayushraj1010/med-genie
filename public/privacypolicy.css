@@ -1,144 +1,640 @@
+/* =========================================================
+   1. DESIGN SYSTEM TOKENS
+========================================================= */
+
 :root {
-      --bg-0: #0b0b0c;             /* page background (near black) */
-      --bg-1: #121214;             /* gradient stop */
-      --fg:  #f3f4f6;              /* primary text (off-white) */
-      --muted: #b5b7be;            /* muted text */
-      --card: rgba(255, 255, 255, 0.06);   /* glass panel */
-      --card-contrast: rgba(255, 255, 255, 0.16);
-      --border: rgba(255, 255, 255, 0.18);
-      --accent: #ffffff;           /* accent kept white for B/W theme */
-      --shadow: 0 10px 30px rgba(0,0,0,.6);
-      --blur: 18px;                /* backdrop blur strength */
-      --radius-xl: 22px;
-      --radius-lg: 14px;
-      --radius-md: 10px;
-      --max-w: 960px;
-    }
+  /* ======================================
+     COLORS
+  ====================================== */
 
-    /* Page base */
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      color: var(--fg);
-      background: radial-gradient(1200px 800px at 10% 10%, #1f1f22 0%, transparent 55%),
-                  radial-gradient(1000px 700px at 90% 10%, #1a1a1d 0%, transparent 50%),
-                  linear-gradient(180deg, var(--bg-1), var(--bg-0));
-      background-attachment: fixed;
-    }
+  --bg-primary: #0b0b0c;
+  --bg-secondary: #121214;
 
-    /* Subtle noise overlay for depth */
-    body::before {
-      content: "";
-      position: fixed; inset: 0; pointer-events: none;
-      background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
-      background-size: 3px 3px;
-      opacity: .25;
-    }
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-hover: rgba(255, 255, 255, 0.1);
 
-    /* Container */
-    .shell { max-width: var(--max-w); margin: 0 auto; padding: 96px 20px 120px; }
+  --surface-border: rgba(255, 255, 255, 0.18);
+  --surface-border-strong: rgba(255, 255, 255, 0.3);
 
-    /* Glass header */
-    .site-header {
-      position: sticky; top: 12px; z-index: 50; margin: 16px auto 0;
-      max-width: calc(var(--max-w) - 20px);
-    }
-    .nav {
-      display: flex; gap: 12px; align-items: center; justify-content: space-between;
-      padding: 14px 16px; border-radius: var(--radius-xl);
-      background: var(--card);
-      backdrop-filter: blur(var(--blur));
-      -webkit-backdrop-filter: blur(var(--blur));
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-    }
-    .brand { display: flex; gap: 12px; align-items: center; }
-    .logo {
-      width: 34px; height: 34px; border-radius: 10px; flex: 0 0 auto;
-      background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.05));
-      border: 1px solid var(--card-contrast);
-      backdrop-filter: blur(6px);
-    }
-    .brand h1 { font-size: 16px; margin: 0; letter-spacing: .3px; font-weight: 700; }
-    .brand small { display: block; color: var(--muted); font-weight: 500; }
+  --text-primary: #f3f4f6;
+  --text-secondary: #b5b7be;
 
-    .nav a, .nav button { color: var(--fg); text-decoration: none; font-weight: 600; }
+  --accent: #ffffff;
 
-    .toc {
-      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-    }
-    .toc a {
-      padding: 8px 12px; border-radius: 999px; border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02));
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 4px 18px rgba(0,0,0,.35);
-      transition: transform .15s ease, background .2s ease, border-color .2s ease;
-      font-size: 13px;
-    }
-    .toc a:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.35); }
+  /* ======================================
+     SHADOWS
+  ====================================== */
 
-    /* Card */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(var(--blur));
-      -webkit-backdrop-filter: blur(var(--blur));
-      box-shadow: var(--shadow);
-      border-radius: var(--radius-xl);
-      overflow: hidden;
-    }
-    .card .head {
-      padding: 28px 26px 16px; border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0));
-    }
-    .card .head h2 { margin: 0; font-size: 28px; letter-spacing: .2px; }
-    .badge { font-size: 12px; color: var(--muted); }
+  --shadow-sm:
+    0 4px 14px rgba(0, 0, 0, 0.3);
 
-    .content { padding: 22px 26px 30px; }
-    .content h3 { margin: 28px 0 10px; font-size: 20px; }
-    .content p { color: var(--fg); line-height: 1.75; }
-    .content ul { margin: 8px 0 16px 20px; line-height: 1.7; }
-    .content li { margin: 6px 0; }
+  --shadow-md:
+    0 10px 30px rgba(0, 0, 0, 0.45);
 
-    /* Section chips */
-    .section { margin: 18px 0 0; padding: 18px; border-radius: var(--radius-lg);
-               border: 1px dashed rgba(255,255,255,.16);
-               background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); }
+  --shadow-lg:
+    0 18px 50px rgba(0, 0, 0, 0.6);
 
-    /* Footer note */
-    .footnote { color: var(--muted); font-size: 14px; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px; }
+  /* ======================================
+     RADIUS
+  ====================================== */
 
-    /* Floating Back-to-top */
-    .fab {
-      position: fixed; right: 20px; bottom: 22px; z-index: 60;
-      border: 1px solid var(--border); border-radius: 14px; padding: 10px 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05));
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: var(--shadow); color: var(--fg);
-      font-weight: 700; text-decoration: none;
-    }
-    .fab:hover { transform: translateY(-2px); }
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-full: 999px;
 
-    /* Accessibility */
-    a:focus-visible, button:focus-visible {
-      outline: 3px solid rgba(255,255,255,.6); outline-offset: 2px; border-radius: 10px;
-    }
+  /* ======================================
+     LAYOUT
+  ====================================== */
 
-    /* Responsive */
-    @media (max-width: 640px) {
-      .brand h1 { font-size: 14px; }
-      .card .head h2 { font-size: 24px; }
-      .content { padding: 18px; }
-      .toc { gap: 8px; }
-      .toc a { padding: 6px 10px; font-size: 12px; }
-    }
+  --container-width: 960px;
 
-    /* Print friendly */
-    @media print {
-      body { background: #fff; color: #000; }
-      .site-header, .fab, body::before { display: none !important; }
-      .card, .section { backdrop-filter: none; box-shadow: none; border-color: #000; }
-    }
+  --header-height: 80px;
+
+  /* ======================================
+     EFFECTS
+  ====================================== */
+
+  --blur-md: 14px;
+  --blur-lg: 18px;
+
+  /* ======================================
+     TRANSITIONS
+  ====================================== */
+
+  --transition-fast: 0.18s ease;
+
+  --transition-normal: 0.3s ease;
+}
+
+/* =========================================================
+   2. GLOBAL RESET
+========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  color: var(--text-primary);
+
+  text-rendering: optimizeLegibility;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  background:
+    radial-gradient(
+      1200px 800px at 10% 10%,
+      #1f1f22 0%,
+      transparent 55%
+    ),
+
+    radial-gradient(
+      1000px 700px at 90% 10%,
+      #1a1a1d 0%,
+      transparent 50%
+    ),
+
+    linear-gradient(
+      180deg,
+      var(--bg-secondary),
+      var(--bg-primary)
+    );
+
+  background-attachment: fixed;
+
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   3. NOISE OVERLAY
+========================================================= */
+
+body::before {
+  content: "";
+
+  position: fixed;
+  inset: 0;
+
+  pointer-events: none;
+
+  z-index: -1;
+
+  background-image:
+    radial-gradient(
+      rgba(255, 255, 255, 0.04) 1px,
+      transparent 1px
+    );
+
+  background-size: 3px 3px;
+
+  opacity: 0.22;
+}
+
+/* =========================================================
+   4. CONTAINER
+========================================================= */
+
+.shell {
+  width: 100%;
+
+  max-width: var(--container-width);
+
+  margin-inline: auto;
+
+  padding:
+    calc(var(--header-height) + 40px)
+    20px
+    120px;
+}
+
+/* =========================================================
+   5. HEADER
+========================================================= */
+
+.site-header {
+  position: sticky;
+
+  top: 12px;
+
+  z-index: 50;
+
+  margin-top: 16px;
+}
+
+.nav {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  padding: 14px 18px;
+
+  border-radius: var(--radius-lg);
+
+  border: 1px solid var(--surface-border);
+
+  background: var(--surface);
+
+  backdrop-filter: blur(var(--blur-lg));
+  -webkit-backdrop-filter: blur(var(--blur-lg));
+
+  box-shadow: var(--shadow-md);
+}
+
+/* =========================================================
+   6. BRAND
+========================================================= */
+
+.brand {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  border-radius: var(--radius-sm);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.22),
+      rgba(255, 255, 255, 0.05)
+    );
+
+  backdrop-filter: blur(6px);
+
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.logo:hover {
+  transform: rotate(4deg) scale(1.05);
+
+  border-color:
+    var(--surface-border-strong);
+}
+
+.brand h1 {
+  margin: 0;
+
+  font-size: 1rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.3px;
+}
+
+.brand small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: var(--text-secondary);
+
+  font-size: 0.8rem;
+
+  font-weight: 500;
+}
+
+/* =========================================================
+   7. NAVIGATION
+========================================================= */
+
+.nav a,
+.nav button {
+  color: var(--text-primary);
+
+  text-decoration: none;
+
+  font-weight: 600;
+}
+
+.toc {
+  display: flex;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+}
+
+.toc a {
+  position: relative;
+
+  padding: 8px 14px;
+
+  border-radius: var(--radius-full);
+
+  border: 1px solid var(--surface-border);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.12),
+      rgba(255, 255, 255, 0.02)
+    );
+
+  backdrop-filter: blur(8px);
+
+  box-shadow: var(--shadow-sm);
+
+  font-size: 0.82rem;
+
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.toc a:hover {
+  transform: translateY(-2px);
+
+  border-color:
+    var(--surface-border-strong);
+
+  background: var(--surface-hover);
+}
+
+/* =========================================================
+   8. CARD
+========================================================= */
+
+.card {
+  overflow: hidden;
+
+  border-radius: var(--radius-lg);
+
+  border: 1px solid var(--surface-border);
+
+  background: var(--surface);
+
+  backdrop-filter: blur(var(--blur-lg));
+  -webkit-backdrop-filter: blur(var(--blur-lg));
+
+  box-shadow: var(--shadow-lg);
+}
+
+.card__head {
+  padding: 28px 26px 18px;
+
+  border-bottom:
+    1px solid var(--surface-border);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0)
+    );
+}
+
+.card__head h2 {
+  margin: 0;
+
+  font-size: clamp(1.8rem, 4vw, 2.2rem);
+
+  font-weight: 700;
+}
+
+.badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 8px;
+
+  color: var(--text-secondary);
+
+  font-size: 0.75rem;
+
+  font-weight: 600;
+}
+
+/* =========================================================
+   9. CONTENT
+========================================================= */
+
+.content {
+  padding: 24px 26px 32px;
+}
+
+.content h3 {
+  margin:
+    30px 0 12px;
+
+  font-size: 1.3rem;
+
+  font-weight: 700;
+}
+
+.content p {
+  margin: 0 0 16px;
+
+  color: var(--text-primary);
+
+  line-height: 1.8;
+}
+
+.content ul {
+  margin:
+    10px 0 18px 22px;
+
+  padding: 0;
+
+  line-height: 1.7;
+}
+
+.content li {
+  margin-bottom: 8px;
+
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   10. SECTION BLOCK
+========================================================= */
+
+.section {
+  margin-top: 20px;
+
+  padding: 20px;
+
+  border-radius: var(--radius-md);
+
+  border:
+    1px dashed rgba(255, 255, 255, 0.16);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.015)
+    );
+
+  transition:
+    border-color var(--transition-normal),
+    transform var(--transition-normal);
+}
+
+.section:hover {
+  transform: translateY(-2px);
+
+  border-color:
+    rgba(255, 255, 255, 0.24);
+}
+
+/* =========================================================
+   11. FOOTNOTE
+========================================================= */
+
+.footnote {
+  margin-top: 28px;
+
+  padding-top: 18px;
+
+  border-top:
+    1px solid var(--surface-border);
+
+  color: var(--text-secondary);
+
+  font-size: 0.92rem;
+
+  line-height: 1.7;
+}
+
+/* =========================================================
+   12. FLOATING ACTION BUTTON
+========================================================= */
+
+.fab {
+  position: fixed;
+
+  right: 20px;
+  bottom: 22px;
+
+  z-index: 60;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 16px;
+
+  border-radius: var(--radius-md);
+
+  border: 1px solid var(--surface-border);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.18),
+      rgba(255, 255, 255, 0.05)
+    );
+
+  backdrop-filter: blur(10px);
+
+  box-shadow: var(--shadow-md);
+
+  color: var(--text-primary);
+
+  text-decoration: none;
+
+  font-weight: 700;
+
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.fab:hover {
+  transform: translateY(-3px);
+
+  border-color:
+    var(--surface-border-strong);
+}
+
+/* =========================================================
+   13. ACCESSIBILITY
+========================================================= */
+
+a:focus-visible,
+button:focus-visible {
+  outline:
+    3px solid rgba(255, 255, 255, 0.55);
+
+  outline-offset: 3px;
+
+  border-radius: 10px;
+}
+
+/* =========================================================
+   14. REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+
+    transition: none !important;
+
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================================
+   15. RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+  .shell {
+    padding:
+      calc(var(--header-height) + 24px)
+      16px
+      80px;
+  }
+
+  .nav {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .toc {
+    width: 100%;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .card__head {
+    padding: 22px 20px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand h1 {
+    font-size: 0.92rem;
+  }
+
+  .toc a {
+    font-size: 0.75rem;
+
+    padding: 6px 10px;
+  }
+
+  .fab {
+    right: 14px;
+    bottom: 14px;
+  }
+}
+
+/* =========================================================
+   16. PRINT MODE
+========================================================= */
+
+@media print {
+  body {
+    background: #ffffff !important;
+
+    color: #000000 !important;
+  }
+
+  body::before,
+  .site-header,
+  .fab {
+    display: none !important;
+  }
+
+  .card,
+  .section {
+    background: #ffffff !important;
+
+    border: 1px solid #000 !important;
+
+    box-shadow: none !important;
+
+    backdrop-filter: none !important;
+  }
+}
