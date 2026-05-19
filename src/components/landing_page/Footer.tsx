@@ -147,7 +147,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="/terms.html"
+                  href="/terms-of-use"
                   className="hover:text-white transition-colors"
                 >
                   Terms of Use
@@ -155,7 +155,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="/cookies.html"
+                  href="/cookie-policy"
                   className="hover:text-white transition-colors"
                 >
                   Cookie Policy

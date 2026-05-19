@@ -3,6 +3,8 @@ import Layout from "@/components/layout";
 export default function TermsOfUsePage() {
   return (
     <Layout>
+        <main className="pt-20 min-h-screen bg-gradient-to-br from-blue-900 via- to-black-50 text-white px-4">
+      <div className="max-w-4xl mx-auto p-6">
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-4">Terms of Use</h1>
       <p className="mb-2">
@@ -26,6 +28,8 @@ export default function TermsOfUsePage() {
         qualified healthcare professionals.
       </p>
     </div>
+    </div>
+    </main>
     </Layout>
   );
 }
