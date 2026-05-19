@@ -29,6 +29,18 @@ const HealthQuestionAnsweringOutputSchema = z.object({
     .array(z.string())
     .optional()
     .describe('A list of questions to ask the user for more context.'),
+  wellnessSuggestions: z
+    .array(z.string())
+    .optional()
+    .describe('Brief contextual wellness suggestions to promote general health and prevention.'),
+  preventiveCare: z
+    .array(z.string())
+    .optional()
+    .describe('Basic preventive care recommendations relevant to the question.'),
+  whenToSeeDoctor: z
+    .string()
+    .optional()
+    .describe('Clear guidance on warning signs or situations when medical consultation is recommended.'),
 });
 export type HealthQuestionAnsweringOutput = z.infer<
   typeof HealthQuestionAnsweringOutputSchema

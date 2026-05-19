@@ -35,6 +35,18 @@ const PersonalizedHealthQuestionAnsweringOutputSchema = z.object({
     .string()
     .optional()
     .describe('A follow-up question to ask the user for more information.'),
+  wellnessSuggestions: z
+    .array(z.string())
+    .optional()
+    .describe('Brief contextual wellness suggestions to promote general health and prevention.'),
+  preventiveCare: z
+    .array(z.string())
+    .optional()
+    .describe('Basic preventive care recommendations relevant to the question.'),
+  whenToSeeDoctor: z
+    .string()
+    .optional()
+    .describe('Clear guidance on warning signs or situations when medical consultation is recommended.'),
 });
 export type PersonalizedHealthQuestionAnsweringOutput = z.infer<
   typeof PersonalizedHealthQuestionAnsweringOutputSchema
@@ -53,32 +65,28 @@ const prompt = ai.definePrompt({
   // Tools removed as the LLM is now instructed to directly output the JSON
   system: `You are a medical AI assistant. Your goal is to answer the user's question or ask for more information if needed.
 
-IMPORTANT: You have access to the conversation history. Use this context to:
-- Reference previous discussions and questions
-- Provide more personalized responses based on what was discussed before
-- Avoid asking for information already provided in previous messages
-- Build upon previous advice or recommendations
+IMPORTANT: Use available conversation history to provide personalized, non-diagnostic information. Always include clear, brief educational and preventive information when relevant.
 
 You MUST respond in JSON format. The JSON object should conform to the following structure:
 {
-  "answer": "string (This field is REQUIRED. It should contain the direct answer to the user's question. If you need to ask a follow-up question, this field should state that more information is needed, e.g., 'I need more information to help you effectively.')",
-  "followUpQuestion": "string (This field is OPTIONAL. If you need more details from the user to provide a complete answer, include your specific follow-up question here. Otherwise, omit this field or provide an empty string.)"
+  "answer": "string (REQUIRED) - direct, user-facing explanation or guidance. Avoid definitive medical diagnoses.",
+  "followUpQuestion": "string (OPTIONAL) - a concise question to request missing details, if necessary.",
+  "wellnessSuggestions": ["string"] (OPTIONAL) - 2-4 short, actionable wellness tips relevant to the user's concern.
+  "preventiveCare": ["string"] (OPTIONAL) - 1-4 basic preventive care recommendations (e.g., vaccinations, screenings, lifestyle changes) when applicable.
+  "whenToSeeDoctor": "string (OPTIONAL) - clear, simple indicators or red flags that should prompt medical consultation or urgent care. Use plain language."
 }
 
-Example 1 (Direct Answer):
-User question: "What are common flu symptoms?"
+Example (Direct Answer with Wellness Info):
+User question: "I have a sore throat and mild fever. What should I do?"
 Your JSON response:
 {
-  "answer": "Common flu symptoms include fever, cough, sore throat, runny or stuffy nose, muscle or body aches, headaches, and fatigue."
+  "answer": "A sore throat with a mild fever can be due to a viral infection or mild pharyngitis. Rest, stay hydrated, and monitor your symptoms.",
+  "wellnessSuggestions": ["Drink warm fluids and rest", "Use throat lozenges or saltwater gargles for comfort", "Avoid smoking and irritants"],
+  "preventiveCare": ["Wash hands frequently to reduce spread", "Stay home while febrile to avoid infecting others"],
+  "whenToSeeDoctor": "Seek medical attention if you have difficulty breathing, inability to swallow, high fever (>39°C / 102°F), or symptoms that worsen or persist beyond a few days."
 }
 
-Example 2 (Need More Information):
-User question: "I have a cough, what could it be?"
-Your JSON response:
-{
-  "answer": "To understand what might be causing your cough, I need a bit more information.",
-  "followUpQuestion": "Could you tell me more about your cough (e.g., is it dry or wet, how long have you had it) and if you have any other symptoms like fever or shortness of breath?"
-}
+If you need more information before answering, set "answer" to a brief request for information and include a specific "followUpQuestion".
 
 Carefully review the user's input:
 Question: {{{question}}}
@@ -87,8 +95,7 @@ Lifestyle: {{{lifestyle}}}
 Symptoms: {{{symptoms}}}
 Previous Conversation: {{{conversationHistory}}}
 
-Based on this, decide if you can answer directly or if a follow-up question is necessary, and then generate the JSON response as described.
-You should avoid providing medical advice or diagnoses. Instead, provide general information. If you are unsure, politely suggest that the user consult a healthcare professional.
+Generate the JSON response matching the schema above. Avoid giving definitive medical diagnoses; when unsure, advise the user to consult a healthcare professional.
 `,
   prompt: `User Input:
 Question: {{{question}}}
