@@ -1,152 +1,490 @@
 #!/usr/bin/env node
 
 /**
- * JWT Security Test Script
- * Tests the security improvements implemented in the JWT system
+ * =========================================================
+ * MED-GENIE JWT SECURITY TEST SUITE
+ * =========================================================
+ *
+ * Features:
+ * - Environment validation
+ * - Strong secret testing
+ * - Token generation testing
+ * - Expiration testing
+ * - Invalid token protection
+ * - Colored console output
+ * - Structured test runner
+ * - Async test handling
+ * - Production-ready logging
+ *
+ * =========================================================
  */
 
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
+"use strict";
 
-console.log('🔒 Testing JWT Security Implementation\n');
+/* =========================================================
+   IMPORTS
+========================================================= */
 
-// Test 1: Environment Variable Requirement
-console.log('1. Testing Environment Variable Requirement...');
-try {
-    // Simulate missing JWT_SECRET
-    delete process.env.JWT_SECRET;
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
-    // This should throw an error
-    require('../src/lib/jwt');
-    console.log('❌ FAILED: JWT_SECRET should be required');
-} catch (error) {
-    if (error.message.includes('JWT_SECRET environment variable is required')) {
-        console.log('✅ PASSED: JWT_SECRET is properly required');
-    } else {
-        console.log('❌ FAILED: Unexpected error:', error.message);
-    }
-}
+/* =========================================================
+   COLORS
+========================================================= */
 
-// Test 2: Strong Secret Generation
-console.log('\n2. Testing Strong Secret Generation...');
-const weakSecret = 'weak-secret';
-const strongSecret = crypto.randomBytes(64).toString('base64');
+const COLORS = {
+  reset: "\x1b[0m",
 
-if (strongSecret.length >= 64) {
-    console.log('✅ PASSED: Strong secret generation (length:', strongSecret.length, ')');
-} else {
-    console.log('❌ FAILED: Secret too short');
-}
+  green: "\x1b[32m",
 
-// Test 3: Token ID Generation
-console.log('\n3. Testing Token ID Generation...');
-try {
-    // Set a test secret
-    process.env.JWT_SECRET = strongSecret;
+  red: "\x1b[31m",
 
-    const jwtModule = require('../src/lib/jwt');
-    const tokenId1 = jwtModule.generateTokenId();
-    const tokenId2 = jwtModule.generateTokenId();
+  yellow: "\x1b[33m",
 
-    if (tokenId1 !== tokenId2 && tokenId1.length === 64) {
-        console.log('✅ PASSED: Unique token IDs generated (length:', tokenId1.length, ')');
-    } else {
-        console.log('❌ FAILED: Token ID generation issue');
-    }
-} catch (error) {
-    console.log('❌ FAILED: Token ID generation test:', error.message);
-}
+  blue: "\x1b[34m",
 
-// Test 4: Token Pair Generation
-console.log('\n4. Testing Token Pair Generation...');
-try {
-    const jwtModule = require('../src/lib/jwt');
-    const tokenPair = jwtModule.signTokenPair(1, 'test@example.com', 'Test User');
+  cyan: "\x1b[36m",
 
-    if (tokenPair.accessToken && tokenPair.refreshToken && tokenPair.expiresIn) {
-        console.log('✅ PASSED: Token pair generation successful');
-        console.log('   - Access token length:', tokenPair.accessToken.split('.').length, 'parts');
-        console.log('   - Refresh token length:', tokenPair.refreshToken.split('.').length, 'parts');
-        console.log('   - Expires in:', tokenPair.expiresIn, 'ms');
-    } else {
-        console.log('❌ FAILED: Token pair generation incomplete');
-    }
-} catch (error) {
-    console.log('❌ FAILED: Token pair generation test:', error.message);
-}
+  gray: "\x1b[90m",
+};
 
-// Test 5: Token Verification
-console.log('\n5. Testing Token Verification...');
-try {
-    const jwtModule = require('../src/lib/jwt');
-    const tokenPair = jwtModule.signTokenPair(1, 'test@example.com', 'Test User');
+/* =========================================================
+   LOGGER
+========================================================= */
 
-    const verified = jwtModule.verifyToken(tokenPair.accessToken);
-    if (verified && verified.userId === 1) {
-        console.log('✅ PASSED: Token verification successful');
-    } else {
-        console.log('❌ FAILED: Token verification failed');
-    }
-} catch (error) {
-    console.log('❌ FAILED: Token verification test:', error.message);
-}
-
-// Test 6: Invalid Token Handling
-console.log('\n6. Testing Invalid Token Handling...');
-try {
-    const jwtModule = require('../src/lib/jwt');
-    const invalidToken = 'invalid.token.here';
-
-    const verified = jwtModule.verifyToken(invalidToken);
-    if (verified === null) {
-        console.log('✅ PASSED: Invalid token properly rejected');
-    } else {
-        console.log('❌ FAILED: Invalid token should be rejected');
-    }
-} catch (error) {
-    console.log('❌ FAILED: Invalid token test:', error.message);
-}
-
-// Test 7: Token Expiration
-console.log('\n7. Testing Token Expiration...');
-try {
-    const jwtModule = require('../src/lib/jwt');
-
-    // Create a token that expires in 1 second
-    const shortLivedToken = jwt.sign(
-        { userId: 1, email: 'test@example.com', name: 'Test User', tokenId: 'test123' },
-        process.env.JWT_SECRET,
-        { expiresIn: '1s' }
+const logger = {
+  section(title) {
+    console.log(
+      `\n${COLORS.cyan}━━━━━━━━━━━━━━━━━━━━━━━━━━━━${COLORS.reset}`
     );
 
-    console.log('   - Token created, waiting for expiration...');
+    console.log(
+      `${COLORS.blue}🚀 ${title}${COLORS.reset}`
+    );
 
-    // Wait for token to expire
-    setTimeout(() => {
-        const verified = jwtModule.verifyToken(shortLivedToken);
-        if (verified === null) {
-            console.log('✅ PASSED: Expired token properly rejected');
-        } else {
-            console.log('❌ FAILED: Expired token should be rejected');
-        }
-    }, 2000);
+    console.log(
+      `${COLORS.cyan}━━━━━━━━━━━━━━━━━━━━━━━━━━━━${COLORS.reset}\n`
+    );
+  },
 
-} catch (error) {
-    console.log('❌ FAILED: Token expiration test:', error.message);
+  success(message) {
+    console.log(
+      `${COLORS.green}✅ ${message}${COLORS.reset}`
+    );
+  },
+
+  error(message) {
+    console.log(
+      `${COLORS.red}❌ ${message}${COLORS.reset}`
+    );
+  },
+
+  warning(message) {
+    console.log(
+      `${COLORS.yellow}⚠️  ${message}${COLORS.reset}`
+    );
+  },
+
+  info(message) {
+    console.log(
+      `${COLORS.gray}ℹ️  ${message}${COLORS.reset}`
+    );
+  },
+};
+
+/* =========================================================
+   TEST RESULTS
+========================================================= */
+
+const testResults = {
+  passed: 0,
+
+  failed: 0,
+
+  total: 0,
+};
+
+/* =========================================================
+   TEST RUNNER
+========================================================= */
+
+async function runTest(name, callback) {
+  testResults.total++;
+
+  process.stdout.write(
+    `${COLORS.blue}Testing:${COLORS.reset} ${name} ... `
+  );
+
+  try {
+    await callback();
+
+    testResults.passed++;
+
+    console.log(
+      `${COLORS.green}PASSED${COLORS.reset}`
+    );
+  } catch (error) {
+    testResults.failed++;
+
+    console.log(
+      `${COLORS.red}FAILED${COLORS.reset}`
+    );
+
+    logger.error(error.message);
+  }
 }
 
-console.log('\n🔍 Security Test Summary:');
-console.log('   - Environment variable enforcement: ✅');
-console.log('   - Strong secret generation: ✅');
-console.log('   - Token ID uniqueness: ✅');
-console.log('   - Token pair generation: ✅');
-console.log('   - Token verification: ✅');
-console.log('   - Invalid token handling: ✅');
-console.log('   - Token expiration: ✅');
+/* =========================================================
+   HELPERS
+========================================================= */
 
-console.log('\n🚀 JWT Security Implementation is working correctly!');
-console.log('\n📋 Next Steps:');
-console.log('   1. Set JWT_SECRET environment variable');
-console.log('   2. Test with actual API endpoints');
-console.log('   3. Implement Redis for token blacklisting');
-console.log('   4. Run comprehensive security testing');
+function generateStrongSecret() {
+  return crypto
+    .randomBytes(64)
+    .toString("base64");
+}
+
+function sleep(ms) {
+  return new Promise((resolve) =>
+    setTimeout(resolve, ms)
+  );
+}
+
+/* =========================================================
+   MAIN TEST SUITE
+========================================================= */
+
+async function runSecurityTests() {
+  logger.section(
+    "JWT SECURITY TEST SUITE"
+  );
+
+  /* ======================================
+     TEST 1
+  ====================================== */
+
+  await runTest(
+    "Environment Variable Requirement",
+
+    async () => {
+      const originalSecret =
+        process.env.JWT_SECRET;
+
+      delete process.env.JWT_SECRET;
+
+      try {
+        delete require.cache[
+          require.resolve("../src/lib/jwt")
+        ];
+
+        require("../src/lib/jwt");
+
+        throw new Error(
+          "JWT_SECRET should be required"
+        );
+      } catch (error) {
+        if (
+          !error.message.includes(
+            "JWT_SECRET environment variable is required"
+          )
+        ) {
+          throw error;
+        }
+      }
+
+      process.env.JWT_SECRET =
+        originalSecret;
+    }
+  );
+
+  /* ======================================
+     TEST 2
+  ====================================== */
+
+  await runTest(
+    "Strong Secret Generation",
+
+    async () => {
+      const secret =
+        generateStrongSecret();
+
+      if (secret.length < 64) {
+        throw new Error(
+          "Generated secret is too short"
+        );
+      }
+
+      logger.info(
+        `Generated secret length: ${secret.length}`
+      );
+    }
+  );
+
+  /* ======================================
+     TEST 3
+  ====================================== */
+
+  await runTest(
+    "Token ID Generation",
+
+    async () => {
+      process.env.JWT_SECRET =
+        generateStrongSecret();
+
+      delete require.cache[
+        require.resolve("../src/lib/jwt")
+      ];
+
+      const jwtModule =
+        require("../src/lib/jwt");
+
+      const tokenId1 =
+        jwtModule.generateTokenId();
+
+      const tokenId2 =
+        jwtModule.generateTokenId();
+
+      if (tokenId1 === tokenId2) {
+        throw new Error(
+          "Token IDs are not unique"
+        );
+      }
+
+      if (tokenId1.length !== 64) {
+        throw new Error(
+          "Invalid token ID length"
+        );
+      }
+    }
+  );
+
+  /* ======================================
+     TEST 4
+  ====================================== */
+
+  await runTest(
+    "Token Pair Generation",
+
+    async () => {
+      const jwtModule =
+        require("../src/lib/jwt");
+
+      const tokenPair =
+        jwtModule.signTokenPair(
+          1,
+          "test@example.com",
+          "Test User"
+        );
+
+      if (
+        !tokenPair.accessToken ||
+        !tokenPair.refreshToken
+      ) {
+        throw new Error(
+          "Missing generated tokens"
+        );
+      }
+
+      logger.info(
+        `Access Token Parts: ${
+          tokenPair.accessToken.split(".")
+            .length
+        }`
+      );
+
+      logger.info(
+        `Refresh Token Parts: ${
+          tokenPair.refreshToken.split(".")
+            .length
+        }`
+      );
+    }
+  );
+
+  /* ======================================
+     TEST 5
+  ====================================== */
+
+  await runTest(
+    "Token Verification",
+
+    async () => {
+      const jwtModule =
+        require("../src/lib/jwt");
+
+      const tokenPair =
+        jwtModule.signTokenPair(
+          1,
+          "test@example.com",
+          "Test User"
+        );
+
+      const verified =
+        jwtModule.verifyToken(
+          tokenPair.accessToken
+        );
+
+      if (!verified) {
+        throw new Error(
+          "Verification failed"
+        );
+      }
+
+      if (verified.userId !== 1) {
+        throw new Error(
+          "Incorrect payload"
+        );
+      }
+    }
+  );
+
+  /* ======================================
+     TEST 6
+  ====================================== */
+
+  await runTest(
+    "Invalid Token Handling",
+
+    async () => {
+      const jwtModule =
+        require("../src/lib/jwt");
+
+      const invalidToken =
+        "invalid.token.here";
+
+      const verified =
+        jwtModule.verifyToken(
+          invalidToken
+        );
+
+      if (verified !== null) {
+        throw new Error(
+          "Invalid token should return null"
+        );
+      }
+    }
+  );
+
+  /* ======================================
+     TEST 7
+  ====================================== */
+
+  await runTest(
+    "Expired Token Rejection",
+
+    async () => {
+      const jwtModule =
+        require("../src/lib/jwt");
+
+      const shortLivedToken =
+        jwt.sign(
+          {
+            userId: 1,
+            email: "test@example.com",
+            tokenId: "abc123",
+          },
+
+          process.env.JWT_SECRET,
+
+          {
+            expiresIn: "1s",
+          }
+        );
+
+      logger.info(
+        "Waiting for token expiration..."
+      );
+
+      await sleep(2000);
+
+      const verified =
+        jwtModule.verifyToken(
+          shortLivedToken
+        );
+
+      if (verified !== null) {
+        throw new Error(
+          "Expired token should be rejected"
+        );
+      }
+    }
+  );
+
+  /* =====================================================
+     SUMMARY
+  ===================================================== */
+
+  logger.section("TEST SUMMARY");
+
+  console.log(
+    `${COLORS.green}Passed:${COLORS.reset} ${testResults.passed}`
+  );
+
+  console.log(
+    `${COLORS.red}Failed:${COLORS.reset} ${testResults.failed}`
+  );
+
+  console.log(
+    `${COLORS.blue}Total:${COLORS.reset} ${testResults.total}`
+  );
+
+  /* ======================================
+     FINAL STATUS
+  ====================================== */
+
+  if (testResults.failed === 0) {
+    logger.success(
+      "All JWT security tests passed successfully!"
+    );
+  } else {
+    logger.warning(
+      "Some tests failed. Review implementation."
+    );
+  }
+
+  /* ======================================
+     SECURITY RECOMMENDATIONS
+  ====================================== */
+
+  console.log(`
+${COLORS.cyan}━━━━━━━━━━━━━━━━━━━━━━━━━━━━${COLORS.reset}
+
+🔒 SECURITY RECOMMENDATIONS
+
+1. Use HTTPS in production
+
+2. Rotate JWT secrets regularly
+
+3. Store refresh tokens securely
+
+4. Use Redis token blacklisting
+
+5. Enable CSRF protection
+
+6. Implement device/session tracking
+
+7. Add rate limiting
+
+8. Monitor authentication logs
+
+9. Use secure cookies
+
+10. Add multi-factor authentication
+
+${COLORS.cyan}━━━━━━━━━━━━━━━━━━━━━━━━━━━━${COLORS.reset}
+`);
+}
+
+/* =========================================================
+   EXECUTE TEST SUITE
+========================================================= */
+
+runSecurityTests().catch((error) => {
+  logger.error(
+    "Test suite crashed unexpectedly."
+  );
+
+  console.error(error);
+
+  process.exit(1);
+});

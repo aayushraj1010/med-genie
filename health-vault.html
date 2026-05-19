@@ -1,382 +1,554 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Vault - Curated Tips & Trusted Wellness Resources</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        border: "hsl(var(--border))",
-                        input: "hsl(var(--input))",
-                        ring: "hsl(var(--ring))",
-                        background: "hsl(var(--background))",
-                        foreground: "hsl(var(--foreground))",
-                        primary: {
-                            DEFAULT: "hsl(var(--primary))",
-                            foreground: "hsl(var(--primary-foreground))",
-                        },
-                        secondary: {
-                            DEFAULT: "hsl(var(--secondary))",
-                            foreground: "hsl(var(--secondary-foreground))",
-                        },
-                        destructive: {
-                            DEFAULT: "hsl(var(--destructive))",
-                            foreground: "hsl(var(--destructive-foreground))",
-                        },
-                        muted: {
-                            DEFAULT: "hsl(var(--muted))",
-                            foreground: "hsl(var(--muted-foreground))",
-                        },
-                        accent: {
-                            DEFAULT: "hsl(var(--accent))",
-                            foreground: "hsl(var(--accent-foreground))",
-                        },
-                        popover: {
-                            DEFAULT: "hsl(var(--popover))",
-                            foreground: "hsl(var(--popover-foreground))",
-                        },
-                        card: {
-                            DEFAULT: "hsl(var(--card))",
-                            foreground: "hsl(var(--card-foreground))",
-                        },
-                    },
-                    borderRadius: {
-                        lg: "var(--radius)",
-                        md: "calc(var(--radius) - 2px)",
-                        sm: "calc(var(--radius) - 4px)",
-                    },
-                },
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Health Vault • Trusted Wellness Resources</title>
+
+  <meta
+    name="description"
+    content="Explore trusted health tips, wellness guidance, fitness advice, and mental health resources verified by leading medical organizations."
+  />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Health Vault" />
+  <meta
+    property="og:description"
+    content="Curated wellness tips and trusted health resources."
+  />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS -->
+  <link
+    href="https://unpkg.com/aos@2.3.1/dist/aos.css"
+    rel="stylesheet"
+  />
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            inter: ["Inter", "sans-serif"],
+          },
+          colors: {
+            brand: {
+              primary: "#2563eb",
+              secondary: "#7c3aed",
+              soft: "#eff6ff",
             },
-        }
-    </script>
-    <style>
-        :root {
-            --background: 0 0% 100%;
-            --foreground: 222.2 84% 4.9%;
-            --card: 0 0% 100%;
-            --card-foreground: 222.2 84% 4.9%;
-            --popover: 0 0% 100%;
-            --popover-foreground: 222.2 84% 4.9%;
-            --primary: 222.2 47.4% 11.2%;
-            --primary-foreground: 210 40% 98%;
-            --secondary: 210 40% 96%;
-            --secondary-foreground: 222.2 84% 4.9%;
-            --muted: 210 40% 96%;
-            --muted-foreground: 215.4 16.3% 46.9%;
-            --accent: 210 40% 96%;
-            --accent-foreground: 222.2 84% 4.9%;
-            --destructive: 0 84.2% 60.2%;
-            --destructive-foreground: 210 40% 98%;
-            --border: 214.3 31.8% 91.4%;
-            --input: 214.3 31.8% 91.4%;
-            --ring: 222.2 84% 4.9%;
-            --radius: 0.5rem;
-        }
+          },
+          boxShadow: {
+            glass: "0 10px 30px rgba(0,0,0,0.08)",
+          },
+        },
+      },
+    };
+  </script>
 
-        .dark {
-            --background: 222.2 84% 4.9%;
-            --foreground: 210 40% 98%;
-            --card: 222.2 84% 4.9%;
-            --card-foreground: 210 40% 98%;
-            --popover: 222.2 84% 4.9%;
-            --popover-foreground: 210 40% 98%;
-            --primary: 210 40% 98%;
-            --primary-foreground: 222.2 47.4% 11.2%;
-            --secondary: 217.2 32.6% 17.5%;
-            --secondary-foreground: 210 40% 98%;
-            --muted: 217.2 32.6% 17.5%;
-            --muted-foreground: 215 20.2% 65.1%;
-            --accent: 217.2 32.6% 17.5%;
-            --accent-foreground: 210 40% 98%;
-            --destructive: 0 62.8% 30.6%;
-            --destructive-foreground: 210 40% 98%;
-            --border: 217.2 32.6% 17.5%;
-            --input: 217.2 32.6% 17.5%;
-            --ring: 212.7 26.8% 83.9%;
-        }
+  <style>
+    :root {
+      --card-bg: rgba(255, 255, 255, 0.72);
+      --card-dark: rgba(31, 41, 55, 0.72);
+    }
 
-        .bg-gradient-text {
-            background: linear-gradient(to right, #2563eb, #7c3aed);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-    </style>
+    body {
+      font-family: "Inter", sans-serif;
+    }
+
+    .gradient-text {
+      background: linear-gradient(to right, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .dark .glass-card {
+      background: var(--card-dark);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .category-btn.active {
+      background: linear-gradient(to right, #2563eb, #7c3aed);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+    }
+
+    .tip-card:hover .tip-title {
+      color: #2563eb;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Header Section -->
-        <div class="text-center mb-12" data-aos="fade-down">
-            <h1 class="text-4xl md:text-5xl font-bold bg-gradient-text mb-4">
-                Health Vault
-            </h1>
-            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                Curated tips and trusted wellness resources to help you maintain a healthy lifestyle. 
-                Each tip is verified by reputable health organizations.
-            </p>
+
+<body
+  class="custom-scrollbar min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-white"
+>
+  <!-- Background Blur -->
+  <div
+    class="pointer-events-none fixed inset-0 overflow-hidden"
+    aria-hidden="true"
+  >
+    <div
+      class="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-blue-300/20 blur-3xl"
+    ></div>
+
+    <div
+      class="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-purple-300/20 blur-3xl"
+    ></div>
+  </div>
+
+  <!-- Navbar -->
+  <header
+    class="sticky top-0 z-50 border-b border-white/10 bg-white/70 backdrop-blur-xl dark:bg-slate-900/70"
+  >
+    <div
+      class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 text-xl text-white shadow-lg"
+        >
+          ❤️
         </div>
 
-        <!-- Category Filter -->
-        <div class="flex flex-wrap justify-center gap-2 mb-8" data-aos="fade-up">
-            <button class="category-btn active rounded-full px-6 py-2 transition-all duration-200 hover:scale-105 bg-blue-600 text-white" data-category="all">
-                ⭐ All
-            </button>
-            <button class="category-btn rounded-full px-6 py-2 transition-all duration-200 hover:scale-105 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700" data-category="nutrition">
-                🍎 Nutrition
-            </button>
-            <button class="category-btn rounded-full px-6 py-2 transition-all duration-200 hover:scale-105 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700" data-category="mental-health">
-                🧠 Mental Health
-            </button>
-            <button class="category-btn rounded-full px-6 py-2 transition-all duration-200 hover:scale-105 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700" data-category="fitness">
-                🏃 Fitness
-            </button>
-            <button class="category-btn rounded-full px-6 py-2 transition-all duration-200 hover:scale-105 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700" data-category="wellness">
-                ❤️ Wellness
-            </button>
-        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight">
+            Health Vault
+          </h1>
 
-        <!-- Loading State -->
-        <div id="loading" class="text-center py-12">
-            <div class="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p class="text-gray-600 dark:text-gray-300">Loading health tips...</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400">
+            Trusted Wellness Resources
+          </p>
         </div>
+      </div>
 
-        <!-- Tips Grid -->
-        <div id="tips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
-            <!-- Tips will be dynamically loaded here -->
-        </div>
-
-        <!-- Empty State -->
-        <div id="empty-state" class="text-center py-12 hidden" data-aos="fade-up">
-            <div class="text-6xl mb-4">🔍</div>
-            <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                No tips found
-            </h3>
-            <p class="text-gray-500 dark:text-gray-400">
-                Try selecting a different category or check back later for new tips.
-            </p>
-        </div>
+      <!-- Dark Mode Toggle -->
+      <button
+        id="themeToggle"
+        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium transition hover:scale-105 dark:border-slate-700 dark:bg-slate-800"
+      >
+        🌙 Theme
+      </button>
     </div>
-    <script>
-        // Health tips data
-        const healthTips = [
-            {
-                id: '1',
-                title: 'Stay Hydrated',
-                summary: 'Drink 8 glasses of water daily to maintain optimal body function and energy levels.',
-                icon: '💧',
-                category: 'nutrition',
-                verifiedBy: 'WHO Guidelines',
-                link: 'https://www.who.int/news-room/fact-sheets/detail/drinking-water'
-            },
-            {
-                id: '2',
-                title: 'Mindful Breathing',
-                summary: 'Practice deep breathing exercises for 5-10 minutes daily to reduce stress and improve focus.',
-                icon: '🧘',
-                category: 'mental-health',
-                verifiedBy: 'American Psychological Association',
-                link: 'https://www.apa.org/topics/mindfulness'
-            },
-            {
-                id: '3',
-                title: 'Regular Exercise',
-                summary: 'Aim for 150 minutes of moderate exercise weekly to boost cardiovascular health and mood.',
-                icon: '🏃',
-                category: 'fitness',
-                verifiedBy: 'CDC Guidelines',
-                link: 'https://www.cdc.gov/physicalactivity/basics/pa-health/index.htm'
-            },
-            {
-                id: '4',
-                title: 'Quality Sleep',
-                summary: 'Get 7-9 hours of sleep nightly to support immune function and cognitive performance.',
-                icon: '😴',
-                category: 'wellness',
-                verifiedBy: 'National Sleep Foundation',
-                link: 'https://www.sleepfoundation.org/how-sleep-works/how-much-sleep-do-we-really-need'
-            },
-            {
-                id: '5',
-                title: 'Balanced Diet',
-                summary: 'Include colorful fruits and vegetables in every meal for essential vitamins and antioxidants.',
-                icon: '🥗',
-                category: 'nutrition',
-                verifiedBy: 'USDA MyPlate',
-                link: 'https://www.myplate.gov/eat-healthy/fruits'
-            },
-            {
-                id: '6',
-                title: 'Digital Detox',
-                summary: 'Take regular breaks from screens to reduce eye strain and improve mental clarity.',
-                icon: '📱',
-                category: 'mental-health',
-                verifiedBy: 'American Academy of Ophthalmology',
-                link: 'https://www.aao.org/eye-health/tips-prevention/digital-eye-strain'
-            },
-            {
-                id: '7',
-                title: 'Social Connection',
-                summary: 'Maintain meaningful relationships to support emotional well-being and longevity.',
-                icon: '👥',
-                category: 'mental-health',
-                verifiedBy: 'Harvard Health',
-                link: 'https://www.health.harvard.edu/newsletter_article/the-health-benefits-of-strong-relationships'
-            },
-            {
-                id: '8',
-                title: 'Sun Protection',
-                summary: 'Use SPF 30+ sunscreen daily to protect against skin damage and premature aging.',
-                icon: '☀️',
-                category: 'wellness',
-                verifiedBy: 'American Academy of Dermatology',
-                link: 'https://www.aad.org/public/everyday-care/sun-protection'
-            },
-            {
-                id: '9',
-                title: 'Stress Management',
-                summary: 'Practice time management and set boundaries to reduce chronic stress levels.',
-                icon: '⚖️',
-                category: 'mental-health',
-                verifiedBy: 'Mayo Clinic',
-                link: 'https://www.mayoclinic.org/healthy-lifestyle/stress-management/in-depth/stress-management/art-20044151'
-            },
-            {
-                id: '10',
-                title: 'Regular Check-ups',
-                summary: 'Schedule annual health screenings to catch potential issues early.',
-                icon: '🏥',
-                category: 'wellness',
-                verifiedBy: 'American Medical Association',
-                link: 'https://www.ama-assn.org/delivering-care/prevention-and-wellness'
-            },
-            {
-                id: '11',
-                title: 'Mindful Eating',
-                summary: 'Eat slowly and savor each bite to improve digestion and prevent overeating.',
-                icon: '🍽️',
-                category: 'nutrition',
-                verifiedBy: 'Harvard Health',
-                link: 'https://www.health.harvard.edu/staying-healthy/mindful-eating'
-            },
-            {
-                id: '12',
-                title: 'Active Recovery',
-                summary: 'Include stretching and light movement on rest days to improve flexibility and recovery.',
-                icon: '🧘‍♀️',
-                category: 'fitness',
-                verifiedBy: 'American College of Sports Medicine',
-                link: 'https://www.acsm.org/read-research/resource-library'
-            }
-        ];
+  </header>
 
-        let currentCategory = 'all';
-        let filteredTips = [...healthTips];
+  <!-- Main -->
+  <main class="relative z-10">
+    <section class="mx-auto max-w-7xl px-5 py-14">
+      <!-- Hero -->
+      <div class="mx-auto max-w-3xl text-center" data-aos="fade-up">
+        <span
+          class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-300"
+        >
+          ✨ Verified Wellness Knowledge
+        </span>
 
-        // Initialize AOS
-        AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
-            once: true,
-            offset: 100,
-            delay: 0,
+        <h2
+          class="mt-6 text-4xl font-extrabold leading-tight md:text-6xl"
+        >
+          Your Daily
+          <span class="gradient-text">
+            Health Companion
+          </span>
+        </h2>
+
+        <p
+          class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-300"
+        >
+          Discover evidence-based wellness guidance curated from trusted medical
+          organizations and healthcare experts.
+        </p>
+      </div>
+
+      <!-- Search -->
+      <div
+        class="mx-auto mt-10 max-w-2xl"
+        data-aos="fade-up"
+        data-aos-delay="100"
+      >
+        <div class="relative">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search wellness tips..."
+            class="w-full rounded-2xl border border-slate-200 bg-white/80 px-5 py-4 pl-12 text-sm shadow-lg outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800/80 dark:focus:ring-blue-500/20"
+          />
+
+          <svg
+            class="absolute left-4 top-4 h-5 w-5 text-slate-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div
+        class="mt-10 flex flex-wrap justify-center gap-3"
+        data-aos="fade-up"
+        data-aos-delay="200"
+      >
+        <button class="category-btn active rounded-full border px-5 py-2 text-sm font-semibold transition-all duration-300" data-category="all">
+          ⭐ All
+        </button>
+
+        <button class="category-btn rounded-full border border-slate-300 bg-white/80 px-5 py-2 text-sm font-semibold transition-all duration-300 hover:scale-105 dark:border-slate-700 dark:bg-slate-800/70" data-category="nutrition">
+          🍎 Nutrition
+        </button>
+
+        <button class="category-btn rounded-full border border-slate-300 bg-white/80 px-5 py-2 text-sm font-semibold transition-all duration-300 hover:scale-105 dark:border-slate-700 dark:bg-slate-800/70" data-category="mental-health">
+          🧠 Mental Health
+        </button>
+
+        <button class="category-btn rounded-full border border-slate-300 bg-white/80 px-5 py-2 text-sm font-semibold transition-all duration-300 hover:scale-105 dark:border-slate-700 dark:bg-slate-800/70" data-category="fitness">
+          🏃 Fitness
+        </button>
+
+        <button class="category-btn rounded-full border border-slate-300 bg-white/80 px-5 py-2 text-sm font-semibold transition-all duration-300 hover:scale-105 dark:border-slate-700 dark:bg-slate-800/70" data-category="wellness">
+          ❤️ Wellness
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading" class="py-20 text-center">
+        <div
+          class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"
+        ></div>
+
+        <p class="mt-4 text-slate-500 dark:text-slate-400">
+          Loading trusted health resources...
+        </p>
+      </div>
+
+      <!-- Grid -->
+      <div
+        id="tipsGrid"
+        class="hidden grid-cols-1 gap-6 pt-14 md:grid-cols-2 xl:grid-cols-3"
+      ></div>
+
+      <!-- Empty -->
+      <div
+        id="emptyState"
+        class="hidden py-20 text-center"
+      >
+        <div class="text-7xl">🔍</div>
+
+        <h3 class="mt-4 text-2xl font-bold">
+          No Results Found
+        </h3>
+
+        <p class="mt-2 text-slate-500 dark:text-slate-400">
+          Try a different keyword or category.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer
+    class="border-t border-slate-200/50 bg-white/40 py-8 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/40"
+  >
+    <div
+      class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 text-sm text-slate-500 md:flex-row dark:text-slate-400"
+    >
+      <p>
+        © 2026 Health Vault. Educational wellness resources only.
+      </p>
+
+      <p>
+        Built with ❤️ for healthier living.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // -----------------------------
+    // Health Tips Data
+    // -----------------------------
+
+    const healthTips = [
+      {
+        id: 1,
+        title: "Stay Hydrated",
+        summary:
+          "Drink enough water daily to maintain energy, digestion, and body function.",
+        icon: "💧",
+        category: "nutrition",
+        verifiedBy: "WHO",
+        link: "https://www.who.int/",
+      },
+      {
+        id: 2,
+        title: "Mindful Breathing",
+        summary:
+          "Practice mindful breathing exercises to reduce stress and improve focus.",
+        icon: "🧘",
+        category: "mental-health",
+        verifiedBy: "APA",
+        link: "https://www.apa.org/",
+      },
+      {
+        id: 3,
+        title: "Regular Exercise",
+        summary:
+          "Aim for at least 150 minutes of moderate exercise every week.",
+        icon: "🏃",
+        category: "fitness",
+        verifiedBy: "CDC",
+        link: "https://www.cdc.gov/",
+      },
+      {
+        id: 4,
+        title: "Healthy Sleep",
+        summary:
+          "Getting 7–9 hours of quality sleep helps immunity and brain health.",
+        icon: "😴",
+        category: "wellness",
+        verifiedBy: "Sleep Foundation",
+        link: "https://www.sleepfoundation.org/",
+      },
+      {
+        id: 5,
+        title: "Balanced Nutrition",
+        summary:
+          "Add colorful fruits and vegetables to improve overall nutrition.",
+        icon: "🥗",
+        category: "nutrition",
+        verifiedBy: "USDA",
+        link: "https://www.myplate.gov/",
+      },
+      {
+        id: 6,
+        title: "Digital Detox",
+        summary:
+          "Reduce screen time regularly to lower eye strain and stress.",
+        icon: "📱",
+        category: "mental-health",
+        verifiedBy: "AAO",
+        link: "https://www.aao.org/",
+      },
+    ];
+
+    // -----------------------------
+    // DOM Elements
+    // -----------------------------
+
+    const loading = document.getElementById("loading");
+    const tipsGrid = document.getElementById("tipsGrid");
+    const emptyState = document.getElementById("emptyState");
+    const categoryButtons = document.querySelectorAll(".category-btn");
+    const searchInput = document.getElementById("searchInput");
+    const themeToggle = document.getElementById("themeToggle");
+
+    let currentCategory = "all";
+
+    // -----------------------------
+    // Theme Toggle
+    // -----------------------------
+
+    themeToggle.addEventListener("click", () => {
+      document.documentElement.classList.toggle("dark");
+
+      localStorage.setItem(
+        "theme",
+        document.documentElement.classList.contains("dark")
+          ? "dark"
+          : "light"
+      );
+    });
+
+    // Load saved theme
+    if (localStorage.getItem("theme") === "dark") {
+      document.documentElement.classList.add("dark");
+    }
+
+    // -----------------------------
+    // Render Tips
+    // -----------------------------
+
+    function renderTips(tips) {
+      if (!tips.length) {
+        tipsGrid.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+        return;
+      }
+
+      emptyState.classList.add("hidden");
+      tipsGrid.classList.remove("hidden");
+
+      tipsGrid.innerHTML = tips
+        .map(
+          (tip, index) => `
+          <article
+            class="tip-card glass-card rounded-3xl p-6 shadow-glass transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+            data-aos="fade-up"
+            data-aos-delay="${index * 100}"
+          >
+            <div class="flex items-center justify-between">
+              <div class="text-4xl">${tip.icon}</div>
+
+              <span
+                class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold capitalize text-slate-600 dark:bg-slate-700 dark:text-slate-200"
+              >
+                ${tip.category.replace("-", " ")}
+              </span>
+            </div>
+
+            <h3
+              class="tip-title mt-5 text-xl font-bold transition-colors duration-300"
+            >
+              ${tip.title}
+            </h3>
+
+            <p
+              class="mt-3 leading-relaxed text-slate-600 dark:text-slate-300"
+            >
+              ${tip.summary}
+            </p>
+
+            <div
+              class="mt-5 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400"
+            >
+              ✅ Verified by ${tip.verifiedBy}
+            </div>
+
+            <a
+              href="${tip.link}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.02]"
+            >
+              Read Resource
+
+              <svg
+                class="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M14 3h7m0 0v7m0-7L10 14"
+                />
+              </svg>
+            </a>
+          </article>
+        `
+        )
+        .join("");
+
+      AOS.refresh();
+    }
+
+    // -----------------------------
+    // Filter Logic
+    // -----------------------------
+
+    function filterTips() {
+      const query = searchInput.value.toLowerCase();
+
+      const filtered = healthTips.filter((tip) => {
+        const matchesCategory =
+          currentCategory === "all" ||
+          tip.category === currentCategory;
+
+        const matchesSearch =
+          tip.title.toLowerCase().includes(query) ||
+          tip.summary.toLowerCase().includes(query);
+
+        return matchesCategory && matchesSearch;
+      });
+
+      renderTips(filtered);
+    }
+
+    // -----------------------------
+    // Category Buttons
+    // -----------------------------
+
+    categoryButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        currentCategory = button.dataset.category;
+
+        categoryButtons.forEach((btn) => {
+          btn.classList.remove("active");
         });
 
-        // DOM elements
-        const loadingEl = document.getElementById('loading');
-        const tipsGridEl = document.getElementById('tips-grid');
-        const emptyStateEl = document.getElementById('empty-state');
-        const categoryBtns = document.querySelectorAll('.category-btn');
+        button.classList.add("active");
 
-        // Render tips
-        function renderTips(tips) {
-            if (tips.length === 0) {
-                tipsGridEl.classList.add('hidden');
-                emptyStateEl.classList.remove('hidden');
-                return;
-            }
+        filterTips();
+      });
+    });
 
-            emptyStateEl.classList.add('hidden');
-            tipsGridEl.classList.remove('hidden');
+    // -----------------------------
+    // Search
+    // -----------------------------
 
-            tipsGridEl.innerHTML = tips.map((tip, index) => `
-                <div class="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6" 
-                     data-aos="fade-up" 
-                     data-aos-delay="${index * 100}">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="text-3xl">${tip.icon}</div>
-                        <span class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300">
-                            ${tip.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        </span>
-                    </div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-3">
-                        ${tip.title}
-                    </h3>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 leading-relaxed">
-                        ${tip.summary}
-                    </p>
-                    ${tip.verifiedBy ? `
-                        <div class="flex items-center gap-2 mb-4 text-xs text-gray-500 dark:text-gray-400">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span>Verified by ${tip.verifiedBy}</span>
-                        </div>
-                    ` : ''}
-                    <a href="${tip.link}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors text-sm flex items-center justify-center gap-2">
-                        Read More
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                        </svg>
-                    </a>
-                </div>
-            `).join('');
+    searchInput.addEventListener("input", filterTips);
 
-            // Refresh AOS for new elements
-            AOS.refresh();
-        }
+    // -----------------------------
+    // Initialize
+    // -----------------------------
 
-        // Filter tips by category
-        function filterTips(category) {
-            currentCategory = category;
-            if (category === 'all') {
-                filteredTips = [...healthTips];
-            } else {
-                filteredTips = healthTips.filter(tip => tip.category === category);
-            }
-            renderTips(filteredTips);
-        }
+    AOS.init({
+      duration: 700,
+      once: true,
+      offset: 80,
+    });
 
-        // Category button click handlers
-        categoryBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Update button states
-                categoryBtns.forEach(b => {
-                    b.classList.remove('active', 'bg-blue-600', 'text-white');
-                    b.classList.add('border', 'border-gray-300', 'dark:border-gray-600');
-                });
-                btn.classList.add('active', 'bg-blue-600', 'text-white');
-                btn.classList.remove('border', 'border-gray-300', 'dark:border-gray-600');
-
-                // Filter tips
-                filterTips(btn.dataset.category);
-            });
-        });
-
-        // Simulate loading delay and initialize
-        setTimeout(() => {
-            loadingEl.classList.add('hidden');
-            renderTips(filteredTips);
-        }, 1000);
-    </script>
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        loading.classList.add("hidden");
+        renderTips(healthTips);
+      }, 800);
+    });
+  </script>
 </body>
-</html> 
+</html>
