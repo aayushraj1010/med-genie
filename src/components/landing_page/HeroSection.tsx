@@ -64,7 +64,7 @@ export default function Hero() {
               max-[768px]:w-auto max-[768px]:h-auto min-w-[200px] whitespace-nowrap
               hover:scale-105 active:scale-95 transition-transform"
           >
-            Get Started
+            Signup
           </a>
         </div>
       </div>

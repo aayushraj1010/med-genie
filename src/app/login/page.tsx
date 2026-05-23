@@ -85,7 +85,7 @@ export default function MedGenieLoginForm() {
                   onClick={handleSignupRedirect}
                   className="w-full py-2 bg-[#3FB5F4]/20 hover:bg-[#3FB5F4]/30 text-[#3FB5F4] text-sm font-medium rounded-lg transition border border-[#3FB5F4]/30"
                 >
-                  Get Started Instead
+                  Signup Instead
                 </button>
               </div>
             )}
