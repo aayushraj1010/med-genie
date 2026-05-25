@@ -17,7 +17,7 @@ import type { ChatMessage, UserProfile, AISuggestedKey } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useChatHistory } from '@/hooks/use-chat-history';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { AlertCircle, ArrowUp, Info, History, Plus, Camera } from 'lucide-react';
+import { AlertCircle, ArrowUp, Info, History, Plus, Camera, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { ChatHistorySidebar } from '@/components/chat-history-sidebar';
@@ -487,53 +487,71 @@ function HomePage() {
               {/* <<< QUICK REPLY GRID IS NOW HERE, PERMANENTLY VISIBLE >>> */}
               <QuickReplyGrid onPromptClick={handlePromptClick} />
 
-              <form onSubmit={handleFormSubmit} className="relative">
-                <div className="relative">
+              <form onSubmit={handleFormSubmit} className="relative w-full">
+                {/* Main Input Container - Premium Glassmorphism */}
+                <div className="relative w-full rounded-[32px] bg-[#F5F9FF]/85 dark:bg-[#0B1220]/90 backdrop-blur-2xl border border-[#C7DFFF]/40 dark:border-[#2563EB]/20 shadow-[0_24px_80px_-38px_rgba(71,145,255,0.18)] dark:shadow-[0_24px_90px_-40px_rgba(14,165,233,0.28)] transition-all duration-300 focus-within:border-[#C7DFFF]/60 dark:focus-within:border-[#2563EB]/35 focus-within:ring-1 focus-within:ring-[#7CC7FF]/15 dark:focus-within:ring-[#3B82F6]/15 hover:border-[#B7D7FF]/70 dark:hover:border-[#3B82F6]/25 px-6 py-4 flex items-center gap-3">
+                  {/* Input Field */}
                   <Input
                     value={input}
                     onChange={(e) => handleInputChange(e.target.value)}
                     placeholder="Ask anything about your health..."
                     disabled={isLoading}
-                    className={`pr-24 ${inputError ? 'border-red-500 focus:border-red-500' : ''}`}
+                    className={`flex-1 border-0 bg-transparent placeholder:text-[#98A4B8] dark:placeholder:text-[#94A3B8] text-[#5B657A] dark:text-[#E5E7EB] text-sm font-light tracking-wide focus:outline-none focus:ring-0 ${
+                      inputError ? 'placeholder:text-red-300' : ''
+                    }`}
                   />
-                  {inputError && (
-                    <div className="absolute -bottom-6 left-0 text-red-500 text-xs">
-                      ⚠️ {inputError}
-                    </div>
-                  )}
+
+                  {/* Icons Container - Premium Layout */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    {/* Camera Icon */}
+                    <label className="cursor-pointer group relative flex items-center justify-center h-11 w-11 rounded-[26px] bg-white/85 dark:bg-[#111827]/90 border border-[#C7DFFF]/35 dark:border-[#2563EB]/20 shadow-sm shadow-slate-900/5 dark:shadow-black/20 hover:bg-[#EEF5FF]/90 dark:hover:bg-[#111827]/95 transition-all duration-200 hover:scale-[1.03]">
+                      <Camera className="h-5 w-5 text-[#5B657A] dark:text-[#E5E7EB] group-hover:text-[#2C5389] dark:group-hover:text-[#BFDBFE] transition-colors" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const formData = new FormData();
+                          formData.append('file', file);
+                          try {
+                            const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                            const data = await res.json();
+                            console.log('Uploaded image:', data);
+                          } catch (err) {
+                            console.error('Upload failed:', err);
+                          }
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+
+                    {/* Microphone Icon */}
+                    <VoiceSearch setInput={setInput} />
+
+                    {/* Send Button - Visual Primary */}
+                    <Button
+                      type="submit"
+                      disabled={isLoading || !input.trim() || !!inputError}
+                      className="relative h-11 w-11 rounded-[26px] bg-gradient-to-br from-[#8FD3FF] to-[#6BB8FF] dark:from-[#3B82F6] dark:to-[#60A5FA] text-white border-0 shadow-[0_18px_38px_-18px_rgba(59,130,246,0.45)] dark:shadow-[0_20px_40px_-20px_rgba(59,130,246,0.65)] hover:brightness-110 transition-all duration-200 hover:scale-[1.03] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <ArrowUp className="h-4 w-4" />
+                      )}
+                      <span className="sr-only">Send message</span>
+                    </Button>
+                  </div>
                 </div>
-                <VoiceSearch setInput={setInput} />
-                <label className="cursor-pointer flex items-center justify-center h-8 w-8 bg-muted rounded absolute right-20 top-1/2 -translate-y-1/2">
-                  <Camera className="h-4 w-4 text-muted-foreground" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      const formData = new FormData();
-                      formData.append('file', file);
-                      try {
-                        const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                        const data = await res.json();
-                        console.log('Uploaded image:', data);
-                      } catch (err) {
-                        console.error('Upload failed:', err);
-                      }
-                    }}
-                    className="hidden"
-                  />
-                </label>
-                <Button
-                  type="submit"
-                  size="icon"
-                  disabled={isLoading || !input.trim() || !!inputError}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 h-8 w-8"
-                >
-                  <ArrowUp className="h-4 w-4" />
-                  <span className="sr-only">Send message</span>
-                </Button>
+
+                {/* Error Message */}
+                {inputError && (
+                  <div className="absolute -bottom-5 left-6 text-red-500 text-xs font-medium mt-1">
+                    ⚠️ {inputError}
+                  </div>
+                )}
               </form>
             </div>
           </div>
