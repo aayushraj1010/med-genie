@@ -8,11 +8,6 @@ import { BackgroundParticles } from '@/components/background-particles';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  personalizedHealthQuestionAnswering,
-  type PersonalizedHealthQuestionAnsweringInput,
-  type PersonalizedHealthQuestionAnsweringOutput,
-} from '@/ai/flows/personalized-health-question-answering';
 import type { ChatMessage, UserProfile, AISuggestedKey } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useChatHistory } from '@/hooks/use-chat-history';
@@ -184,37 +179,120 @@ function HomePage() {
             .slice(-10)
             .map((msg) => `${msg.sender === 'user' ? 'User' : 'Med Genie'}: ${msg.text}`)
             .join('\n');
-        const input: PersonalizedHealthQuestionAnsweringInput = {
-          question,
-          medicalHistory: userProfile.medicalHistory,
-          lifestyle: userProfile.lifestyle,
-          symptoms: userProfile.symptoms,
-          conversationHistory: formatConversationHistory(messages),
+        const response = await fetch('/api/agent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question,
+            medicalHistory: userProfile.medicalHistory,
+            lifestyle: userProfile.lifestyle,
+            symptoms: userProfile.symptoms,
+            conversationHistory: formatConversationHistory(messages),
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        if (!response.body) {
+          throw new Error('Streaming response is unavailable');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let assistantText = '';
+        let additionalQuestions: string[] = [];
+        const assistantMessageId = `ai-stream-${Date.now()}`;
+
+        setMessages((prev) =>
+          prev
+            .filter((msg) => msg.id !== aiLoadingMessage.id)
+            .concat({
+              id: assistantMessageId,
+              text: '',
+              sender: 'ai',
+              timestamp: Date.now(),
+            })
+        );
+
+        const applyAssistantText = (text: string) => {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMessageId
+                ? { ...msg, text }
+                : msg
+            )
+          );
         };
-        const result: PersonalizedHealthQuestionAnsweringOutput = await personalizedHealthQuestionAnswering(input);
 
-        setMessages((prev) => prev.filter((msg) => msg.id !== aiLoadingMessage.id));
+        const parseSseBlock = (block: string) => {
+          const lines = block.split('\n');
+          let eventName = 'message';
+          const dataLines: string[] = [];
 
-        if (result.answer) {
+          for (const line of lines) {
+            if (line.startsWith('event:')) {
+              eventName = line.slice(6).trim();
+            } else if (line.startsWith('data:')) {
+              dataLines.push(line.slice(5).trim());
+            }
+          }
+
+          const data = dataLines.join('\n');
+          return { eventName, data };
+        };
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+
+          let separatorIndex = buffer.indexOf('\n\n');
+          while (separatorIndex !== -1) {
+            const block = buffer.slice(0, separatorIndex);
+            buffer = buffer.slice(separatorIndex + 2);
+
+            if (block.trim()) {
+              const { eventName, data } = parseSseBlock(block);
+              if (data) {
+                const payload = JSON.parse(data) as { text?: string; additionalQuestions?: string[] };
+                if (eventName === 'chunk' && payload.text) {
+                  assistantText += payload.text;
+                  applyAssistantText(assistantText);
+                }
+                if (eventName === 'meta' && payload.additionalQuestions) {
+                  additionalQuestions = payload.additionalQuestions;
+                }
+              }
+            }
+
+            separatorIndex = buffer.indexOf('\n\n');
+          }
+        }
+
+        if (assistantText) {
           const aiInfoMessage: ChatMessage = {
-            id: `ai-info-${Date.now()}`,
-            text: result.answer,
+            id: assistantMessageId,
+            text: assistantText,
             sender: 'ai',
             timestamp: Date.now(),
           };
-          setMessages((prev) => [...prev, aiInfoMessage]);
           addMessage(activeSessionId, aiInfoMessage);
         }
 
-        if (result.followUpQuestion) {
+        if (additionalQuestions.length > 0) {
+          const followUpQuestion = `I need a bit more information to help safely:\n\n- ${additionalQuestions.join('\n- ')}`;
           let keyToUpdate: AISuggestedKey | undefined;
-          const followUpLower = result.followUpQuestion.toLowerCase();
+          const followUpLower = followUpQuestion.toLowerCase();
           if (followUpLower.includes('medical history')) keyToUpdate = 'medicalHistory';
           else if (followUpLower.includes('lifestyle')) keyToUpdate = 'lifestyle';
           else if (followUpLower.includes('symptom')) keyToUpdate = 'symptoms';
           const aiFollowUpMessage: ChatMessage = {
             id: `ai-followup-${Date.now()}`,
-            text: result.followUpQuestion as string,
+            text: followUpQuestion,
             sender: 'ai',
             timestamp: Date.now(),
             isFollowUpPrompt: true,
@@ -308,10 +386,6 @@ function HomePage() {
       if (!activeSessionId) return;
 
       if (lastUserQuestionForFollowUp) {
-        const updatedInput: PersonalizedHealthQuestionAnsweringInput = {
-          question: lastUserQuestionForFollowUp,
-          ...newProfileData,
-        };
         const profileUpdatedMessage: ChatMessage = {
           id: `system-profile-updated-${Date.now()}`,
           text: "✅ Your information has been updated. I'll use this to refine my answer.",
@@ -333,28 +407,102 @@ function HomePage() {
         setIsLoading(true);
 
         try {
-          const result = await personalizedHealthQuestionAnswering(updatedInput);
+          const response = await fetch('/api/agent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              question: lastUserQuestionForFollowUp,
+              medicalHistory: newProfileData.medicalHistory,
+              lifestyle: newProfileData.lifestyle,
+              symptoms: newProfileData.symptoms,
+              conversationHistory: messages
+                .filter((msg) => !msg.isLoading)
+                .slice(-10)
+                .map((msg) => `${msg.sender === 'user' ? 'User' : 'Med Genie'}: ${msg.text}`)
+                .join('\n'),
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+          }
+
+          if (!response.body) {
+            throw new Error('Streaming response is unavailable');
+          }
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          let refinedText = '';
+
           setMessages((prev) => prev.filter((msg) => msg.id !== loadingId));
+
+          const refinedMessageId = `ai-refined-response-${Date.now()}`;
+          setMessages((prev) =>
+            prev.concat({
+              id: refinedMessageId,
+              text: '',
+              sender: 'ai',
+              timestamp: Date.now(),
+            })
+          );
+
+          const updateRefinedText = (text: string) => {
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === refinedMessageId
+                  ? { ...msg, text }
+                  : msg
+              )
+            );
+          };
+
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+
+            let separatorIndex = buffer.indexOf('\n\n');
+            while (separatorIndex !== -1) {
+              const block = buffer.slice(0, separatorIndex);
+              buffer = buffer.slice(separatorIndex + 2);
+
+              if (block.trim()) {
+                const lines = block.split('\n');
+                let eventName = 'message';
+                const dataLines: string[] = [];
+
+                for (const line of lines) {
+                  if (line.startsWith('event:')) {
+                    eventName = line.slice(6).trim();
+                  } else if (line.startsWith('data:')) {
+                    dataLines.push(line.slice(5).trim());
+                  }
+                }
+
+                const payloadText = dataLines.join('\n');
+                if (payloadText) {
+                  const payload = JSON.parse(payloadText) as { text?: string };
+                  if (eventName === 'chunk' && payload.text) {
+                    refinedText += payload.text;
+                    updateRefinedText(refinedText);
+                  }
+                }
+              }
+
+              separatorIndex = buffer.indexOf('\n\n');
+            }
+          }
+
           const refinedResponseMessage: ChatMessage = {
-            id: `ai-refined-response-${Date.now()}`,
-            text: result.answer || 'Thanks! Let me know how else I can help.',
+            id: refinedMessageId,
+            text: refinedText || 'Thanks! Let me know how else I can help.',
             sender: 'ai',
             timestamp: Date.now(),
           };
-          setMessages((prev) => [...prev, refinedResponseMessage]);
           addMessage(activeSessionId, refinedResponseMessage);
-          if (result.followUpQuestion) {
-            const refinedFollowUpMessage: ChatMessage = {
-              id: `ai-refined-followup-${Date.now()}`,
-              text: result.followUpQuestion as string,
-              sender: 'ai',
-              timestamp: Date.now(),
-              isFollowUpPrompt: true,
-            };
-            setMessages((prev) => [...prev, refinedFollowUpMessage]);
-            addMessage(activeSessionId, refinedFollowUpMessage);
-            toast({ title: 'Further Info Needed', description: 'The AI has another follow-up question.' });
-          }
         } catch (error) {
           setMessages((prev) => prev.filter((msg) => msg.id !== loadingId));
           const errorMessage: ChatMessage = {

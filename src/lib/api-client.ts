@@ -50,7 +50,7 @@ class ApiClient {
         // Clear invalid token
         if (typeof window !== 'undefined') {
           SecureTokenStorage.clearTokens();
-          sessionStorage.removeItem('medgenie_user');
+          localStorage.removeItem('medgenie_user');
           window.location.href = '/login';
         }
       }

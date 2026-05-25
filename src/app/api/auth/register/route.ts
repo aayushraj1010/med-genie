@@ -187,7 +187,7 @@ const registerHandler = async (req: NextRequest) => {
       success: true
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: "User registered successfully",
       accessToken: tokenPair.accessToken,
@@ -199,6 +199,16 @@ const registerHandler = async (req: NextRequest) => {
         email: newUser.email
       }
     }, { status: 201 });
+
+    response.cookies.set('refresh_token', tokenPair.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60,
+      path: '/',
+    });
+
+    return response;
 
   } catch (error: any) {
     console.error('Registration error:', error);

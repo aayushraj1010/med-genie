@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyRefreshToken, signAccessToken, blacklistToken } from '@/lib/jwt';
+import { verifyRefreshToken, signAccessToken } from '@/lib/jwt';
+import { SecurePrisma } from '@/lib/secure-prisma';
 import { cookies } from 'next/headers';
 
 export async function POST(req: NextRequest) {
@@ -22,20 +23,27 @@ export async function POST(req: NextRequest) {
             );
         }
 
+        const user = await SecurePrisma.user.findUnique({
+            where: { id: decoded.userId },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+            },
+        });
+
         // Generate new access token
         const newAccessToken = signAccessToken({
             userId: decoded.userId,
-            email: '', // Will be filled by the sign function
-            name: '',  // Will be filled by the sign function
+            email: user?.email || '',
+            name: user?.name || '',
             tokenId: decoded.tokenId,
         });
-
-        // Blacklist old refresh token (optional - implement rotation)
-        // await blacklistToken(decoded.tokenId);
 
         return NextResponse.json({
             success: true,
             accessToken: newAccessToken,
+            user: user ? { id: user.id, name: user.name, email: user.email } : undefined,
         });
 
     } catch (error) {

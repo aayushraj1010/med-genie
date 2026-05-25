@@ -1,6 +1,6 @@
 /**
  * SecureTokenStorage - Secure token management for JWT authentication
- * Provides secure storage and retrieval of access and refresh tokens
+ * Provides storage and retrieval of access and refresh tokens
  */
 
 export class SecureTokenStorage {
@@ -14,8 +14,8 @@ export class SecureTokenStorage {
      */
     static setTokens(accessToken: string, refreshToken: string): void {
         try {
-            // Store access token in sessionStorage (cleared when tab closes)
-            sessionStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
+            // Store access token in localStorage so auth survives route changes and new tabs
+            localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
 
             // Store refresh token in httpOnly cookie (handled by backend)
             // The refresh token is managed by the backend via httpOnly cookies
@@ -32,7 +32,7 @@ export class SecureTokenStorage {
      */
     static setAccessToken(accessToken: string): void {
         try {
-            sessionStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
+            localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
         } catch (error) {
             console.error('Error storing access token:', error);
             throw new Error('Failed to store access token');
@@ -45,7 +45,7 @@ export class SecureTokenStorage {
      */
     static getAccessToken(): string | null {
         try {
-            return sessionStorage.getItem(this.ACCESS_TOKEN_KEY);
+            return localStorage.getItem(this.ACCESS_TOKEN_KEY);
         } catch (error) {
             console.error('Error retrieving access token:', error);
             return null;
@@ -65,8 +65,8 @@ export class SecureTokenStorage {
      */
     static clearTokens(): void {
         try {
-            sessionStorage.removeItem(this.ACCESS_TOKEN_KEY);
-            sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
+            localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+            localStorage.removeItem(this.REFRESH_TOKEN_KEY);
         } catch (error) {
             console.error('Error clearing tokens:', error);
         }
@@ -77,7 +77,7 @@ export class SecureTokenStorage {
      */
     static clearAccessToken(): void {
         try {
-            sessionStorage.removeItem(this.ACCESS_TOKEN_KEY);
+            localStorage.removeItem(this.ACCESS_TOKEN_KEY);
         } catch (error) {
             console.error('Error clearing access token:', error);
         }

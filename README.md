@@ -107,7 +107,7 @@ Med Genie is an intelligent AI-powered health assistant that provides instant, a
 ### **Build Errors**
 - **JWT_SECRET error**: Run `npm run setup-env` to generate environment variables
 - **Database connection issues**: Ensure Prisma client is generated with `npx prisma generate`
-- **Port conflicts**: Change port in `package.json` scripts if 9003 is occupied
+DATABASE_URL="file:./dev.db"
 
 ### **Common Issues**
 - **Authentication not working**: Verify JWT_SECRET is set in your environment
@@ -570,11 +570,13 @@ npm run genkit:dev
 Create a `.env.local` file with:
 
 ```env
-# Google AI (Gemini) API Key
-GOOGLE_AI_API_KEY=your_google_ai_api_key
+# OpenRouter AI Configuration
+OPENROUTER_API_KEY=your_openrouter_api_key
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+OPENROUTER_MODEL=openrouter/openai/gpt-4o-mini
 
-# Database URL (if using database features)
-DATABASE_URL=your_database_url
+# Database URL (local SQLite dev database)
+DATABASE_URL=file:./dev.db
 
 # Other optional configurations
 NEXT_PUBLIC_APP_URL=http://localhost:3000

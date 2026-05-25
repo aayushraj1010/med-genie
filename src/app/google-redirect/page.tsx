@@ -20,7 +20,7 @@ function GoogleRedirect() {
       // Store tokens in your secure storage
       SecureTokenStorage.setTokens(token, ""); 
       setAccessToken(token);
-      sessionStorage.setItem('medgenie_user', JSON.stringify(user));
+      localStorage.setItem('medgenie_user', JSON.stringify(user));
       setUser(user);
       router.replace("/homepage"); // redirect after login
     } else {

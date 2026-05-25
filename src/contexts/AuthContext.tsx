@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
           return () => clearTimeout(refreshTimer);
         } else {
-          refreshAccessToken();
+          refreshAccessToken({ silent: true });
         }
       } catch (error) {
         console.error("Error parsing token:", error);
@@ -73,19 +73,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Load user data from secure storage on mount
   useEffect(() => {
-    const loadUserData = () => {
+    const loadUserData = async () => {
       try {
         const savedAccessToken = SecureTokenStorage.getAccessToken();
-        const savedUser = sessionStorage.getItem("medgenie_user");
+        const savedUser = localStorage.getItem("medgenie_user");
 
         if (savedAccessToken && savedUser) {
           setAccessToken(savedAccessToken);
           setUser(JSON.parse(savedUser));
+        } else {
+          await refreshAccessToken({ silent: true });
         }
       } catch (error) {
         console.error("Error loading user data:", error);
         SecureTokenStorage.clearTokens();
-        sessionStorage.removeItem("medgenie_user");
+        localStorage.removeItem("medgenie_user");
       }
       setIsLoading(false);
     };
@@ -93,23 +95,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loadUserData();
   }, []);
 
-  const refreshAccessToken = async (): Promise<boolean> => {
+  const refreshAccessToken = async (options?: { silent?: boolean }): Promise<boolean> => {
     try {
       const response = await fetch("/api/auth/refresh", {
         method: "POST",
         credentials: "include",
       });
       if (response.ok) {
-        const { accessToken: newAccessToken } = await response.json();
+        const { accessToken: newAccessToken, user: refreshedUser } = await response.json();
         setAccessToken(newAccessToken);
         SecureTokenStorage.setTokens(newAccessToken, "");
+        if (refreshedUser) {
+          setUser(refreshedUser);
+          localStorage.setItem("medgenie_user", JSON.stringify(refreshedUser));
+        }
         return true;
       } else {
-        await logout();
+        if (!options?.silent) {
+          await logout();
+        }
         return false;
       }
     } catch (error) {
-      await logout();
+      if (!options?.silent) {
+        await logout();
+      }
       return false;
     }
   };
@@ -128,7 +138,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAccessToken(data.accessToken);
         setUser(data.user);
         SecureTokenStorage.setTokens(data.accessToken, data.refreshToken || "");
-        sessionStorage.setItem("medgenie_user", JSON.stringify(data.user));
+        localStorage.setItem("medgenie_user", JSON.stringify(data.user));
         return { success: true, message: data.message };
       } else {
         return { success: false, message: data.message || "Login failed" };
@@ -160,7 +170,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAccessToken(data.accessToken);
         setUser(data.user);
         SecureTokenStorage.setTokens(data.accessToken, data.refreshToken || "");
-        sessionStorage.setItem("medgenie_user", JSON.stringify(data.user));
+        localStorage.setItem("medgenie_user", JSON.stringify(data.user));
         return { success: true, message: data.message };
       } else {
         return {
@@ -188,7 +198,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       setAccessToken(null);
       SecureTokenStorage.clearTokens();
-      sessionStorage.removeItem("medgenie_user");
+      localStorage.removeItem("medgenie_user");
       router.push("/login");
     }
   };

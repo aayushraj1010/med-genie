@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
 import { Menu, X } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { UserMenu } from "@/components/UserMenu";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -22,6 +24,7 @@ const links = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
 
   return (
     <div className="bg-black/15 text-white fixed top-[30px] left-1/2 -translate-x-1/2 w-[87%] h-auto py-[10px] px-[20px] border border-[#3FB5F440] rounded-[10px] backdrop-blur-[15px] flex justify-between items-center z-[100]">
@@ -52,13 +55,19 @@ export default function Navbar() {
         ))}
       </div>
 
-      {/* Desktop Login */}
-      <Link
-        href="/login"
-        className="hidden md:flex w-[100px] h-[40px] rounded-[7px] py-[10px] px-[29px] bg-[#3FB5F4] hover:bg-[#2196d3] hover:shadow-[0_5px_15px_0_rgba(63,181,244,0.4)] transition-all duration-200 justify-center items-center text-[18px] text-[#101010] font-medium"
-      >
-        Login
-      </Link>
+      {/* Desktop Auth */}
+      <div className="hidden md:flex items-center">
+        {!isLoading && (isAuthenticated ? (
+          <UserMenu />
+        ) : (
+          <Link
+            href="/login"
+            className="w-[100px] h-[40px] rounded-[7px] py-[10px] px-[29px] bg-[#3FB5F4] hover:bg-[#2196d3] hover:shadow-[0_5px_15px_0_rgba(63,181,244,0.4)] transition-all duration-200 justify-center items-center text-[18px] text-[#101010] font-medium flex"
+          >
+            Login
+          </Link>
+        ))}
+      </div>
 
       {/* Hamburger */}
       <button
@@ -86,13 +95,21 @@ export default function Navbar() {
             {name}
           </Link>
         ))}
-        <Link
-          href="/login"
-          onClick={() => setMenuOpen(false)}
-          className="w-full h-[40px] rounded-[7px] bg-[#3FB5F4] hover:bg-[#2196d3] hover:shadow-[0_5px_15px_0_rgba(63,181,244,0.4)] transition-all duration-200 text-[18px] text-[#101010] font-medium flex items-center justify-center"
-        >
-          Login
-        </Link>
+        {!isLoading && (
+          isAuthenticated ? (
+            <div onClick={() => setMenuOpen(false)}>
+              <UserMenu />
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              onClick={() => setMenuOpen(false)}
+              className="w-full h-[40px] rounded-[7px] bg-[#3FB5F4] hover:bg-[#2196d3] hover:shadow-[0_5px_15px_0_rgba(63,181,244,0.4)] transition-all duration-200 text-[18px] text-[#101010] font-medium flex items-center justify-center"
+            >
+              Login
+            </Link>
+          )
+        )}
       </div>
     </div>
   );

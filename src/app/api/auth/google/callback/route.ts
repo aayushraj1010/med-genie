@@ -123,7 +123,7 @@ const GOOGLE_CALLBACK_HANDLER = async (req: NextRequest) => {
     const response = NextResponse.redirect(redirectUrl);
 
     // Set refresh token as HttpOnly cookie
-    response.cookies.set("refreshToken", tokenPair.refreshToken, {
+    response.cookies.set("refresh_token", tokenPair.refreshToken, {
       httpOnly: true,
       path: "/",
       maxAge: 7 * 24 * 60 * 60, // 7 days

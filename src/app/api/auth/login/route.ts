@@ -199,7 +199,7 @@ const loginHandler = async (req: NextRequest) => {
     });
 
     // Return success response with token pair and user data
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: "Login successful",
       accessToken: tokenPair.accessToken,
@@ -211,6 +211,16 @@ const loginHandler = async (req: NextRequest) => {
         email: user.email
       }
     }, { status: 200 });
+
+    response.cookies.set('refresh_token', tokenPair.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60,
+      path: '/',
+    });
+
+    return response;
 
   } catch (error: any) {
     console.error('Login error:', error);

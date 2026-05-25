@@ -86,7 +86,7 @@ JWT_SECRET=your-super-secret-jwt-key-change-in-production
 JWT_EXPIRES_IN=7d
 
 # Database Configuration
-DATABASE_URL="postgresql://username:password@localhost:5432/medgenie"
+DATABASE_URL="file:./dev.db"
 ```
 
 ## API Endpoints
