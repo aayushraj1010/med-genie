@@ -50,7 +50,7 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
         className={cn(
           "max-w-lg lg:max-w-xl xl:max-w-2xl rounded-xl shadow-md",
           isUser
-            ? "bg-primary text-primary-foreground rounded-br-none"
+            ? "bg-white/90 text-slate-900 border border-slate-200 dark:bg-primary dark:text-primary-foreground rounded-br-none"
             : "bg-card text-card-foreground rounded-bl-none"
         )}
         role="region"
