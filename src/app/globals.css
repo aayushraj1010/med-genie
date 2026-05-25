@@ -143,11 +143,11 @@ body {
 }
 
 .bot-response-card {
-  background: rgba(248, 250, 252, 0.96);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(248, 250, 252, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 @keyframes glassGlow {

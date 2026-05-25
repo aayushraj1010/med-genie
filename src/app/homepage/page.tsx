@@ -473,7 +473,7 @@ function HomePage() {
             role="log"
             aria-label="Chat conversation"
           >
-            <div className="space-y-4 max-w-3xl mx-auto pr-4">
+            <div className="space-y-3 max-w-2xl mx-auto pr-3">
               {/* NOTE: The QuickReplyGrid is no longer here */}
               {messages.map((msg) => (
                 <ChatMessageItem key={msg.id} message={msg} onFeedback={handleFeedback} />

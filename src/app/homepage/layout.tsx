@@ -113,19 +113,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
-        <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
-<AOSProvider>
-  <StructuredData />
-  <SiteHeader />
-  {children}
-  <SiteFooter />
-  <Toaster />
-  <Analytics />
-</AOSProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+    <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
+      <AOSProvider>
+        <StructuredData />
+        <SiteHeader />
+        {children}
+        <SiteFooter />
+        <Toaster />
+        <Analytics />
+      </AOSProvider>
+    </ThemeProvider>
   );
 }
