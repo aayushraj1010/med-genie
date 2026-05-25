@@ -96,7 +96,7 @@ export function ChatInputForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-background border-t border-border/40 shadow-sm rounded-lg flex items-center space-x-2"
+      className="p-5 md:p-6 bg-slate-50/90 border-t border-slate-200/80 shadow-[0_24px_80px_-44px_rgba(15,23,42,0.25)] rounded-[28px] flex items-center gap-4"
     >
       <input
         type="file"
@@ -105,31 +105,41 @@ export function ChatInputForm({
         style={{ display: "none" }}
         onChange={handleImageChange}
       />
-      <label htmlFor="image-upload">
-        <Button type="button" size="icon" variant="outline">
-          <ImageIcon className="h-5 w-5" />
+
+      <label htmlFor="image-upload" className="shrink-0">
+        <Button
+          type="button"
+          size="icon"
+          variant="outline"
+          className="h-14 w-14 rounded-2xl border border-slate-200/80 bg-white shadow-sm text-slate-600 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-sky-200"
+        >
+          <ImageIcon className="h-6 w-6" />
         </Button>
       </label>
 
-      <div className="flex-grow flex flex-col">
-        <Textarea
-          value={question}
-          onChange={(e) => handleInputChange(e.target.value)}
-          placeholder={placeholder}
-          className={`flex-grow resize-none min-h-[40px] max-h-[150px] py-2 ${inputError ? 'border-red-500 focus:border-red-500' : ''
+      <div className="flex-1 flex flex-col gap-2">
+        <div className="flex items-center gap-3 rounded-[22px] border border-slate-200/70 bg-white shadow-sm px-4 py-3.5 transition-all duration-200 focus-within:border-blue-300 focus-within:ring-1 focus-within:ring-blue-100">
+          <Textarea
+            value={question}
+            onChange={(e) => handleInputChange(e.target.value)}
+            placeholder={placeholder}
+            className={`w-full resize-none min-h-[56px] max-h-[170px] bg-transparent border-0 px-0 py-0 text-base leading-7 font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-0 ${
+              inputError ? 'placeholder-red-300' : ''
             }`}
-          rows={1}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit(e as unknown as FormEvent<HTMLFormElement>);
-            }
-          }}
-          disabled={isLoading}
-          aria-label="Type your health question here"
-        />
+            rows={1}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e as unknown as FormEvent<HTMLFormElement>);
+              }
+            }}
+            disabled={isLoading}
+            aria-label="Type your health question here"
+          />
+        </div>
+
         {inputError && (
-          <div className="text-red-500 text-xs mt-1 px-2">
+          <div className="text-red-600 text-xs px-3">
             ⚠️ {inputError}
           </div>
         )}
@@ -138,13 +148,12 @@ export function ChatInputForm({
       <Button
         type="submit"
         disabled={isLoading || (!question.trim() && !imageFile) || !!inputError}
-        size="icon"
-        className="bg-primary hover:bg-primary/90 transition-all duration-200"
+        className="h-14 w-14 rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/15 transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center border-0"
       >
         {isLoading ? (
-          <Loader2 className="h-5 w-5 animate-spin" />
+          <Loader2 className="h-6 w-6 animate-spin" />
         ) : (
-          <SendHorizonal className="h-5 w-5" />
+          <SendHorizonal className="h-6 w-6" />
         )}
       </Button>
     </form>

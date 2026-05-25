@@ -26,7 +26,7 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
   return (
     <div
       className={cn(
-        "flex items-end space-x-3",
+        "flex items-start space-x-3",
         isUser ? "justify-end" : "justify-start"
       )}
       role="article"
@@ -48,10 +48,10 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
       {/* Message Card */}
       <Card
         className={cn(
-          "max-w-lg lg:max-w-xl xl:max-w-2xl rounded-xl shadow-md",
+          "relative overflow-hidden max-w-[65%] rounded-[20px] shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5",
           isUser
-            ? "bg-primary text-primary-foreground rounded-br-none"
-            : "bg-card text-card-foreground rounded-bl-none"
+            ? "bg-slate-900/95 text-slate-100 border border-slate-700/50"
+            : "bot-response-card text-slate-950 border border-slate-200/60"
         )}
         role="region"
         aria-label={isUser ? "Your message" : "Med Genie response"}
@@ -76,10 +76,19 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
               {message.text && (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
-                  className="prose prose-sm dark:prose-invert max-w-none"
+                  className={cn(
+                    "prose prose-sm max-w-none",
+                    isUser ? "text-slate-100" : "text-slate-950"
+                  )}
                   components={{
                     p: ({ node, ...props }) => (
-                      <p className="mb-2 last:mb-0" {...props} />
+                      <p
+                        className={cn(
+                          "mb-2 last:mb-0 text-sm font-normal leading-7 tracking-normal",
+                          isUser ? "text-slate-100" : "text-slate-950"
+                        )}
+                        {...props}
+                      />
                     ),
                     ul: ({ node, ...props }) => (
                       <ul
@@ -103,10 +112,10 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
                       <h1 className="text-xl font-bold mb-2" {...props} />
                     ),
                     h2: ({ node, ...props }) => (
-                      <h2 className="text-lg font-bold mb-2" {...props} />
+                      <h2 className="text-lg font-semibold mb-2" {...props} />
                     ),
                     h3: ({ node, ...props }) => (
-                      <h3 className="text-base font-bold mb-2" {...props} />
+                      <h3 className="text-base font-medium mb-2" {...props} />
                     ),
                   }}
                 >
@@ -128,7 +137,7 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
 
         {/* Feedback (only for bot messages) */}
         {!isUser && !message.isLoading && !message.isFollowUpPrompt && (
-          <CardFooter className="p-3 pt-0">
+          <CardFooter className="px-3 pb-2 pt-1">
             <FeedbackButtons
               messageId={message.id}
               onFeedback={handleFeedback}
