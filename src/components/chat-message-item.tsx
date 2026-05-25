@@ -48,10 +48,10 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
       {/* Message Card */}
       <Card
         className={cn(
-          "max-w-lg lg:max-w-xl xl:max-w-2xl rounded-xl shadow-md",
+          "relative overflow-hidden max-w-lg lg:max-w-xl xl:max-w-2xl rounded-[22px] shadow-lg transition-all duration-300 ease-out hover:-translate-y-0.5",
           isUser
-            ? "bg-white/90 text-slate-900 border border-slate-200 dark:bg-primary dark:text-primary-foreground rounded-br-none"
-            : "bg-card text-card-foreground rounded-bl-none"
+            ? "glass-query-card text-slate-100 border border-slate-700/40 rounded-br-none"
+            : "bot-response-card text-slate-950 rounded-bl-none"
         )}
         role="region"
         aria-label={isUser ? "Your message" : "Med Genie response"}
@@ -76,10 +76,19 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
               {message.text && (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
-                  className="prose prose-sm dark:prose-invert max-w-none"
+                  className={cn(
+                    "prose prose-sm max-w-none",
+                    isUser ? "text-slate-100" : "text-slate-950"
+                  )}
                   components={{
                     p: ({ node, ...props }) => (
-                      <p className="mb-2 last:mb-0" {...props} />
+                      <p
+                        className={cn(
+                          "mb-2 last:mb-0 text-base font-medium leading-7",
+                          isUser ? "text-slate-100" : "text-slate-950"
+                        )}
+                        {...props}
+                      />
                     ),
                     ul: ({ node, ...props }) => (
                       <ul
