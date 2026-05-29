@@ -10,11 +10,23 @@
   <link rel="stylesheet" href="privacypolicy.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    
+    .back-button {
+      margin-bottom: 16px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      background: white;
+    }
   </style>
 </head>
 <body>
+  
+  <div class="container">
+
+    
   <!-- Sticky glass navigation -->
+
   <header class="site-header" id="top">
     <nav class="nav" aria-label="Primary">
       <div class="brand">
@@ -42,6 +54,13 @@
 
   <main class="shell">
     <article class="card" role="article">
+      <button
+      onclick="window.history.back()"
+      aria-label="Go back to previous page"
+      class="back-button"
+    >
+      ← Back
+    </button>
       <div class="head">
         <h2 data-aos="fade-up">Privacy Policy</h2>
         <div data-aos="fade-up" class="badge" id="last-updated">Last Updated: August 15, 2025</div>
