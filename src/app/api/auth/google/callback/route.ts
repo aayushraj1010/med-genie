@@ -31,6 +31,8 @@ const GOOGLE_CALLBACK_HANDLER = async (req: NextRequest) => {
       );
     }
 
+    const appUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
     // Exchange code for tokens
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
@@ -39,7 +41,7 @@ const GOOGLE_CALLBACK_HANDLER = async (req: NextRequest) => {
         code,
         client_id: process.env.GOOGLE_CLIENT_ID!,
         client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-        redirect_uri: `${process.env.APP_URL}/api/auth/google/callback`,
+        redirect_uri: `${appUrl}/api/auth/google/callback`,
         grant_type: "authorization_code",
       }),
     });
@@ -107,10 +109,7 @@ const GOOGLE_CALLBACK_HANDLER = async (req: NextRequest) => {
     });
 
     // redirect to frontend route with accessToken
-    console.log(process.env.APP_URL)
-    const redirectUrl = `${
-      process.env.APP_URL
-    }/google-redirect?accessToken=${
+    const redirectUrl = `${appUrl}/google-redirect?accessToken=${
       tokenPair.accessToken
     }&user=${encodeURIComponent(
       JSON.stringify({
