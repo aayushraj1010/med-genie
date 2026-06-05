@@ -5,8 +5,9 @@ generator client {
 // migrate cmnd : npx prisma migrate dev --name your_migration_name
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
