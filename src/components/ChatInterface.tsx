@@ -9,12 +9,13 @@ interface Message {
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
+  const trimmedInput = input.trim();
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!trimmedInput) return;
 
-    const userMessage = input;
+    const userMessage = trimmedInput;
     setMessages(prev => [...prev, { role: 'user' as const, content: userMessage }]);
     setInput('');
 
@@ -55,7 +56,7 @@ export default function ChatInterface() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about symptoms, dosage, etc..."
         />
-        <button type="submit">Send</button>
+        <button type="submit" disabled={!trimmedInput}>Send</button>
       </form>
     </div>
   );
