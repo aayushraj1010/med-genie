@@ -24,6 +24,7 @@ import { ChatHistorySidebar } from '@/components/chat-history-sidebar';
 import { ChatHistoryButton } from '@/components/chat-history-button';
 import { QuickReplyGrid } from '@/components/QuickReplyGrid';
 import { InputSanitizer } from '@/lib/input-sanitizer';
+import { useHealthReminders } from '@/hooks/useHealthReminders';
 
 const VoiceSearch = dynamic(() => import('@/components/VoiceSearch'), {
   ssr: false,
@@ -57,6 +58,7 @@ function HomePage() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const { remindersActive } = useHealthReminders();
 
   const {
     sessions,
@@ -461,10 +463,17 @@ function HomePage() {
                 New Chat
               </Button>
             </div>
-            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information">
-              <Info className="mr-2 h-4 w-4" />
-              Update Health Info
-            </Button>
+            <div className="flex space-x-2 items-center">
+              {remindersActive && (
+                <span className="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded border border-green-400">
+                  🔔 Reminders Active
+                </span>
+              )}
+              <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information">
+                <Info className="mr-2 h-4 w-4" />
+                Update Health Info
+              </Button>
+            </div>
           </header>
 
           <ScrollArea
