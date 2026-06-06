@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { withAuth, AuthenticatedRequest } from '@/lib/auth-middleware';
 
 // Temporarily use a mock function for testing until AI is configured
 async function getMockRecommendations(input: any) {
@@ -146,7 +147,7 @@ async function getMockRecommendations(input: any) {
   };
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: AuthenticatedRequest) => {
   try {
     const body = await request.json();
     
@@ -189,7 +190,7 @@ export async function POST(request: NextRequest) {
     console.error('Error in specialist recommendation API:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 } 
     );
   }
-}
+});

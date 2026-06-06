@@ -6,6 +6,7 @@ import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import Lottie from "lottie-react";
 import ecgAnimation from "@/assets/animations/ECG.json";
+import Link from 'next/link';
 
 export default function MedGenieLoginForm() {
   const [email, setEmail] = useState("");
@@ -72,6 +73,13 @@ export default function MedGenieLoginForm() {
         <p className="text-white/70 text-center mb-8 text-sm">
           Sign in to access your AI-powered health assistant
         </p>
+        <button
+  type="button"
+  onClick={() => router.push("/")}
+  className="block mx-auto mb-8 text-sm text-blue-400 hover:text-blue-300 hover:underline"
+>
+  ← Back to Home
+</button>
 
         {error && (
           <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
