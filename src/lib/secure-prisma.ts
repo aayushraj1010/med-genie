@@ -333,6 +333,74 @@ class SecurePrismaClient extends PrismaClient {
             take: 10 // Limit results
         });
     }
+    async exportUserData(userId: number, ipAddress?: string) {
+        // Validate user ID
+        if (!userId || typeof userId !== 'number' || userId <= 0) {
+            throw new Error('Invalid user ID');
+        }
+
+        // Check rate limiting - more strict for full exports
+        if (!DatabaseSecurity.checkRateLimit('exportUserData', userId, 3, 86400000)) { // 3 per day
+            throw new Error('Rate limit exceeded for data export. Please try again later.');
+        }
+
+        // Log database access
+        DatabaseSecurity.logDatabaseAccess({
+            userId,
+            action: 'EXPORT_USER_DATA',
+            table: 'user, healthProfile, chatSessions',
+            details: `Full data export requested for user: ${userId}`,
+            ipAddress,
+            success: true
+        });
+
+        // Fetch user data, health profile, and chat sessions
+        const userData = await this.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                createdAt: true,
+                updatedAt: true,
+                lastLoginAt: true,
+                healthProfile: {
+                    select: {
+                        medicalHistory: true,
+                        lifestyle: true,
+                        symptoms: true,
+                        allergies: true,
+                        medications: true,
+                        createdAt: true,
+                        updatedAt: true
+                    }
+                },
+                chatSessions: {
+                    select: {
+                        sessionId: true,
+                        title: true,
+                        createdAt: true,
+                        messages: {
+                            select: {
+                                content: true,
+                                sender: true,
+                                timestamp: true,
+                                isFollowUp: true
+                            },
+                            orderBy: { timestamp: 'asc' }
+                        }
+                    },
+                    orderBy: { createdAt: 'desc' }
+                }
+            }
+        });
+
+        if (!userData) {
+            throw new Error('User not found');
+        }
+
+        return userData;
+    }
 }
 
 // Export singleton instance
