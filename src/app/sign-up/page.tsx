@@ -43,6 +43,7 @@ function MedGenieRegisterForm() {
     // Check if user came from login page and pre-fill email if provided
     const emailFromParams = searchParams.get("email");
     const fromLogin = searchParams.get("from") === "login";
+    const errorFromParams = searchParams.get("error");
 
     if (emailFromParams) {
       // Basic email validation
@@ -54,6 +55,10 @@ function MedGenieRegisterForm() {
 
     if (fromLogin) {
       setIsFromLogin(true);
+    }
+
+    if (errorFromParams === "google_not_configured") {
+      setError("Google Sign-In is not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your environment variables.");
     }
 
     // Trigger animation after mount
@@ -83,7 +88,7 @@ function MedGenieRegisterForm() {
   }, [password]);
 
   const handleGoogleLogin = () => {
-    router.push("/api/auth/google"); // redirect to Google auth
+    window.location.href = "/api/auth/google"; // redirect to Google auth
   };
 
   const handleRegister = async (e: React.FormEvent) => {
