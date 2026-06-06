@@ -12,25 +12,76 @@ interface Contributor {
 
 export function TopContributors() {
     const [contributors, setContributors] = useState<Contributor[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        fetch('https://api.github.com/repos/aayushraj1010/med-genie/contributors')
-            .then(res => res.json())
-            .then((data: any[]) => {
+        // 1. Initialize AbortController to handle component unmounts
+        const controller = new AbortController();
+        const { signal } = controller;
+
+        const fetchContributors = async () => {
+            try {
+                setIsLoading(true);
+                setError(null);
+
+                const res = await fetch('https://api.github.com/repos/aayushraj1010/med-genie/contributors', { signal });
+
+                // 2. Check if the network response is ok (handles rate limits or API errors)
+                if (!res.ok) {
+                    throw new Error(`Failed to fetch contributors: ${res.statusText}`);
+                }
+
+                const data = await res.json();
+                
                 const sorted = data
-                    .map((c, index) => ({
+                    .map((c: any, index: number) => ({
                         id: index + 1,
                         name: c.login,
                         profileUrl: c.html_url,
                         contributions: c.contributions,
                         avatarUrl: c.avatar_url,
                     }))
-                    .sort((a, b) => b.contributions - a.contributions)
+                    .sort((a: any, b: any) => b.contributions - a.contributions)
                     .slice(0, 7);
+
                 setContributors(sorted);
-            })
-            .catch(err => console.error('GitHub API Error:', err));
+            } catch (err: any) {
+                // 3. Ignore errors caused by manual code abortion on unmount
+                if (err.name !== 'AbortError') {
+                    console.error('GitHub API Error:', err);
+                    setError('Failed to load contributors. Please try again later.');
+                }
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchContributors();
+
+        // 4. Cleanup function: Aborts the fetch request if the component unmounts
+        return () => {
+            controller.abort();
+        };
     }, []);
+
+    // 5. Display loading state
+    if (isLoading) {
+        return (
+            <div className="mt-6 p-4 text-center text-gray-500 animate-pulse bg-white rounded-xl border border-gray-100 dark:bg-gray-900 dark:border-gray-700">
+                Loading contributors...
+            </div>
+        );
+    }
+
+    // 6. Display error fallback state
+    if (error) {
+        return (
+            <div className="mt-6 p-4 text-center text-red-500 font-medium bg-white rounded-xl border border-gray-100 dark:bg-gray-900 dark:border-gray-700">
+                {error}
+            </div>
+        );
+    }
 
     return (
         <div className="grid gap-4 mt-6">
