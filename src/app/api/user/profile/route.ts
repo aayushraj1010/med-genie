@@ -51,7 +51,8 @@ async function handler(req: AuthenticatedRequest) {
           id: userProfile.id,
           name: userProfile.name,
           email: userProfile.email,
-          createdAt: userProfile.createdAt
+          createdAt: userProfile.createdAt,
+          healthProfile: userProfile.healthProfile || null
         }
       });
     }
@@ -59,7 +60,7 @@ async function handler(req: AuthenticatedRequest) {
     if (req.method === 'PUT') {
       // Update user profile
       const body = await req.json();
-      const { name } = body;
+      const { name, healthProfile } = body;
 
       // Validate update data
       if (name !== undefined) {
@@ -83,7 +84,12 @@ async function handler(req: AuthenticatedRequest) {
       }
 
       // Update user profile using secure database layer
-      const updatedUser = await SecurePrisma.updateUser(user.userId, { name }, ipAddress);
+      const updatedUser = name !== undefined ? await SecurePrisma.updateUser(user.userId, { name }, ipAddress) : null;
+      let updatedHealthProfile = null;
+
+      if (healthProfile) {
+         updatedHealthProfile = await SecurePrisma.upsertHealthProfile(user.userId, healthProfile, ipAddress);
+      }
 
       // Log successful profile update
       DatabaseSecurity.logDatabaseAccess({
@@ -99,9 +105,10 @@ async function handler(req: AuthenticatedRequest) {
         success: true,
         message: "Profile updated successfully",
         user: {
-          id: updatedUser.id,
-          name: updatedUser.name,
-          email: updatedUser.email
+          id: updatedUser ? updatedUser.id : user.userId,
+          name: updatedUser ? updatedUser.name : undefined,
+          email: updatedUser ? updatedUser.email : undefined,
+          healthProfile: updatedHealthProfile
         }
       });
     }

@@ -282,7 +282,48 @@ class SecurePrismaClient extends PrismaClient {
                 id: true,
                 name: true,
                 email: true,
-                createdAt: true
+                createdAt: true,
+                healthProfile: true
+            }
+        });
+    }
+
+    async upsertHealthProfile(userId: number, profileData: any, ipAddress?: string) {
+        // Validate user ID
+        if (!userId || typeof userId !== 'number' || userId <= 0) {
+            throw new Error('Invalid user ID');
+        }
+
+        // Check rate limiting
+        if (!DatabaseSecurity.checkRateLimit('upsertHealthProfile', userId, 50, 60000)) { // 50 per minute
+            throw new Error('Rate limit exceeded for profile updates');
+        }
+
+        // We can define stricter validation inside DatabaseSecurity, but for now we'll sanitize
+        const sanitizedData = {
+            medicalHistory: DatabaseSecurity.sanitizeInput(profileData.medicalHistory || '', 2000),
+            lifestyle: DatabaseSecurity.sanitizeInput(profileData.lifestyle || '', 2000),
+            symptoms: DatabaseSecurity.sanitizeInput(profileData.symptoms || '', 2000),
+            allergies: DatabaseSecurity.sanitizeInput(profileData.allergies || '', 1000),
+            medications: DatabaseSecurity.sanitizeInput(profileData.medications || '', 1000),
+        };
+
+        // Log database access
+        DatabaseSecurity.logDatabaseAccess({
+            userId,
+            action: 'UPSERT_HEALTH_PROFILE',
+            table: 'healthProfile',
+            details: `Health Profile update: ${userId}`,
+            ipAddress,
+            success: true
+        });
+
+        return this.healthProfile.upsert({
+            where: { userId },
+            update: sanitizedData,
+            create: {
+                userId,
+                ...sanitizedData
             }
         });
     }
