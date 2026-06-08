@@ -95,7 +95,16 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
                         {...props}
                       />
                     ),
-                    li: ({ node, ...props }) => <li role="listitem" {...props} />,
+                    li: ({ node, key, ...props }: any) => (
+                      <li key={key} role="listitem" {...props} />
+                    ),
+                    img: ({ node, alt, ...props }: any) => (
+                      <img
+                        alt={alt ?? 'Chat image'}
+                        className="mt-2 max-w-full rounded-lg border"
+                        {...props}
+                      />
+                    ),
                     strong: ({ node, ...props }) => (
                       <strong className="font-semibold" {...props} />
                     ),
