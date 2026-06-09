@@ -17,7 +17,7 @@ class SecurePrismaClient extends PrismaClient {
 
     private setupSecurityHooks() {
         // Monitor all queries for security threats
-        this.$on('query', (e) => {
+        (this as any).$on('query', (e: any) => {
             const startTime = Date.now();
 
             // Log query for security analysis
@@ -42,7 +42,7 @@ class SecurePrismaClient extends PrismaClient {
         });
 
         // Monitor errors for security analysis
-        this.$on('error', (e) => {
+        (this as any).$on('error', (e: any) => {
             console.error('[DB ERROR] Database error occurred:', {
                 message: e.message,
                 target: e.target,
@@ -56,14 +56,14 @@ class SecurePrismaClient extends PrismaClient {
         });
 
         // Monitor info events
-        this.$on('info', (e) => {
+        (this as any).$on('info', (e: any) => {
             if (process.env.NODE_ENV === 'development') {
                 console.log('[DB INFO]', e.message);
             }
         });
 
         // Monitor warnings
-        this.$on('warn', (e) => {
+        (this as any).$on('warn', (e: any) => {
             console.warn('[DB WARN]', e.message);
         });
     }
@@ -186,7 +186,6 @@ class SecurePrismaClient extends PrismaClient {
                 name: sanitizedData.name,
                 email: sanitizedData.email,
                 password: sanitizedData.password, // Should be hashed
-                confirmpassword: sanitizedData.password, // Should be hashed
                 createdAt: new Date()
             }
         });

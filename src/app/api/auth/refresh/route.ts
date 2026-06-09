@@ -4,8 +4,8 @@ import { cookies } from 'next/headers';
 
 export async function POST(req: NextRequest) {
     try {
-        const cookieStore = cookies();
-        const refreshToken = cookieStore.get('refresh_token')?.value;
+        const cookieStore = await cookies();
+        const refreshToken = (cookieStore as unknown as { get: (name: string) => { value: string } | undefined }).get('refresh_token')?.value;
 
         if (!refreshToken) {
             return NextResponse.json(
