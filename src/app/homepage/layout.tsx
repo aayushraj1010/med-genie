@@ -107,14 +107,13 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
 };
 
-export default function RootLayout({
+export default function HomepageLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
+    <div className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
 <AOSProvider>
   <StructuredData />
@@ -125,7 +124,6 @@ export default function RootLayout({
   <Analytics />
 </AOSProvider>
         </ThemeProvider>
-      </body>
-    </html>
+    </div>
   );
 }

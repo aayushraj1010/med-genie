@@ -1,5 +1,6 @@
 // In src/app/api/chat/agent/route.ts (keep the try/catch as-is)
 import { getAgentExecutor } from "@/ai/agent";  // ← Uses the fixed async getter
+import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {

@@ -14,7 +14,6 @@ model User {
   name            String   @db.VarChar(100)
   email           String   @unique @db.VarChar(254)
   password        String   @db.VarChar(255)
-  confirmpassword String   @db.VarChar(255)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   lastLoginAt     DateTime?
@@ -24,6 +23,8 @@ model User {
   lockedUntil     DateTime?
   lastPasswordChange DateTime @default(now())
   passwordVersion Int      @default(1)
+  resetToken      String?  @db.VarChar(255)
+  resetTokenExpiry DateTime?
 
   // Relations
   auditLogs       AuditLog[]

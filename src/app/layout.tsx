@@ -1,3 +1,4 @@
+import BackToTopButton from '@/components/BackToTopButton';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import { Toaster } from '@/components/ui/toaster';
@@ -170,8 +171,5 @@ export default function RootLayout({
     </html>
   );
 }
-
-
-import BackToTopButton from '@/components/BackToTopButton';
 
 
