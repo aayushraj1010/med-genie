@@ -9,6 +9,7 @@ import { FeedbackButtons } from "./feedback-buttons";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { RobotDoctorIcon } from "./icons/robot-doctor-icon";
+import { TypingIndicator } from "./typing-indicator";
 
 interface ChatMessageItemProps {
   message: ChatMessage;
@@ -58,18 +59,7 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
       >
         <CardContent className="p-3">
           {message.isLoading ? (
-            <div
-              className="flex items-center space-x-2"
-              role="status"
-              aria-label="Med Genie is thinking"
-            >
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-75"></div>
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-150"></div>
-              <div className="w-2 h-2 bg-current rounded-full animate-pulse delay-300"></div>
-              <span className="sr-only">
-                Med Genie is processing your question
-              </span>
-            </div>
+            <TypingIndicator className="bg-transparent dark:bg-transparent p-1 shadow-none w-auto h-auto" />
           ) : (
             <>
               {/* Render message text */}
