@@ -24,6 +24,9 @@ model User {
   lockedUntil     DateTime?
   lastPasswordChange DateTime @default(now())
   passwordVersion Int      @default(1)
+  age             Int?
+  bloodGroup      String?  @db.VarChar(10)
+  allergies       String?  @db.Text
 
   // Relations
   auditLogs       AuditLog[]
