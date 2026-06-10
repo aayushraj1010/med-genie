@@ -16,8 +16,8 @@ import {z} from 'genkit';
 const HealthQuestionAnsweringInputSchema = z.object({
   question: z.string().describe('The health-related question to be answered.'),
   medicalHistory: z.string().optional().describe('The user medical history'),
-  lifestyle: z.string().optional().describe('The user lifestyle'),
   symptoms: z.string().optional().describe('The user symptoms'),
+  language: z.string().optional().default('en').describe('The language to respond in'),
 });
 export type HealthQuestionAnsweringInput = z.infer<
   typeof HealthQuestionAnsweringInputSchema
@@ -73,9 +73,9 @@ Consider the following information about the user:
 
 Medical History: {{medicalHistory}}
 Lifestyle: {{lifestyle}}
-Symptoms: {{symptoms}}
-
 If you need more information to provide a better answer, use the needsMoreInformation tool to ask the user for clarification.
+
+Respond to the user in the following language code: {{language}}
 `, system: `You are a medical assistant chatbot.
 * If a user asks a question that requires medical expertise, you will answer it.
 * You should avoid providing medical advice or diagnoses. Instead, provide general information.

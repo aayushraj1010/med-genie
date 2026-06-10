@@ -12,6 +12,7 @@ import './globals.css';
 import { StructuredData } from './structured-data';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import Preloader from "../components/Preloader";
+import { I18nProvider } from '@/components/I18nProvider';
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -156,14 +157,16 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <Preloader />
         <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
-          <AuthProvider>
-            <AOSProvider>
-              <ErrorBoundary>
-                {children}
-              </ErrorBoundary>
-              <Toaster />
-            </AOSProvider>
-          </AuthProvider>
+          <I18nProvider>
+            <AuthProvider>
+              <AOSProvider>
+                <ErrorBoundary>
+                  {children}
+                </ErrorBoundary>
+                <Toaster />
+              </AOSProvider>
+            </AuthProvider>
+          </I18nProvider>
         </ThemeProvider>
         <BackToTopButton />
       </body>
