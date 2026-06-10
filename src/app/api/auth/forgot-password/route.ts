@@ -1,83 +1,77 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendEmail } from "@/lib/email";
-import { Prisma } from "../../../../../prisma/prisma";
+import { SecurePrisma } from "@/lib/secure-prisma";
 import crypto from "crypto";
+import nodemailer from "nodemailer";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { email } = body;
+    const { email } = await req.json();
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Find user safely
-    let user;
-    try {
-      user = await Prisma.user.findUnique({
-        where: { email },
-      });
-    } catch (dbErr) {
-      console.error("Database error:", dbErr);
-      return NextResponse.json(
-        { error: "Database temporarily unavailable" },
-        { status: 503 }
-      );
-    }
+    const user = await SecurePrisma.user.findUnique({
+      where: { email },
+    });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "No user found with this email" },
-        { status: 404 }
-      );
+      // Prevent enumeration
+      return NextResponse.json({ message: "If that email exists, a reset link has been sent." });
     }
 
-    // Generate secure token
     const token = crypto.randomBytes(32).toString("hex");
-    const expiry = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
 
-    // Save token safely
-    try {
-      await Prisma.user.update({
-        where: { email },
-        data: {
-          resetToken: token,
-          resetTokenExpiry: expiry,
-        },
-      });
-    } catch (dbErr) {
-      console.error("Database error on update:", dbErr);
-      return NextResponse.json(
-        { error: "Failed to save reset token" },
-        { status: 503 }
-      );
+    // Save to PasswordResetToken table
+    await SecurePrisma.passwordResetToken.create({
+      data: {
+        email,
+        token,
+        expiresAt,
+      },
+    });
+
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+    
+    console.log('\n=======================================');
+    console.log(`PASSWORD RESET LINK FOR ${email}:`);
+    console.log(resetUrl);
+    console.log('=======================================\n');
+
+    // Attempt email
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      try {
+        const transporter = nodemailer.createTransport({
+          host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+          port: parseInt(process.env.EMAIL_PORT || '587'),
+          secure: process.env.EMAIL_SECURE === 'true',
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+        });
+
+        await transporter.sendMail({
+          from: `"Med Genie" <${process.env.EMAIL_USER}>`,
+          to: email,
+          subject: 'Reset your Med Genie password',
+          html: `
+            <h1>Password Reset Request</h1>
+            <p>You requested to reset your password for Med Genie.</p>
+            <p>Click the link below to set a new password. This link expires in 15 minutes.</p>
+            <a href="${resetUrl}">Reset Password</a>
+            <p>If you didn't request this, you can safely ignore this email.</p>
+          `,
+        });
+      } catch (emailError) {
+        console.error('Failed to send email:', emailError);
+      }
     }
 
-    // Build reset URL
-    const resetUrl = `${
-      process.env.NEXT_PUBLIC_BASE_URL
-    }/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
-
-    // Send email
-    const html = `
-      <p>Hello ${user.name},</p>
-      <p>You requested a password reset. Click the link below to reset your password:</p>
-      <p><a href="${resetUrl}" target="_blank">${resetUrl}</a></p>
-      <p>This link will expire in 1 hour.</p>
-      <p>If you did not request this, please ignore this email.</p>
-    `;
-
-    await sendEmail({ to: email, subject: "MedGenie Password Reset", html });
-
-    return NextResponse.json({
-      message: "Password reset link sent to your email",
-    });
+    return NextResponse.json({ message: "If that email exists, a reset link has been sent." });
   } catch (err) {
     console.error("Forgot password error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
