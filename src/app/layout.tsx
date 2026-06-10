@@ -1,7 +1,7 @@
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import { Toaster } from '@/components/ui/toaster';
-import { ThemeProvider } from '@/hooks/use-theme';
+import { ThemeProvider } from 'next-themes';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { Analytics } from '@vercel/analytics/react';
 import { GeistMono } from 'geist/font/mono';
@@ -12,6 +12,7 @@ import './globals.css';
 import { StructuredData } from './structured-data';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import Preloader from "../components/Preloader";
+import { I18nProvider } from '@/components/I18nProvider';
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -155,15 +156,17 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <Preloader />
-        <ThemeProvider defaultTheme="dark" storageKey="med-genie-theme">
-          <AuthProvider>
-            <AOSProvider>
-              <ErrorBoundary>
-                {children}
-              </ErrorBoundary>
-              <Toaster />
-            </AOSProvider>
-          </AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" storageKey="med-genie-theme" enableSystem disableTransitionOnChange={false}>
+          <I18nProvider>
+            <AuthProvider>
+              <AOSProvider>
+                <ErrorBoundary>
+                  {children}
+                </ErrorBoundary>
+                <Toaster />
+              </AOSProvider>
+            </AuthProvider>
+          </I18nProvider>
         </ThemeProvider>
         <BackToTopButton />
       </body>
