@@ -113,6 +113,22 @@ function HomePage() {
     [activeSessionId, getSession, updateSession]
   );
 
+  const syncChatToBackend = async (sessionId: string, title: string, newMessages: ChatMessage[]) => {
+    try {
+      const token = localStorage.getItem('med-genie-token') || sessionStorage.getItem('med-genie-token');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      
+      await fetch('/api/history/save', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ sessionId, title, messages: newMessages }),
+      });
+    } catch (e) {
+      console.error('Failed to sync to backend', e);
+    }
+  };
+
   const handleSubmitQuestion = useCallback(
     async (question: string) => {
       if (!activeSessionId) return;
@@ -159,6 +175,9 @@ function HomePage() {
                 setMessages((prev) => [...prev.filter((msg) => msg.id !== aiLoadingMessage.id), aiResponseMessage]);
                 addMessage(activeSessionId, aiResponseMessage);
                 setIsLoading(false);
+                
+                // Sync to backend
+                syncChatToBackend(activeSessionId, question, [userMessage, aiResponseMessage]);
                 return;
               } else {
                 throw new Error('No hospitals found');
@@ -204,6 +223,9 @@ function HomePage() {
           };
           setMessages((prev) => [...prev, aiInfoMessage]);
           addMessage(activeSessionId, aiInfoMessage);
+          
+          // Sync to backend
+          syncChatToBackend(activeSessionId, question, [userMessage, aiInfoMessage]);
         }
 
         if (result.followUpQuestion) {

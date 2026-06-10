@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,6 +52,12 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/history" className="cursor-pointer w-full flex items-center">
+            <History className="mr-2 h-4 w-4" />
+            <span>Chat History</span>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem>
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
