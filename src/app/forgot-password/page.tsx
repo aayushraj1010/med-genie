@@ -1,104 +1,132 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Mail } from "lucide-react";
-import Lottie from "lottie-react";
-import ecgAnimation from "@/assets/animations/ECG.json";
-import { useAuth } from "@/contexts/AuthContext";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ShieldAlert, ArrowLeft, MailCheck } from "lucide-react";
+import { LogoIcon } from "@/components/icons/logo-icon";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-  const { requestPasswordReset } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage("");
-    setError("");
-    setIsLoading(true);
+    if (!email) return;
 
-    // Frontend email validation
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Please enter a valid email address");
-      setIsLoading(false);
-      return;
-    }
+    setStatus("loading");
+    setMessage("");
 
     try {
-      const result = await requestPasswordReset(email);
-      if (result.success) {
-        setMessage(
-          result.message || "Password reset link sent! Check your email."
-        );
-        // Optional: redirect to login after 5 seconds
-        setTimeout(() => router.push("/login"), 5000);
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setStatus("success");
+        setMessage("If an account exists with that email, a password reset link has been sent to your inbox.");
       } else {
-        setError(result.message || "Something went wrong");
+        setStatus("error");
+        setMessage(data.error || "An error occurred. Please try again.");
       }
     } catch (err) {
-      setError("Something went wrong");
-    } finally {
-      setIsLoading(false);
+      setStatus("error");
+      setMessage("A network error occurred. Please try again later.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-black via-[#0a0f14] to-black p-4">
-      <div className="w-full max-w-md p-8 rounded-2xl border border-[#3FB5F440] backdrop-blur-lg bg-black/10 shadow-lg">
-        <div className="flex justify-center mb-6">
-          <Lottie animationData={ecgAnimation} loop className="w-40 h-24" />
-        </div>
+    <div className="min-h-screen bg-background flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Background Gradients */}
+      <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" />
+      <div className="absolute top-0 -right-4 w-72 h-72 bg-secondary/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-200" />
+      <div className="absolute -bottom-8 left-20 w-72 h-72 bg-accent/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-400" />
 
-        <h2 className="text-3xl font-bold text-center mb-2 text-white">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+        <div className="flex justify-center mb-6">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20 backdrop-blur-sm">
+            <LogoIcon className="h-8 w-8 text-primary" />
+          </div>
+        </div>
+        <h2 className="mt-2 text-center text-3xl font-extrabold text-foreground tracking-tight">
           Forgot Password
         </h2>
-        <p className="text-white/70 text-center mb-8 text-sm">
-          Enter your email to receive a password reset link
+        <p className="mt-2 text-center text-sm text-muted-foreground">
+          Enter your email to receive a reset link.
         </p>
+      </div>
 
-        {message && (
-          <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400 text-center text-sm">
-            {message}
-          </div>
-        )}
-        {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-center text-sm">
-            {error}
-          </div>
-        )}
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+        <div className="bg-card py-8 px-4 shadow-xl border border-border/40 sm:rounded-2xl sm:px-10 backdrop-blur-sm">
+          
+          {status === "success" ? (
+            <div className="flex flex-col items-center justify-center text-center space-y-4 py-4">
+              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center text-green-500 mb-2">
+                <MailCheck className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-bold">Check your email</h3>
+              <p className="text-muted-foreground text-sm">{message}</p>
+              <Button asChild className="w-full mt-6" variant="outline">
+                <Link href="/login">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Return to login
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              {status === "error" && (
+                <div className="bg-destructive/15 border border-destructive/30 rounded-lg p-4 flex items-start space-x-3">
+                  <ShieldAlert className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                  <p className="text-sm text-destructive font-medium leading-relaxed">{message}</p>
+                </div>
+              )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="relative">
-            <Mail className="absolute left-3 top-3 text-[#3FB5F4] w-5 h-5" />
-            <input
-              type="email"
-              required
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/50 focus:border-[#3FB5F4] outline-none transition"
-            />
-          </div>
+              <div>
+                <Label htmlFor="email" className="block text-sm font-medium text-foreground">
+                  Email address
+                </Label>
+                <div className="mt-1 relative">
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border border-input rounded-md shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-background/50"
+                    placeholder="john@example.com"
+                  />
+                </div>
+              </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-3 bg-[#3FB5F4] hover:bg-[#35a5e0] text-black font-semibold rounded-xl shadow-lg transition disabled:opacity-50"
-          >
-            {isLoading ? "Sending..." : "Send Reset Link"}
-          </button>
-        </form>
-
-        <p className="text-center text-white/60 text-sm mt-6">
-          Remember your password?{" "}
-          <a href="/login" className="text-[#3FB5F4] hover:underline">
-            Sign in
-          </a>
-        </p>
+              <div>
+                <Button 
+                  type="submit" 
+                  className="w-full flex justify-center py-2 px-4 shadow-md hover:shadow-lg transition-all duration-200"
+                  disabled={status === "loading" || !email}
+                >
+                  {status === "loading" ? "Sending Link..." : "Send Reset Link"}
+                </Button>
+              </div>
+              
+              <div className="flex items-center justify-center mt-6">
+                <Link href="/login" className="flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  Back to login
+                </Link>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
