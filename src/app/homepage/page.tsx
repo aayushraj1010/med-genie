@@ -507,6 +507,7 @@ function HomePage() {
             className="flex-grow min-h-0 mb-4 rounded-lg"
             viewportRef={viewportRef}
             role="log"
+            aria-live="polite"
             aria-label="Chat conversation"
           >
             <div className="space-y-4 max-w-3xl mx-auto pr-4">
@@ -539,7 +540,18 @@ function HomePage() {
                   )}
                 </div>
                 <VoiceSearch setInput={setInput} />
-                <label className="cursor-pointer flex items-center justify-center h-8 w-8 bg-muted rounded absolute right-20 top-1/2 -translate-y-1/2">
+                <label 
+                  className="cursor-pointer flex items-center justify-center h-8 w-8 bg-muted rounded absolute right-20 top-1/2 -translate-y-1/2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Upload image"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      e.currentTarget.querySelector('input')?.click();
+                    }
+                  }}
+                >
                   <Camera className="h-4 w-4 text-muted-foreground" />
                   <input
                     type="file"
@@ -566,6 +578,7 @@ function HomePage() {
                   size="icon"
                   disabled={isLoading || !input.trim() || !!inputError}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 h-8 w-8"
+                  aria-label="Send message"
                 >
                   <ArrowUp className="h-4 w-4" />
                   <span className="sr-only">Send message</span>
