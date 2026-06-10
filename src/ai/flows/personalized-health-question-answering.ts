@@ -24,6 +24,7 @@ const PersonalizedHealthQuestionAnsweringInputSchema = z.object({
   lifestyle: z.string().optional().describe('The user\u0027s lifestyle information.'),
   symptoms: z.string().optional().describe('The user\u0027s symptoms.'),
   conversationHistory: z.string().optional().describe('Previous messages in the conversation for context.'),
+  language: z.string().optional().default('en').describe('The language to respond in'),
 });
 export type PersonalizedHealthQuestionAnsweringInput = z.infer<
   typeof PersonalizedHealthQuestionAnsweringInputSchema
@@ -86,9 +87,10 @@ Medical History: {{{medicalHistory}}}
 Lifestyle: {{{lifestyle}}}
 Symptoms: {{{symptoms}}}
 Previous Conversation: {{{conversationHistory}}}
-
 Based on this, decide if you can answer directly or if a follow-up question is necessary, and then generate the JSON response as described.
 You should avoid providing medical advice or diagnoses. Instead, provide general information. If you are unsure, politely suggest that the user consult a healthcare professional.
+
+Respond to the user in the following language code: {{language}}
 `,
   prompt: `User Input:
 Question: {{{question}}}
