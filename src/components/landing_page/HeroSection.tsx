@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function Hero() {
+  const { t } = useTranslation();
   const brandColor = "rgb(63, 181, 244)"; // Updated MedGenie brand color
 
   const [visible, setVisible] = useState(false);
@@ -24,18 +26,16 @@ export default function Hero() {
           text-[45px] max-[1024px]:text-[36px] max-[768px]:text-[30px]
           max-[480px]:text-[24px] max-[380px]:text-[22px]"
         >
-          Your AI-powered Health Companion
+          {t('hero.title')}
           <br />
-          <span style={{ color: brandColor }}>MedGenie</span> – Care at Your Fingertips
+          <span style={{ color: brandColor }}>MedGenie</span> – {t('hero.subtitle')}
         </h1>
 
         <p data-aos="fade-up"
           className="text-[#939393] text-[20px] font-normal leading-[150%]
           max-[768px]:text-[16px] max-[768px]:leading-[140%]"
         >
-          MedGenie is your smart AI health assistant — get instant answers to basic
-          medical questions, emergency guidance, and symptom-based suggestions.
-          Privacy-first, accessible anywhere, anytime.
+          {t('hero.description')}
         </p>
 
         <a data-aos="fade-up"
@@ -49,7 +49,7 @@ export default function Hero() {
             max-[768px]:w-auto max-[768px]:h-auto min-w-[200px] whitespace-nowrap
             hover:scale-105 active:scale-95 transition-transform"
         >
-          Try MedGenie
+          {t('hero.tryButton')}
         </a>
       </div>
 
@@ -60,7 +60,7 @@ export default function Hero() {
       >
         <p  className="text-[#939393] text-[18px] font-normal leading-[150%]
           max-[768px]:text-[14px] max-[768px]:leading-[130%]">
-          Helping users during health emergencies, trusted by the open-source community
+          {t('hero.footerText')}
         </p>
       </div>
     </section>
