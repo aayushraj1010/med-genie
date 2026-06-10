@@ -51,7 +51,10 @@ async function handler(req: AuthenticatedRequest) {
           id: userProfile.id,
           name: userProfile.name,
           email: userProfile.email,
-          createdAt: userProfile.createdAt
+          createdAt: userProfile.createdAt,
+          age: userProfile.age,
+          bloodGroup: userProfile.bloodGroup,
+          allergies: userProfile.allergies
         }
       });
     }
@@ -59,11 +62,17 @@ async function handler(req: AuthenticatedRequest) {
     if (req.method === 'PUT') {
       // Update user profile
       const body = await req.json();
-      const { name } = body;
+      const { name, age, bloodGroup, allergies } = body;
 
       // Validate update data
-      if (name !== undefined) {
-        const validation = DatabaseSecurity.validateUserData({ name });
+      const updateData: any = {};
+      if (name !== undefined) updateData.name = name;
+      if (age !== undefined) updateData.age = age;
+      if (bloodGroup !== undefined) updateData.bloodGroup = bloodGroup;
+      if (allergies !== undefined) updateData.allergies = allergies;
+
+      if (Object.keys(updateData).length > 0) {
+        const validation = DatabaseSecurity.validateUserData(updateData);
         if (!validation.isValid) {
           DatabaseSecurity.logDatabaseAccess({
             userId: user.userId,
@@ -83,7 +92,7 @@ async function handler(req: AuthenticatedRequest) {
       }
 
       // Update user profile using secure database layer
-      const updatedUser = await SecurePrisma.updateUser(user.userId, { name }, ipAddress);
+      const updatedUser = await SecurePrisma.updateUser(user.userId, updateData, ipAddress);
 
       // Log successful profile update
       DatabaseSecurity.logDatabaseAccess({

@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
 import { Menu, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -22,6 +24,16 @@ const links = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useTranslation();
+
+  const navLinks = [
+    { name: t("navbar.about"), href: "/about" },
+    { name: "Services", href: "/services" },
+    { name: "Our Process", href: "#process" },
+    { name: t("navbar.findSpecialist"), href: "/specialist-recommendation" },
+    { name: t("navbar.contact"), href: "/contact" },
+    { name: "FAQ", href: "#faq" },
+  ];
 
   return (
     <div className="bg-black/15 text-white fixed top-[30px] left-1/2 -translate-x-1/2 w-[87%] h-auto py-[10px] px-[20px] border border-[#3FB5F440] rounded-[10px] backdrop-blur-[15px] flex justify-between items-center z-[100]">
@@ -36,7 +48,7 @@ export default function Navbar() {
       <div
         className={`hidden md:flex gap-[40px] text-[18px] font-normal leading-[150%] ${montserrat.className}`}
       >
-        {links.map(({ name, href }, i) => (
+        {navLinks.map(({ name, href }, i) => (
           <Link
             href={href}
             key={i}
@@ -53,12 +65,15 @@ export default function Navbar() {
       </div>
 
       {/* Desktop Login */}
-      <Link
-        href="/login"
-        className="hidden md:flex w-[100px] h-[40px] rounded-[7px] py-[10px] px-[29px] bg-[#3FB5F4] hover:bg-[#2196d3] hover:shadow-[0_5px_15px_0_rgba(63,181,244,0.4)] transition-all duration-200 justify-center items-center text-[18px] text-[#101010] font-medium"
-      >
-        Login
-      </Link>
+      <div className="hidden md:flex items-center gap-4">
+        <LanguageSelector />
+        <Link
+          href="/login"
+          className="flex w-[100px] h-[40px] rounded-[7px] py-[10px] px-[29px] bg-[#3FB5F4] hover:bg-[#2196d3] hover:shadow-[0_5px_15px_0_rgba(63,181,244,0.4)] transition-all duration-200 justify-center items-center text-[18px] text-[#101010] font-medium"
+        >
+          Login
+        </Link>
+      </div>
 
       {/* Hamburger */}
       <button
@@ -76,7 +91,7 @@ export default function Navbar() {
             : "opacity-0 -translate-y-2 pointer-events-none"
         }`}
       >
-        {links.map(({ name, href }, i) => (
+        {navLinks.map(({ name, href }, i) => (
           <Link
             href={href}
             key={i}
@@ -93,6 +108,9 @@ export default function Navbar() {
         >
           Login
         </Link>
+        <div className="flex justify-center mt-2">
+          <LanguageSelector />
+        </div>
       </div>
     </div>
   );
