@@ -19,6 +19,7 @@ const SpecialistRecommendationInputSchema = z.object({
   medicalHistory: z.string().optional().describe('The user medical history'),
   duration: z.string().optional().describe('How long the symptoms have been present'),
   severity: z.string().optional().describe('The severity of the symptoms'),
+  language: z.string().optional().default('en').describe('The language to respond in'),
 });
 
 export type SpecialistRecommendationInput = z.infer<
@@ -77,6 +78,7 @@ Guidelines:
 4. Provide clear reasons for each recommendation
 5. Include relevant disclaimers about seeking professional medical advice
 6. Set appropriate urgency levels based on symptom severity and duration
+7. Translate the reasons, disclaimers, and descriptions to the specified language code: {{language}}
 
 Common specialists:
 - Primary Care Physician (General Medicine)
