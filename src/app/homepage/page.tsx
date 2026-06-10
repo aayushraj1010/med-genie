@@ -168,7 +168,7 @@ function HomePage() {
                   .join('\n\n');
                 const aiResponseMessage: ChatMessage = {
                   id: `ai-hospital-${Date.now()}`,
-                  text: `Here are some nearby hospitals in **${location}**:\n\n${hospitalList}`,
+                  text: `Here are some nearby hospitals in **${location}**:\n\n${hospitalList}\n\n*Tip: You can use our [Hospital Locator](/hospitals) to find hospitals based on your exact device location.*`,
                   sender: 'ai',
                   timestamp: Date.now(),
                 };
@@ -185,15 +185,29 @@ function HomePage() {
             } catch (err) {
               const aiErrorMessage: ChatMessage = {
                 id: `a-hospital-error-${Date.now()}`,
-                text: `😔 I couldn't find hospital data for "${location}". Please check the location name.`,
+                text: `😔 I couldn't find hospital data specifically for "${location}".\n\nTry using our automatic [Hospital Locator](/hospitals) instead!`,
                 sender: 'ai',
                 timestamp: Date.now(),
               };
               setMessages((prev) => [...prev.filter((msg) => msg.id !== aiLoadingMessage.id), aiErrorMessage]);
               addMessage(activeSessionId, aiErrorMessage);
               setIsLoading(false);
+              syncChatToBackend(activeSessionId, question, [userMessage, aiErrorMessage]);
               return;
             }
+          } else {
+            // Mentioned hospital but no specific location given
+            const aiInfoMessage: ChatMessage = {
+              id: `ai-hospital-link-${Date.now()}`,
+              text: `Looking for a hospital? I can help! \n\nPlease use our dedicated **[Hospital Locator](/hospitals)** page to automatically find nearby hospitals using your device's location.`,
+              sender: 'ai',
+              timestamp: Date.now(),
+            };
+            setMessages((prev) => [...prev.filter((msg) => msg.id !== aiLoadingMessage.id), aiInfoMessage]);
+            addMessage(activeSessionId, aiInfoMessage);
+            setIsLoading(false);
+            syncChatToBackend(activeSessionId, question, [userMessage, aiInfoMessage]);
+            return;
           }
         }
 

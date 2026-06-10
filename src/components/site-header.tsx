@@ -25,6 +25,7 @@ export function SiteHeader() {
 
           {/* Navigation Links */}
           <nav className="flex items-center space-x-4">
+            <Link href="/hospitals" className="hover:underline font-medium text-blue-600 dark:text-blue-400">Hospitals</Link>
             <Link href="/about" className="hover:underline">{t('navbar.about')}</Link>
             <Link href="/contact" className="hover:underline">{t('navbar.contact')}</Link>
             <Link href="/health-vault" className="hover:underline">{t('navbar.healthVault')}</Link>
