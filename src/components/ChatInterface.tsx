@@ -1,14 +1,16 @@
 "use client";
 import { useState } from 'react';
+import { TypingIndicator } from './typing-indicator';
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'error';
   content: string;
 }
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,6 +19,7 @@ export default function ChatInterface() {
     const userMessage = input;
     setMessages(prev => [...prev, { role: 'user' as const, content: userMessage }]);
     setInput('');
+    setIsLoading(true);
 
     try {
       const res = await fetch("/api/agent", {
@@ -36,7 +39,9 @@ export default function ChatInterface() {
       setMessages(prev => [...prev, { role: 'assistant' as const, content: data.response }]);
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { role: 'assistant' as const, content: "Error: Try again!" }]);
+      setMessages(prev => [...prev, { role: 'error' as const, content: "Error: Failed to connect to AI. Please try again!" }]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -44,10 +49,16 @@ export default function ChatInterface() {
     <div className="chat-container">
       <div className="messages">
         {messages.map((msg, idx) => (
-          <div key={idx} className={`message ${msg.role}`}>
-            <strong>{msg.role}:</strong> {msg.content}
+          <div key={idx} className={`message ${msg.role} ${msg.role === 'error' ? 'text-red-500' : ''}`}>
+            <strong>{msg.role === 'error' ? 'System' : msg.role}:</strong> {msg.content}
           </div>
         ))}
+        {isLoading && (
+          <div className="message assistant">
+            <strong>assistant:</strong>
+            <TypingIndicator className="mt-1" />
+          </div>
+        )}
       </div>
       <form onSubmit={handleSendMessage}>
         <input
@@ -55,8 +66,11 @@ export default function ChatInterface() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about symptoms, dosage, etc..."
+          disabled={isLoading}
         />
-        <button type="submit">Send</button>
+        <button type="submit" disabled={isLoading || !input.trim()}>
+          {isLoading ? 'Sending...' : 'Send'}
+        </button>
       </form>
     </div>
   );
