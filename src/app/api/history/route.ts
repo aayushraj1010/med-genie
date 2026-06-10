@@ -28,7 +28,6 @@ async function handler(req: AuthenticatedRequest) {
           orderBy: {
             timestamp: 'asc',
           },
-          take: 1, // Only need the first message for the preview
         },
         _count: {
           select: { messages: true }
@@ -38,13 +37,20 @@ async function handler(req: AuthenticatedRequest) {
 
     // Format the response
     const formattedHistory = chatSessions.map((session) => ({
-      id: session.id,
+      id: session.id.toString(), // id needs to be string for frontend
       sessionId: session.sessionId,
-      title: session.title || 'New Conversation',
+      name: session.title || 'New Conversation',
       createdAt: session.createdAt,
-      updatedAt: session.updatedAt,
+      updatedAt: session.updatedAt.toISOString(),
       messageCount: session._count.messages,
-      preview: session.messages.length > 0 ? session.messages[0].content : 'Empty conversation',
+      preview: session.messages.length > 0 ? session.messages[session.messages.length - 1].content.substring(0, 50) : 'Empty conversation',
+      messages: session.messages.map(msg => ({
+        id: msg.id.toString(),
+        text: msg.content,
+        sender: msg.sender,
+        timestamp: new Date(msg.timestamp).getTime(),
+        isFollowUpPrompt: msg.isFollowUp
+      }))
     }));
 
     return NextResponse.json({
