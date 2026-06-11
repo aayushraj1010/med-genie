@@ -1,5 +1,7 @@
 // In src/app/api/chat/agent/route.ts (keep the try/catch as-is)
+import { NextRequest } from "next/server";
 import { getAgentExecutor } from "@/ai/agent";  // ← Uses the fixed async getter
+import { validateMedicalResponse } from "@/lib/medical-validator";
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,7 +17,10 @@ export async function POST(req: NextRequest) {
 
     const aiResponse = result.messages[result.messages.length - 1].content;
 
-    return Response.json({ response: aiResponse });
+    // Apply medical safety validation layer
+    const validation = await validateMedicalResponse(message, aiResponse);
+
+    return Response.json({ response: validation.validatedAnswer });
   } catch (error: any) {
     console.error("Agent error:", error);
     return Response.json(
