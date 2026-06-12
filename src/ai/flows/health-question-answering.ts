@@ -12,6 +12,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { detectEmergency } from '@/lib/emergency/emergency-detector';
+import { getEmergencyResponse } from '@/lib/emergency/emergency-response';
 
 const HealthQuestionAnsweringInputSchema = z.object({
   question: z.string().describe('The health-related question to be answered.'),
@@ -79,6 +81,7 @@ If you need more information to provide a better answer, use the needsMoreInform
 `, system: `You are a medical assistant chatbot.
 * If a user asks a question that requires medical expertise, you will answer it.
 * You should avoid providing medical advice or diagnoses. Instead, provide general information.
+* If symptoms suggest a medical emergency, prioritize advising immediate emergency medical care and contacting local emergency services.
 * If you are unsure, politely suggest that the user consult a healthcare professional.`
 });
 
@@ -89,7 +92,34 @@ const healthQuestionAnsweringFlow = ai.defineFlow(
     outputSchema: HealthQuestionAnsweringOutputSchema,
   },
   async input => {
-    const {output} = await healthQuestionAnsweringPrompt(input);
-    return output!;
+    const emergency = detectEmergency(
+  [
+    input.question,
+    input.symptoms,
+  ]
+    .filter(Boolean)
+    .join(' ')
+);
+    if (emergency.isEmergency) {
+    console.warn(
+      '[EMERGENCY_DETECTED]',
+      emergency.category
+    );
+
+    return {
+  answer: getEmergencyResponse(
+    emergency.category,
+    emergency.severity,
+  ),
+  additionalQuestions: [],
+};
   }
+
+  const { output } =
+    await healthQuestionAnsweringPrompt(
+      input
+    );
+
+  return output!;
+}
 );
