@@ -17,6 +17,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { detectEmergency } from '@/lib/emergency/emergency-detector';
+import { getEmergencyResponse } from '@/lib/emergency/emergency-response';
 
 const PersonalizedHealthQuestionAnsweringInputSchema = z.object({
   question: z.string().describe('The user\u0027s health-related question.'),
@@ -106,8 +108,34 @@ const personalizedHealthQuestionAnsweringFlow = ai.defineFlow(
     inputSchema: PersonalizedHealthQuestionAnsweringInputSchema,
     outputSchema: PersonalizedHealthQuestionAnsweringOutputSchema,
   },
-  async input => {
-    const result = await prompt(input);
+    async input => {
+
+  const emergency = detectEmergency(
+    [
+      input.question,
+      input.symptoms,
+      input.medicalHistory,
+    ]
+      .filter(Boolean)
+      .join(' ')
+  );
+
+  if (emergency.isEmergency) {
+    console.warn(
+      '[EMERGENCY_DETECTED]',
+      emergency.category
+    );
+
+    return {
+      answer: getEmergencyResponse(
+        emergency.category,
+        emergency.severity
+      ),
+      followUpQuestion: undefined,
+    };
+  }
+
+  const result = await prompt(input);
 
     if (!result.output) {
       // This case should be rare if the LLM adheres to the prompt and schema.
