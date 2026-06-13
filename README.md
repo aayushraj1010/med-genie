@@ -440,15 +440,30 @@ Zero data storage, zero tracking. Your health conversations remain completely pr
 
 <div align="center">
 
-### 🏠 **Welcome Interface**
-*Clean, intuitive design that welcomes users to start their health journey*
+### 🏠 Home Page
+*Modern and welcoming reading sanctuary interface*
 
-![Welcome Screen](./assets/demo1.png)
+![Home](./assets/home.png)
 
-### � **Interactive Chat Experience**
-*Natural conversation flow with instant AI responses and helpful suggestions*
+### ✨ Features
+*Explore the core features and reading experience*
 
-![Chat Interface](./assets/demo2.png)
+![Features](./assets/feature.png)
+
+### 📚 Library
+*Browse and manage your personal collection*
+
+![Library](./assets/library.png)
+
+### 🌐 Community
+*Connect with readers and share experiences*
+
+![Community](./assets/community.png)
+
+### 🔄 Workflow
+*Overview of the platform workflow and user journey*
+
+![Workflow](./assets/workflow.png)
 
 </div>
 
