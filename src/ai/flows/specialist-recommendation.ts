@@ -113,7 +113,35 @@ const specialistRecommendationFlow = ai.defineFlow(
     outputSchema: SpecialistRecommendationOutputSchema,
   },
   async input => {
-    const { output } = await prompt(input);
-    return output!;
+    const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_AI_API_KEY;
+    if (!apiKey) {
+      console.error('[Med Genie] GOOGLE_API_KEY is not set. Cannot process specialist recommendation.');
+      return {
+        recommendations: [{
+          specialty: 'Configuration Error',
+          description: 'The AI service is not configured. Please contact the administrator.',
+          urgency: 'low' as const,
+          reason: 'Missing GOOGLE_API_KEY environment variable.',
+          additionalInfo: 'Get a key at https://aistudio.google.com/apikey',
+        }],
+        disclaimers: ['The AI service requires a valid Google AI API key to function.'],
+      };
+    }
+
+    try {
+      const { output } = await prompt(input);
+      return output!;
+    } catch (error: any) {
+      console.error('[Med Genie] Specialist recommendation flow error:', error?.message || error);
+      return {
+        recommendations: [{
+          specialty: 'Service Unavailable',
+          description: 'The AI service encountered an error. Please try again.',
+          urgency: 'low' as const,
+          reason: error?.message || 'Unknown error occurred.',
+        }],
+        disclaimers: ['If this error persists, please check that the GOOGLE_API_KEY is configured correctly.'],
+      };
+    }
   }
 );
