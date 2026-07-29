@@ -81,7 +81,7 @@ export const signTokenPair = (userId: number, email: string, name: string): Toke
   };
 };
 
-export const verifyToken = (token: string): JWTPayload | null => {
+export const verifyToken = async (token: string): Promise<JWTPayload | null> => {
   try {
     const decoded = jwt.verify(token, getJWTSecret(), {
       algorithms: ['HS256'],
@@ -89,8 +89,7 @@ export const verifyToken = (token: string): JWTPayload | null => {
       audience: 'med-genie-users',
     }) as JWTPayload;
 
-    // Check if token is blacklisted
-    if (isTokenBlacklisted(decoded.tokenId)) {
+    if (await isTokenBlacklisted(decoded.tokenId)) {
       return null;
     }
 
@@ -100,7 +99,7 @@ export const verifyToken = (token: string): JWTPayload | null => {
   }
 };
 
-export const verifyRefreshToken = (token: string): RefreshTokenPayload | null => {
+export const verifyRefreshToken = async (token: string): Promise<RefreshTokenPayload | null> => {
   try {
     const decoded = jwt.verify(token, getJWTSecret(), {
       algorithms: ['HS256'],
@@ -108,8 +107,7 @@ export const verifyRefreshToken = (token: string): RefreshTokenPayload | null =>
       audience: 'med-genie-refresh',
     }) as RefreshTokenPayload;
 
-    // Check if refresh token is blacklisted
-    if (isTokenBlacklisted(decoded.tokenId)) {
+    if (await isTokenBlacklisted(decoded.tokenId)) {
       return null;
     }
 
