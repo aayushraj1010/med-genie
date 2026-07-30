@@ -147,7 +147,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="/terms.html"
+                  href="/terms-of-use"
                   className="hover:text-white transition-colors"
                 >
                   Terms of Use
@@ -155,7 +155,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="/cookies.html"
+                  href="/cookie-policy"
                   className="hover:text-white transition-colors"
                 >
                   Cookie Policy
@@ -167,7 +167,7 @@ const Footer = () => {
 
         {/* Bottom Line */}
         <div className="mt-12 border-t border-white/25 pt-5 text-xs text-white/70 text-center">
-          © 2025 MedGenie. All Rights Reserved.
+          © {new Date().getFullYear()} MedGenie. All Rights Reserved.
         </div>
       </div>
     </footer>
