@@ -39,6 +39,30 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/cookies.html',
+        destination: '/cookie-policy',
+        permanent: true,
+      },
+      {
+        source: '/terms.html',
+        destination: '/terms-of-use',
+        permanent: true,
+      },
+      {
+        source: '/cookies',
+        destination: '/cookie-policy',
+        permanent: true,
+      },
+      {
+        source: '/terms',
+        destination: '/terms-of-use',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
