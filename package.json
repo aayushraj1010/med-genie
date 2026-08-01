@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "generate-og": "node scripts/generate-og-image.js",
     "test:jwt": "node scripts/test-jwt-security.js",
+    "test:medical": "tsx scripts/test-medical-validation.ts",
     "setup-env": "node scripts/setup-env.js",
     "postinstall": "prisma generate",
     "validate-api": "node .github/scripts/validate-apis.js",
