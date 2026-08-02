@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
       severity
     } = body;
 
-    if (!symptoms || symptoms.trim() === '') {
+    if (!symptoms || symptoms.trim().length === 0) {
       return NextResponse.json(
         { error: 'Symptoms are required' },
         { status: 400 }
