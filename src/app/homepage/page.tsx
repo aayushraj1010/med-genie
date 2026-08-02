@@ -100,7 +100,7 @@ function HomePage() {
 
   const handleFeedback = useCallback(
     (messageId: string, feedback: 'good' | 'bad') => {
-      setMessages((prevMessages) => prevMessages.map((msg) => (msg.id === messageId ? { ...msg, feedback } : msg)));
+      setMessages((prevMessages) => (prevMessages ?? []).map((msg) => (msg.id === messageId ? { ...msg, feedback } : msg)));
 
       if (activeSessionId) {
         const session = getSession(activeSessionId);
