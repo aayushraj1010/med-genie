@@ -106,7 +106,7 @@ export function ChatInputForm({
         onChange={handleImageChange}
       />
       <label htmlFor="image-upload">
-        <Button type="button" size="icon" variant="outline">
+        <Button type="button" size="icon" variant="outline" aria-label="Upload an image">
           <ImageIcon className="h-5 w-5" />
         </Button>
       </label>

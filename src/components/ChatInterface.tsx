@@ -1,7 +1,8 @@
 "use client";
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 
 interface Message {
+  id: string;
   role: 'user' | 'assistant';
   content: string;
 }
@@ -10,12 +11,18 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
 
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const createMessage = (role: Message['role'], content: string): Message => ({
+    id: crypto.randomUUID(),
+    role,
+    content,
+  });
+
+  const handleSendMessage = async (e: FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     const userMessage = input;
-    setMessages(prev => [...prev, { role: 'user' as const, content: userMessage }]);
+    setMessages(prev => [...prev, createMessage('user', userMessage)]);
     setInput('');
 
     try {
@@ -32,18 +39,18 @@ export default function ChatInterface() {
 
       const data = await res.json();
 
-      setMessages(prev => [...prev, { role: 'assistant' as const, content: data.response }]);
+      setMessages(prev => [...prev, createMessage('assistant', data.response)]);
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { role: 'assistant' as const, content: "Error: Try again!" }]);
+      setMessages(prev => [...prev, createMessage('assistant', 'Error: Try again!')]);
     }
   };
 
   return (
     <div className="chat-container">
       <div className="messages">
-        {messages.map((msg, idx) => (
-          <div key={idx} className={`message ${msg.role}`}>
+        {messages.map((msg) => (
+          <div key={msg.id} className={`message ${msg.role}`}>
             <strong>{msg.role}:</strong> {msg.content}
           </div>
         ))}
