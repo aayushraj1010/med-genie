@@ -226,6 +226,7 @@ function HomePage() {
           setIsProfileModalOpen(true);
         }
       } catch (error) {
+        console.error('Chat request failed:', error);
         setMessages((prev) => prev.filter((msg) => msg.id !== aiLoadingMessage.id));
         const aiErrorMessage: ChatMessage = {
           id: `ai-error-${Date.now()}`,
