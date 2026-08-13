@@ -107,7 +107,16 @@ const personalizedHealthQuestionAnsweringFlow = ai.defineFlow(
     outputSchema: PersonalizedHealthQuestionAnsweringOutputSchema,
   },
   async input => {
-    const result = await prompt(input);
+    let result;
+    try {
+      result = await prompt(input);
+    } catch (error) {
+      console.error('Personalized Health QA Flow: prompt execution failed.', error);
+      return {
+        answer: "I'm sorry, I encountered an issue processing your request. Please try again.",
+        followUpQuestion: undefined,
+      };
+    }
 
     if (!result.output) {
       // This case should be rare if the LLM adheres to the prompt and schema.
