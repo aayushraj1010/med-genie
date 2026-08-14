@@ -9,17 +9,21 @@ import { MemorySaver } from "@langchain/langgraph";
 const memory = new MemorySaver();
 
 // Gemini model setup
-const llm = new ChatGoogleGenerativeAI({
-  model: "gemini-1.5-flash",
-  temperature: 0.7,
-  apiKey: process.env.GEMINI_API_KEY,  // Ensure this is in .env.local
-});
+let llm: any;
 
 // Lazy-load the agent (avoids top-level await issues)
 let agentExecutor: any;
 
 export async function getAgentExecutor() {
   if (agentExecutor) return agentExecutor;
+
+  if (!llm) {
+    llm = new ChatGoogleGenerativeAI({
+      model: "gemini-1.5-flash",
+      temperature: 0.7,
+      apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "dummy-key",
+    });
+  }
 
   // Pull the ReAct prompt asynchronously
   const prompt = await pull("hwchase17/react");

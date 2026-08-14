@@ -1,7 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { DatabaseSecurity, DatabaseQueryLog } from './database-security';
 
-class SecurePrismaClient extends PrismaClient {
+class SecurePrismaClient extends PrismaClient<
+    Prisma.PrismaClientOptions,
+    'query' | 'info' | 'warn' | 'error'
+> {
     constructor() {
         super({
             log: [
@@ -151,7 +154,9 @@ class SecurePrismaClient extends PrismaClient {
                 failedLoginAttempts: true,
                 lockedUntil: true,
                 lastPasswordChange: true,
-                passwordVersion: true
+                passwordVersion: true,
+                resetToken: true,
+                resetTokenExpiry: true
             }
         });
     }
@@ -320,8 +325,8 @@ class SecurePrismaClient extends PrismaClient {
         return this.user.findMany({
             where: {
                 OR: [
-                    { name: { contains: sanitizedTerm, mode: 'insensitive' } },
-                    { email: { contains: sanitizedTerm, mode: 'insensitive' } }
+                    { name: { contains: sanitizedTerm } },
+                    { email: { contains: sanitizedTerm } }
                 ]
             },
             select: {
