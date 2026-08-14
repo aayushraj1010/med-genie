@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get refresh token from cookies and blacklist it
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const refreshToken = cookieStore.get('refresh_token')?.value;
 
     if (refreshToken) {

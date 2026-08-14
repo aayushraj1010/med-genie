@@ -43,7 +43,7 @@ export const generateTokenId = (): string => {
 
 export const signAccessToken = (payload: Omit<JWTPayload, 'iat' | 'exp'>): string => {
   return jwt.sign(payload, getJWTSecret(), {
-    expiresIn: JWT_EXPIRES_IN,
+    expiresIn: JWT_EXPIRES_IN as any,
     algorithm: 'HS256',
     issuer: 'med-genie',
     audience: 'med-genie-users',
@@ -52,7 +52,7 @@ export const signAccessToken = (payload: Omit<JWTPayload, 'iat' | 'exp'>): strin
 
 export const signRefreshToken = (payload: Omit<RefreshTokenPayload, 'iat' | 'exp'>): string => {
   return jwt.sign(payload, getJWTSecret(), {
-    expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+    expiresIn: REFRESH_TOKEN_EXPIRES_IN as any,
     algorithm: 'HS256',
     issuer: 'med-genie',
     audience: 'med-genie-refresh',
@@ -127,7 +127,7 @@ export const blacklistToken = async (tokenId: string): Promise<void> => {
   // TODO: Implement with Redis or database for production
 };
 
-export const isTokenBlacklisted = async (tokenId: string): Promise<boolean> => {
+export const isTokenBlacklisted = (tokenId: string): boolean => {
   // Check if token is in blacklist
   // return await redis.exists(`blacklist:${tokenId}`);
   // TODO: Implement with actual storage

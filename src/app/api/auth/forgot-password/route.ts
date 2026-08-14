@@ -1,6 +1,7 @@
+export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email";
-import { Prisma } from "../../../../../prisma/prisma";
+import { SecurePrisma } from "@/lib/secure-prisma";
 import crypto from "crypto";
 
 export async function POST(req: NextRequest) {
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
     // Find user safely
     let user;
     try {
-      user = await Prisma.user.findUnique({
+      user = await SecurePrisma.user.findUnique({
         where: { email },
       });
     } catch (dbErr) {
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
 
     // Save token safely
     try {
-      await Prisma.user.update({
+      await SecurePrisma.user.update({
         where: { email },
         data: {
           resetToken: token,
