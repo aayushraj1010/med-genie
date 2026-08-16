@@ -210,6 +210,27 @@ export default function HealthVaultPage() {
             </p>
           </div>
         )}
+
+        {/* Signup CTA Section */}
+        <div className="mt-16 mb-8" data-aos="fade-up">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-8 md:p-12 text-center text-white shadow-lg">
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">
+              Ready to take control of your health?
+            </h2>
+            <p className="text-blue-100 mb-6 max-w-xl mx-auto">
+              Create an account to save your favorite health tips, track your wellness journey, and get personalized recommendations from our AI health advisor.
+            </p>
+            <Button 
+              asChild
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
+            >
+              <a href="/sign-up">
+                Get Started Now
+              </a>
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
     <SiteFooter />
