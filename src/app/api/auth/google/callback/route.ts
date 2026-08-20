@@ -13,6 +13,7 @@ const GOOGLE_CALLBACK_HANDLER = async (req: NextRequest) => {
 
   try {
     const url = new URL(req.url);
+    const origin = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || url.origin;
     const code = url.searchParams.get("code");
 
     if (!code) {
@@ -39,7 +40,7 @@ const GOOGLE_CALLBACK_HANDLER = async (req: NextRequest) => {
         code,
         client_id: process.env.GOOGLE_CLIENT_ID!,
         client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-        redirect_uri: `${process.env.APP_URL}/api/auth/google/callback`,
+        redirect_uri: `${origin}/api/auth/google/callback`,
         grant_type: "authorization_code",
       }),
     });
@@ -107,10 +108,8 @@ const GOOGLE_CALLBACK_HANDLER = async (req: NextRequest) => {
     });
 
     // redirect to frontend route with accessToken
-    console.log(process.env.APP_URL)
-    const redirectUrl = `${
-      process.env.APP_URL
-    }/google-redirect?accessToken=${
+    console.log(origin);
+    const redirectUrl = `${origin}/google-redirect?accessToken=${
       tokenPair.accessToken
     }&user=${encodeURIComponent(
       JSON.stringify({

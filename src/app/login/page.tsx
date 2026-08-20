@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,6 +15,13 @@ export default function MedGenieLoginForm() {
   const [showSignupSuggestion, setShowSignupSuggestion] = useState(false);
   const { login, isLoading } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error") === "google_not_configured") {
+      setError("Google Sign-In is not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your environment variables.");
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +48,7 @@ export default function MedGenieLoginForm() {
   };
 
   const handleGoogleLogin = () => {
-    router.push("/api/auth/google"); // redirect to Google auth
+    window.location.href = "/api/auth/google"; // redirect to Google auth
   };
 
   const handleSignupRedirect = () => {
