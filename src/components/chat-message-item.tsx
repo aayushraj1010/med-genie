@@ -15,7 +15,9 @@ interface ChatMessageItemProps {
   onFeedback: (messageId: string, feedback: "good" | "bad") => void;
 }
 
-export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
+import React from "react";
+
+export const ChatMessageItem = React.memo(function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
   const isUser = message.sender === "user";
   const Icon = isUser ? UserCircle2 : RobotDoctorIcon;
 
@@ -148,4 +150,6 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
       )}
     </div>
   );
-}
+});
+
+ChatMessageItem.displayName = "ChatMessageItem";
