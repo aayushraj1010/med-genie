@@ -170,6 +170,14 @@ export default function MedGenieLoginForm() {
           Continue with Google
         </button>
 
+        {/* Blackbox Login */}
+        <button
+          onClick={() => router.push("/api/auth/blackbox")}
+          className="w-full py-3 mt-3 flex items-center justify-center gap-2 bg-[#111827] text-white font-semibold rounded-xl shadow-lg hover:bg-[#1f2937] transition"
+        >
+          Continue with Blackbox
+        </button>
+
         {/* Footer */}
         <p className="text-center text-white/60 text-sm mt-6">
           Don't have an account?{" "}

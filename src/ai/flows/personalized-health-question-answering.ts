@@ -17,6 +17,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { validateMedicalResponse } from '@/lib/medical-validator';
 
 const PersonalizedHealthQuestionAnsweringInputSchema = z.object({
   question: z.string().describe('The user\u0027s health-related question.'),
@@ -115,14 +116,17 @@ const personalizedHealthQuestionAnsweringFlow = ai.defineFlow(
       console.error('Personalized Health QA Flow: No valid output from AI model matching the expected schema.', result);
       // Fallback to a generic error response that fits the schema
       return {
-        answer: "I'm sorry, I encountered an issue processing your request. Please try again.",
+        answer: "I'm unable to verify the medical accuracy of this response. Please consult a qualified healthcare professional.",
         followUpQuestion: undefined,
       };
     }
     
-    // `result.output` is guaranteed by Genkit (if no error during prompt execution) 
-    // to conform to PersonalizedHealthQuestionAnsweringOutputSchema.
-    // So, result.output.answer exists, and result.output.followUpQuestion is optional.
-    return result.output;
+    // Apply medical validation layer
+    const validation = await validateMedicalResponse(input.question, result.output.answer);
+    
+    return {
+      answer: validation.validatedAnswer,
+      followUpQuestion: validation.blocked ? undefined : result.output.followUpQuestion,
+    };
   }
 );

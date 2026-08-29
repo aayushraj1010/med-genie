@@ -12,6 +12,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { validateMedicalResponse } from '@/lib/medical-validator';
 
 const HealthQuestionAnsweringInputSchema = z.object({
   question: z.string().describe('The health-related question to be answered.'),
@@ -90,6 +91,18 @@ const healthQuestionAnsweringFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await healthQuestionAnsweringPrompt(input);
-    return output!;
+    if (!output) {
+      return {
+        answer: "I'm unable to verify the medical accuracy of this response. Please consult a qualified healthcare professional.",
+      };
+    }
+    
+    // Apply medical validation layer
+    const validation = await validateMedicalResponse(input.question, output.answer);
+    
+    return {
+      ...output,
+      answer: validation.validatedAnswer,
+    };
   }
 );
