@@ -131,8 +131,10 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
           <CardFooter className="p-3 pt-0">
             <FeedbackButtons
               messageId={message.id}
+              messageText={message.text || ""}
               onFeedback={handleFeedback}
               currentFeedback={message.feedback}
+              
             />
           </CardFooter>
         )}

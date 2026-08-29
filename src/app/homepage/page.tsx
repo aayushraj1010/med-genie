@@ -581,10 +581,16 @@ function HomePage() {
 }
 
 // Wrap with protected route
+// export default function ProtectedHomePage() {
+//   return (
+//     <ProtectedRoute>
+//       <HomePage />
+//     </ProtectedRoute>
+//   );
+// }
+
+
+
 export default function ProtectedHomePage() {
-  return (
-    <ProtectedRoute>
-      <HomePage />
-    </ProtectedRoute>
-  );
+  return <HomePage />;
 }
