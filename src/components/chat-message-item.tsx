@@ -143,6 +143,7 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
         <Avatar className="h-10 w-10 self-start">
           <AvatarFallback className="bg-secondary text-secondary-foreground">
             <UserCircle2 className="h-6 w-6" />
+
           </AvatarFallback>
         </Avatar>
       )}
