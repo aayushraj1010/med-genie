@@ -17,7 +17,7 @@ const links = [
   { name: "Our Process", href: "#process" },
   { name: "Find Specialist", href: "/specialist-recommendation" },
   { name: "Contact Us", href: "#contact" },
-  { name: "FAQ", href: "#faq" },
+  { name: "FAQ", href: "/#faq" },
 ];
 
 export default function Navbar() {
