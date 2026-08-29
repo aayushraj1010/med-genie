@@ -144,7 +144,8 @@ function HomePage() {
           if (location) {
             try {
               const res = await fetch(`/api/nearby-hospitals?state=${encodeURIComponent(location)}`);
-              const data = await res.json();
+              if (!res.ok) throw new Error("Request failed");
+const data = await res.json();
               if (Array.isArray(data.hospitals) && data.hospitals.length > 0) {
                 const hospitalList = data.hospitals
                   .slice(0, 5)
@@ -516,7 +517,8 @@ function HomePage() {
                       formData.append('file', file);
                       try {
                         const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                        const data = await res.json();
+                        if (!res.ok) throw new Error("Request failed");
+const data = await res.json();
                         console.log('Uploaded image:', data);
                       } catch (err) {
                         console.error('Upload failed:', err);
