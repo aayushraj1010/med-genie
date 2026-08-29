@@ -494,6 +494,7 @@ function HomePage() {
                     onChange={(e) => handleInputChange(e.target.value)}
                     placeholder="Ask anything about your health..."
                     disabled={isLoading}
+                    autoFocus
                     className={`pr-24 ${inputError ? 'border-red-500 focus:border-red-500' : ''}`}
                   />
                   {inputError && (
