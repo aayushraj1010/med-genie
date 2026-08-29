@@ -128,6 +128,7 @@ export function ChatHistorySidebar({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem 
+                      aria-label="Rename conversation"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleOpenRenameDialog(session.id, session.name);
@@ -137,6 +138,7 @@ export function ChatHistorySidebar({
                       Rename
                     </DropdownMenuItem>
                     <DropdownMenuItem 
+                      aria-label="Delete conversation"
                       className="text-destructive focus:text-destructive"
                       onClick={(e) => {
                         e.stopPropagation();
