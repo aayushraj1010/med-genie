@@ -24,6 +24,8 @@ import { ChatHistorySidebar } from '@/components/chat-history-sidebar';
 import { ChatHistoryButton } from '@/components/chat-history-button';
 import { QuickReplyGrid } from '@/components/QuickReplyGrid';
 import { InputSanitizer } from '@/lib/input-sanitizer';
+import { MedicalIntake, type MedicalIntakeData } from '@/components/medical-intake';
+import { SOSButton } from '@/components/sos-button';
 
 const VoiceSearch = dynamic(() => import('@/components/VoiceSearch'), {
   ssr: false,
@@ -52,6 +54,9 @@ function HomePage() {
   const [input, setInput] = useState('');
   const [inputError, setInputError] = useState<string>('');
   const [showHistorySidebar, setShowHistorySidebar] = useState(false);
+  const [showMedicalIntake, setShowMedicalIntake] = useState(true);
+  const [medicalIntakeData, setMedicalIntakeData] = useState<MedicalIntakeData | null>(null);
+  const [hasCompletedIntake, setHasCompletedIntake] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -249,6 +254,40 @@ function HomePage() {
       setMessages([initialWelcomeMessage]);
     }
   }, [isInitialized, createSession]);
+
+  // Medical Intake handlers
+  const handleIntakeComplete = (data: MedicalIntakeData) => {
+    setMedicalIntakeData(data);
+    setShowMedicalIntake(false);
+    setHasCompletedIntake(true);
+    
+    const conditionsText = data.conditions.length > 0 
+      ? data.conditions.filter((c: string) => c !== 'None of the above').join(', ') || 'None'
+      : 'None';
+    
+    const profileData: UserProfile = {
+      medicalHistory: conditionsText,
+      lifestyle: data.lifestyle,
+      symptoms: data.currentMedications || '',
+    };
+    setUserProfile(profileData);
+    
+    const welcomeWithIntakeMsg: ChatMessage = {
+      id: `system-welcome-${Date.now()}`,
+      text: "Thanks! I've saved your health information. This helps me give you better personalized advice. How can I help you today?",
+      sender: 'ai',
+      timestamp: Date.now(),
+    };
+    
+    if (activeSessionId) {
+      addMessage(activeSessionId, welcomeWithIntakeMsg);
+    }
+    setMessages((prev) => [...prev, welcomeWithIntakeMsg]);
+  };
+
+  const handleIntakeSkip = () => {
+    setShowMedicalIntake(false);
+  };
 
   const handleInputChange = (value: string) => {
     // Clear any previous errors
@@ -474,6 +513,11 @@ function HomePage() {
             aria-label="Chat conversation"
           >
             <div className="space-y-4 max-w-3xl mx-auto pr-4">
+              {/* Medical Intake Modal */}
+              {showMedicalIntake && (
+                <MedicalIntake onComplete={handleIntakeComplete} onSkip={handleIntakeSkip} />
+              )}
+              
               {/* NOTE: The QuickReplyGrid is no longer here */}
               {messages.map((msg) => (
                 <ChatMessageItem key={msg.id} message={msg} onFeedback={handleFeedback} />
@@ -575,6 +619,14 @@ function HomePage() {
         onSave={handleSaveProfile}
         currentProfile={userProfile}
         aiSuggestedKey={currentAiFollowUpKey}
+      />
+      
+      {/* SOS Emergency Button */}
+      <SOSButton 
+        emergencyContact={medicalIntakeData?.emergencyContact}
+        onAlertTriggered={(reason) => {
+          console.log('SOS Alert:', reason);
+        }}
       />
     </div>
   );

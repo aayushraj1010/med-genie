@@ -76,7 +76,7 @@ export default function AboutPage() {
                     <CardContent className="space-y-4 text-base leading-relaxed">
                         <p>
                             Healthcare information should be accessible to everyone, but navigating complex medical resources can be overwhelming. 
-                            <span className="font-semibold text-primary"> Med Genie bridges this gap</span> by providing instant, AI-powered health guidance 
+                            <span className="font-semibold text-blue-500 dark:text-blue-400"> Med Genie bridges this gap</span> by providing instant, AI-powered health guidance 
                             in a conversational, easy-to-understand format.
                         </p>
                         <div className="bg-muted/30 p-4 rounded-lg border">
