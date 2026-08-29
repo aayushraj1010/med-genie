@@ -32,16 +32,16 @@ class MemoryRateLimitStore {
         }, 5 * 60 * 1000);
     }
 
-    async get(key: string): Promise<number> {
+    async get(key: string): Promise<{ count: number; resetTime: number }> {
         const entry = this.store[key];
-        if (!entry) return 0;
+        if (!entry) return { count: 0, resetTime: 0 };
 
         if (Date.now() > entry.resetTime) {
             delete this.store[key];
-            return 0;
+            return { count: 0, resetTime: 0 };
         }
 
-        return entry.count;
+        return { count: entry.count, resetTime: entry.resetTime };
     }
 
     async increment(key: string, windowMs: number): Promise<number> {
@@ -119,12 +119,12 @@ export function withRateLimit(config: RateLimitConfig) {
                 const ip = getClientIP(req);
                 const key = generateKey(ip, req.nextUrl.pathname, config);
 
-                // Get current count
-                const currentCount = await memoryStore.get(key);
+                // Get current count and reset time
+                const { count: currentCount, resetTime: storeResetTime } = await memoryStore.get(key);
 
                 // Check if rate limit exceeded
                 if (currentCount >= config.maxRequests) {
-                    const resetTime = Date.now() + config.windowMs;
+                    const resetTime = storeResetTime || Date.now() + config.windowMs;
                     const info = getRateLimitInfo(currentCount, config.maxRequests, resetTime);
 
                     return NextResponse.json(
@@ -147,15 +147,16 @@ export function withRateLimit(config: RateLimitConfig) {
                     );
                 }
 
-                // Increment counter
+                // Increment counter and get updated reset time
                 const newCount = await memoryStore.increment(key, config.windowMs);
+                const { resetTime: updatedResetTime } = await memoryStore.get(key);
 
                 // Execute the actual handler
                 const response = await handler(req);
 
                 // Add rate limit headers to successful responses
                 if (response.status < 400 || !config.skipSuccessfulRequests) {
-                    const resetTime = Date.now() + config.windowMs;
+                    const resetTime = updatedResetTime || Date.now() + config.windowMs;
                     const info = getRateLimitInfo(newCount, config.maxRequests, resetTime);
 
                     response.headers.set('X-RateLimit-Limit', config.maxRequests.toString());
