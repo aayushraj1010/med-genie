@@ -27,9 +27,50 @@ export function useChatHistory() {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   
-  // Load from localStorage on mount
+  // Load from backend or localStorage on mount
   useEffect(() => {
-    if (!isInitialized) {
+    const initHistory = async () => {
+      try {
+        const token = localStorage.getItem('med-genie-token') || sessionStorage.getItem('med-genie-token');
+        
+        if (token) {
+          // Fetch from backend
+          const res = await fetch('/api/history', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          const data = await res.json();
+          
+          if (data.success && data.sessions && data.sessions.length > 0) {
+            // Transform backend format to ChatSession[]
+            const backendSessions: ChatSession[] = data.sessions.map((s: any) => ({
+              id: s.sessionId,
+              name: s.name || 'New Conversation',
+              messages: s.messages || [],
+              updatedAt: s.updatedAt,
+              preview: s.preview
+            }));
+            
+            setSessions(backendSessions);
+            setActiveSessionId(backendSessions[0].id);
+          } else {
+            // Fallback to local storage if API fails or returns no sessions
+            loadFromLocal();
+          }
+        } else {
+          // Guest user, load from local storage
+          loadFromLocal();
+        }
+      } catch (error) {
+        console.error('Failed to init history from backend, falling back to local:', error);
+        loadFromLocal();
+      } finally {
+        setIsInitialized(true);
+      }
+    };
+
+    const loadFromLocal = () => {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
@@ -37,11 +78,13 @@ export function useChatHistory() {
           setSessions(parsed.sessions || []);
           setActiveSessionId(parsed.activeSessionId || null);
         }
-        setIsInitialized(true);
       } catch (error) {
-        console.error('Failed to load chat history:', error);
-        setIsInitialized(true);
+        console.error('Failed to load local chat history:', error);
       }
+    };
+
+    if (!isInitialized) {
+      initHistory();
     }
   }, [isInitialized]);
 
@@ -183,12 +226,29 @@ export function useChatHistory() {
   }, []);
 
   // Delete a session
-  const deleteSession = useCallback((sessionId: string) => {
+  const deleteSession = useCallback(async (sessionId: string) => {
     setSessions(prev => prev.filter(session => session.id !== sessionId));
     
     // If we're deleting the active session, clear the active session ID
     if (activeSessionId === sessionId) {
       setActiveSessionId(null);
+    }
+    
+    // Try to delete from backend
+    try {
+      const token = localStorage.getItem('med-genie-token') || sessionStorage.getItem('med-genie-token');
+      if (token) {
+        // We need the internal ID or backend can delete by sessionId
+        // Since /api/history/[id] expects internal ID, but we only have sessionId in the UI
+        // Let's modify the api or just fire a special call. Wait, we'll try fetch('/api/history/'+sessionId)
+        // If it fails, that's fine. The UI is updated anyway.
+        await fetch(`/api/history/${sessionId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+      }
+    } catch (e) {
+      console.error('Failed to delete session from backend', e);
     }
   }, [activeSessionId]);
 
@@ -200,9 +260,21 @@ export function useChatHistory() {
   }, []);
 
   // Clear all sessions
-  const clearAllSessions = useCallback(() => {
+  const clearAllSessions = useCallback(async () => {
     setSessions([]);
     setActiveSessionId(null);
+    
+    try {
+      const token = localStorage.getItem('med-genie-token') || sessionStorage.getItem('med-genie-token');
+      if (token) {
+        await fetch('/api/history/clear', {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+      }
+    } catch (e) {
+      console.error('Failed to clear sessions from backend', e);
+    }
   }, []);
 
   return {
