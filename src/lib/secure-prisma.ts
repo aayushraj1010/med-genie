@@ -282,7 +282,10 @@ class SecurePrismaClient extends PrismaClient {
                 id: true,
                 name: true,
                 email: true,
-                createdAt: true
+                createdAt: true,
+                age: true,
+                bloodGroup: true,
+                allergies: true
             }
         });
     }

@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Heart, Brain, Apple, Activity, Shield, Star, Loader2 } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import { RemindersWidget } from '@/components/reminders-widget';
 
 interface HealthTip {
   id: string;
@@ -126,9 +127,13 @@ export default function HealthVaultPage() {
             Health Vault
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Curated tips and trusted wellness resources to help you maintain a healthy lifestyle. 
-            Each tip is verified by reputable health organizations.
+            Manage your health reminders and browse curated wellness resources verified by reputable organizations.
           </p>
+        </div>
+
+        {/* Reminders Widget */}
+        <div className="max-w-4xl mx-auto mb-16" data-aos="fade-up">
+          <RemindersWidget />
         </div>
 
         {/* Category Filter */}

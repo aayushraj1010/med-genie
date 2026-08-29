@@ -24,12 +24,16 @@ model User {
   lockedUntil     DateTime?
   lastPasswordChange DateTime @default(now())
   passwordVersion Int      @default(1)
+  age             Int?
+  bloodGroup      String?  @db.VarChar(10)
+  allergies       String?  @db.Text
 
   // Relations
   auditLogs       AuditLog[]
   sessions        Session[]
   healthProfile   HealthProfile?
   chatSessions    ChatSession[]
+  reminders       Reminder[]
 
   @@map("users")
   @@index([email])
@@ -193,4 +197,22 @@ model NewsletterSubscription {
   active    Boolean  @default(true)
 
   @@map("newsletter_subscriptions")
+}
+
+model Reminder {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String   @db.VarChar(100)
+  dosage    String?  @db.VarChar(50)
+  frequency String   @db.VarChar(50)
+  time      String   @db.VarChar(10)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reminders")
+  @@index([userId])
+  @@index([time])
 }
