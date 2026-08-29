@@ -157,16 +157,19 @@ if (args.includes('--help') || args.includes('-h')) {
 switch (service) {
   case 'pinecone':
     validatePinecone().then(result => {
+.catch(err => console.error(err))
       process.exit(result.success ? 0 : 1);
     });
     break;
   case 'github':
     validateGitHub().then(result => {
+.catch(err => console.error(err))
       process.exit(result.success ? 0 : 1);
     });
     break;
   case 'gemini':
     validateGemini().then(result => {
+.catch(err => console.error(err))
       process.exit(result.success ? 0 : 1);
     });
     break;
