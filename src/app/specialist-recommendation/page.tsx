@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Stethoscope, MapPin, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { InputSanitizer } from '@/lib/input-sanitizer';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 import Layout from '@/components/layout';
 
@@ -198,6 +199,7 @@ export default function SpecialistRecommendationPage() {
   };
 
   return (
+    <ProtectedRoute>
     <Layout>
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -436,5 +438,6 @@ export default function SpecialistRecommendationPage() {
       </div>
     </div>
     </Layout>
+    </ProtectedRoute>
   );
 }
