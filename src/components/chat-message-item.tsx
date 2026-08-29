@@ -1,6 +1,6 @@
 "use client";
 
-import { UserCircle2 } from "lucide-react";
+import { UserCircle2, Copy } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -126,14 +126,25 @@ export function ChatMessageItem({ message, onFeedback }: ChatMessageItemProps) {
           )}
         </CardContent>
 
-        {/* Feedback (only for bot messages) */}
+        {/* Feedback and Actions (only for bot messages) */}
         {!isUser && !message.isLoading && !message.isFollowUpPrompt && (
-          <CardFooter className="p-3 pt-0">
+          <CardFooter className="p-3 pt-0 flex justify-between items-center">
             <FeedbackButtons
               messageId={message.id}
               onFeedback={handleFeedback}
               currentFeedback={message.feedback}
             />
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(message.text || "");
+                // simple visual feedback could be added here
+              }}
+              className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-muted"
+              title="Copy response"
+              aria-label="Copy response to clipboard"
+            >
+              <Copy className="h-4 w-4" />
+            </button>
           </CardFooter>
         )}
       </Card>
