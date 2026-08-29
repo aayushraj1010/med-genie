@@ -1,9 +1,21 @@
+"use client";
 import Layout from "@/components/layout";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export default function TermsOfUsePage() {
+  const router = useRouter();
   return (
     <Layout>
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 pt-32">
+       <Button
+      variant="outline"
+      className="mb-4"
+      onClick={() => router.back()}
+      aria-label="Go back to previous page"
+    >
+      ← Back
+    </Button>
       <h1 className="text-3xl font-bold mb-4">Terms of Use</h1>
       <p className="mb-2">
         Welcome to Med-Genie. By using our platform, you agree to the following terms and

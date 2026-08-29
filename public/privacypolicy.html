@@ -10,7 +10,29 @@
   <link rel="stylesheet" href="privacypolicy.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+      height: 40px;
+      margin-bottom: 16px;
+      padding: 0 16px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--fg);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1;
+      transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+    }
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
   </style>
 </head>
 <body>
@@ -42,6 +64,13 @@
 
   <main class="shell">
     <article class="card" role="article">
+      <button
+      onclick="window.history.back()"
+      aria-label="Go back to previous page"
+      class="back-button"
+    >
+      ← Back
+    </button>
       <div class="head">
         <h2>Privacy Policy</h2>
         <div class="badge" id="last-updated">Last Updated: August 15, 2025</div>
