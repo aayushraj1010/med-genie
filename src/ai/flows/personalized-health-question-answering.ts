@@ -107,22 +107,60 @@ const personalizedHealthQuestionAnsweringFlow = ai.defineFlow(
     outputSchema: PersonalizedHealthQuestionAnsweringOutputSchema,
   },
   async input => {
-    const result = await prompt(input);
-
-    if (!result.output) {
-      // This case should be rare if the LLM adheres to the prompt and schema.
-      // Genkit's validation against outputSchema would likely throw an error before this.
-      console.error('Personalized Health QA Flow: No valid output from AI model matching the expected schema.', result);
-      // Fallback to a generic error response that fits the schema
+    // Check if API key is configured before making the call
+    const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_AI_API_KEY;
+    if (!apiKey) {
+      console.error('[Med Genie] GOOGLE_API_KEY is not set. Cannot process health question.');
       return {
-        answer: "I'm sorry, I encountered an issue processing your request. Please try again.",
+        answer: "⚠️ The AI service is not configured. The server is missing a GOOGLE_API_KEY. Please contact the administrator to set up the Google AI API key. You can get one at https://aistudio.google.com/apikey",
         followUpQuestion: undefined,
       };
     }
-    
-    // `result.output` is guaranteed by Genkit (if no error during prompt execution) 
-    // to conform to PersonalizedHealthQuestionAnsweringOutputSchema.
-    // So, result.output.answer exists, and result.output.followUpQuestion is optional.
-    return result.output;
+
+    try {
+      const result = await prompt(input);
+
+      if (!result.output) {
+        console.error('Personalized Health QA Flow: No valid output from AI model matching the expected schema.', result);
+        return {
+          answer: "I'm sorry, I encountered an issue processing your request. Please try again.",
+          followUpQuestion: undefined,
+        };
+      }
+
+      return result.output;
+    } catch (error: any) {
+      console.error('[Med Genie] AI flow error:', error?.message || error);
+
+      // Provide specific error messages based on the error type
+      const errorMsg = error?.message || String(error);
+
+      if (errorMsg.includes('API_KEY') || errorMsg.includes('api_key') || errorMsg.includes('apiKey') || errorMsg.includes('API key')) {
+        return {
+          answer: "⚠️ The AI service API key is invalid or missing. Please check that GOOGLE_API_KEY is set correctly in the server environment. Get a key at https://aistudio.google.com/apikey",
+          followUpQuestion: undefined,
+        };
+      }
+
+      if (errorMsg.includes('quota') || errorMsg.includes('rate limit') || errorMsg.includes('429')) {
+        return {
+          answer: "⚠️ The AI service has hit its rate limit or quota. Please try again in a few minutes.",
+          followUpQuestion: undefined,
+        };
+      }
+
+      if (errorMsg.includes('SAFETY') || errorMsg.includes('blocked')) {
+        return {
+          answer: "I'm sorry, my safety filters blocked this response. Please rephrase your health question and I'll do my best to help.",
+          followUpQuestion: undefined,
+        };
+      }
+
+      // Generic fallback with more context than before
+      return {
+        answer: `😔 I encountered an error while processing your question. Please try again. If this persists, check that the GOOGLE_API_KEY environment variable is configured correctly on the server.`,
+        followUpQuestion: undefined,
+      };
+    }
   }
 );

@@ -89,7 +89,40 @@ const healthQuestionAnsweringFlow = ai.defineFlow(
     outputSchema: HealthQuestionAnsweringOutputSchema,
   },
   async input => {
-    const {output} = await healthQuestionAnsweringPrompt(input);
-    return output!;
+    const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_AI_API_KEY;
+    if (!apiKey) {
+      console.error('[Med Genie] GOOGLE_API_KEY is not set. Cannot process health question.');
+      return {
+        answer: "⚠️ The AI service is not configured. The server is missing a GOOGLE_API_KEY. Please contact the administrator.",
+        additionalQuestions: undefined,
+      };
+    }
+
+    try {
+      const {output} = await healthQuestionAnsweringPrompt(input);
+      return output!;
+    } catch (error: any) {
+      console.error('[Med Genie] Health QA flow error:', error?.message || error);
+      const errorMsg = error?.message || String(error);
+
+      if (errorMsg.includes('API_KEY') || errorMsg.includes('api_key') || errorMsg.includes('apiKey') || errorMsg.includes('API key')) {
+        return {
+          answer: "⚠️ The AI service API key is invalid or missing. Please check that GOOGLE_API_KEY is set correctly.",
+          additionalQuestions: undefined,
+        };
+      }
+
+      if (errorMsg.includes('quota') || errorMsg.includes('rate limit') || errorMsg.includes('429')) {
+        return {
+          answer: "⚠️ The AI service has hit its rate limit. Please try again in a few minutes.",
+          additionalQuestions: undefined,
+        };
+      }
+
+      return {
+        answer: "😔 I encountered an error while processing your question. Please try again.",
+        additionalQuestions: undefined,
+      };
+    }
   }
 );
