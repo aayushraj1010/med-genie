@@ -24,6 +24,7 @@ import { ChatHistorySidebar } from '@/components/chat-history-sidebar';
 import { ChatHistoryButton } from '@/components/chat-history-button';
 import { QuickReplyGrid } from '@/components/QuickReplyGrid';
 import { InputSanitizer } from '@/lib/input-sanitizer';
+import ExportPDFButton from "@/components/ExportPDFButton";
 
 const VoiceSearch = dynamic(() => import('@/components/VoiceSearch'), {
   ssr: false,
@@ -461,10 +462,19 @@ function HomePage() {
                 New Chat
               </Button>
             </div>
-            <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information">
-              <Info className="mr-2 h-4 w-4" />
-              Update Health Info
-            </Button>
+            <div className="flex items-center gap-2">
+              <ExportPDFButton
+                messages={messages.map((msg) => ({
+                  role: msg.sender === 'user' ? 'user' : 'assistant',
+                  content: msg.text,
+                }))}
+                userName="Patient"
+              />
+              <Button variant="outline" onClick={() => setIsProfileModalOpen(true)} aria-label="Update your health information">
+                <Info className="mr-2 h-4 w-4" />
+                Update Health Info
+              </Button>
+            </div>
           </header>
 
           <ScrollArea
