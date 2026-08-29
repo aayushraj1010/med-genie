@@ -170,17 +170,29 @@ export function UserProfileModal({ isOpen, onClose, onSave, currentProfile, aiSu
             </div>
           ))}
         </div>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            onClick={handleSave}
-            disabled={Object.keys(fieldErrors).some(key => fieldErrors[key])}
+        <DialogFooter className="flex justify-between items-center w-full sm:justify-between">
+          <Button 
+            type="button" 
+            variant="ghost" 
+            className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+            onClick={() => {
+              window.location.href = '/api/user/export-data';
+            }}
           >
-            Save Information
+            Download My Health Data
           </Button>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSave}
+              disabled={Object.keys(fieldErrors).some(key => fieldErrors[key])}
+            >
+              Save Information
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
