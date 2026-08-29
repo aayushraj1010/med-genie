@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -131,13 +132,13 @@ export default function MedGenieLoginForm() {
           </div>
 
           {/* Forgot Password Link */}
-          <p className="text-right text-sm mt-2">
-            <a
+          <p className="text-right text-sm mt-2 -mb-2">
+            <Link
               href="/forgot-password"
               className="text-[#3FB5F4] hover:underline"
             >
               Forgot Password?
-            </a>
+            </Link>
           </p>
 
           {/* Submit */}
