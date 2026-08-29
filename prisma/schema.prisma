@@ -11,15 +11,15 @@ datasource db {
 
 model User {
   id              Int      @id @default(autoincrement())
-  name            String   @db.VarChar(100)
-  email           String   @unique @db.VarChar(254)
-  password        String   @db.VarChar(255)
-  confirmpassword String   @db.VarChar(255)
+  name            String
+  email           String   @unique
+  password        String
+  confirmpassword String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   lastLoginAt     DateTime?
   isActive        Boolean  @default(true)
-  role            String   @default("user") @db.VarChar(20)
+  role            String   @default("user")
   failedLoginAttempts Int  @default(0)
   lockedUntil     DateTime?
   lastPasswordChange DateTime @default(now())
@@ -41,13 +41,13 @@ model User {
 model Session {
   id           String   @id @default(cuid())
   userId       Int
-  token        String   @unique @db.VarChar(500)
-  refreshToken String   @unique @db.VarChar(500)
+  token        String   @unique
+  refreshToken String   @unique
   expiresAt    DateTime
   createdAt    DateTime @default(now())
   lastUsedAt   DateTime @default(now())
-  ipAddress    String?  @db.VarChar(45)
-  userAgent    String?  @db.Text
+  ipAddress    String?
+  userAgent    String?
   isActive     Boolean  @default(true)
 
   // Relations
@@ -64,16 +64,16 @@ model Session {
 model AuditLog {
   id        Int      @id @default(autoincrement())
   userId    Int?
-  action    String   @db.VarChar(100)
-  table     String   @db.VarChar(50)
-  details   String?  @db.Text
-  ipAddress String?  @db.VarChar(45)
-  userAgent String?  @db.Text
-  query     String?  @db.Text
-  params    String?  @db.Text
+  action    String
+  table     String
+  details   String?
+  ipAddress String?
+  userAgent String?
+  query     String?
+  params    String?
   duration  Int?     // Query duration in milliseconds
   success   Boolean  @default(true)
-  error     String?  @db.Text
+  error     String?
   createdAt DateTime @default(now())
 
   // Relations
@@ -91,11 +91,11 @@ model AuditLog {
 model HealthProfile {
   id            Int      @id @default(autoincrement())
   userId        Int      @unique
-  medicalHistory String? @db.Text
-  lifestyle     String?  @db.Text
-  symptoms      String?  @db.Text
-  allergies     String?  @db.Text
-  medications   String?  @db.Text
+  medicalHistory String?
+  lifestyle     String?
+  symptoms      String?
+  allergies     String?
+  medications   String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   isActive      Boolean  @default(true)
@@ -112,8 +112,8 @@ model HealthProfile {
 model ChatSession {
   id        Int      @id @default(autoincrement())
   userId    Int
-  sessionId String   @unique @db.VarChar(100)
-  title     String?  @db.VarChar(200)
+  sessionId String   @unique
+  title     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
@@ -132,11 +132,11 @@ model ChatSession {
 model ChatMessage {
   id          Int      @id @default(autoincrement())
   sessionId   Int
-  content     String   @db.Text
-  sender      String   @db.VarChar(20) // 'user' or 'ai'
+  content     String
+  sender      String // 'user' or 'ai'
   timestamp   DateTime @default(now())
   isFollowUp  Boolean  @default(false)
-  metadata    String?  @db.Text // JSON string for additional data
+  metadata    String? // JSON string for additional data
 
   // Relations
   session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
@@ -150,7 +150,7 @@ model ChatMessage {
 
 model RateLimit {
   id        Int      @id @default(autoincrement())
-  key       String   @db.VarChar(200)
+  key       String
   count     Int      @default(1)
   resetTime DateTime
   createdAt DateTime @default(now())
@@ -163,13 +163,13 @@ model RateLimit {
 
 model SecurityEvent {
   id        Int      @id @default(autoincrement())
-  type      String   @db.VarChar(100) // 'sql_injection', 'rate_limit', 'suspicious_ip', etc.
-  severity  String   @db.VarChar(20)  // 'low', 'medium', 'high', 'critical'
-  details   String   @db.Text
-  ipAddress String?  @db.VarChar(45)
-  userAgent String?  @db.Text
+  type      String // 'sql_injection', 'rate_limit', 'suspicious_ip', etc.
+  severity  String  // 'low', 'medium', 'high', 'critical'
+  details   String
+  ipAddress String?
+  userAgent String?
   userId    Int?
-  metadata  String?  @db.Text // JSON string for additional data
+  metadata  String? // JSON string for additional data
   createdAt DateTime @default(now())
   resolved  Boolean  @default(false)
   resolvedAt DateTime?

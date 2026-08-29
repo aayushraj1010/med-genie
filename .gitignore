@@ -40,6 +40,9 @@ next-env.d.ts
 .genkit/*
 .env*
 
+# local sqlite dev database
+prisma/dev.db
+
 # firebase
 firebase-debug.log
 firestore-debug.log
