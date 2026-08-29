@@ -310,7 +310,7 @@ Contributors are recognized in our [Contributors Hall of Fame](./CONTRIBUTORS.md
 
 **Current Maintainers:**
 - [@ashutosh-engineer](https://github.com/ashutosh-engineer) - Project Lead & Architecture
-- [Your Name Here] - Join our team!
+- Join our team by becoming a contributor!
 
 ---
 
