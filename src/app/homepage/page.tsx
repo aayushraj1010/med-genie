@@ -1,5 +1,6 @@
 'use client';
 
+import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect, useRef, useCallback, FormEvent } from 'react';
 import dynamic from 'next/dynamic';
 import { ChatMessageItem } from '@/components/chat-message-item';
@@ -56,6 +57,7 @@ function HomePage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+const { user } = useAuth();
   const isMobile = useIsMobile();
 
   const {
@@ -204,6 +206,17 @@ function HomePage() {
           };
           setMessages((prev) => [...prev, aiInfoMessage]);
           addMessage(activeSessionId, aiInfoMessage);
+// Save to audit log
+fetch('/api/audit/log', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    userId: user?.id,
+    question: question,
+    aiResponse: result.answer,
+    sessionId: activeSessionId,
+  }),
+});
         }
 
         if (result.followUpQuestion) {
