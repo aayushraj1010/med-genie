@@ -6,9 +6,12 @@ import { UserMenu } from "@/components/UserMenu";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from '@/components/ui/button';
 import { UserPlus, LogIn } from "lucide-react";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { useTranslation } from "react-i18next";
 
 export function SiteHeader() {
   const { isAuthenticated, isLoading } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -22,10 +25,11 @@ export function SiteHeader() {
 
           {/* Navigation Links */}
           <nav className="flex items-center space-x-4">
-            <Link href="/about" className="hover:underline">About</Link>
-            <Link href="/contact" className="hover:underline">Contact</Link>
-            <Link href="/health-vault" className="hover:underline">Health Vault</Link>
-            <Link href="/specialist-recommendation" className="hover:underline">Find Specialist</Link>
+            <Link href="/hospitals" className="hover:underline font-medium text-blue-600 dark:text-blue-400">Hospitals</Link>
+            <Link href="/about" className="hover:underline">{t('navbar.about')}</Link>
+            <Link href="/contact" className="hover:underline">{t('navbar.contact')}</Link>
+            <Link href="/health-vault" className="hover:underline">{t('navbar.healthVault')}</Link>
+            <Link href="/specialist-recommendation" className="hover:underline">{t('navbar.findSpecialist')}</Link>
           </nav>
         </div>
 
@@ -34,6 +38,7 @@ export function SiteHeader() {
 
         {/* Theme Toggle and Authentication */}
         <div className="flex items-center space-x-2">
+          <LanguageSelector />
           <ThemeToggle />
           
           {!isLoading && (
@@ -50,7 +55,7 @@ export function SiteHeader() {
                       window.location.reload();
                     }}
                   >
-                    Reset Chat
+                    {t('navbar.resetChat')}
                   </Button>
                 </>
               ) : (

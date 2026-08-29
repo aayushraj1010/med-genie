@@ -217,6 +217,12 @@ export class DatabaseSecurity {
                     case 'name':
                         sanitized[key] = this.sanitizeInput(value, this.MAX_NAME_LENGTH);
                         break;
+                    case 'bloodGroup':
+                        sanitized[key] = this.sanitizeInput(value, 10);
+                        break;
+                    case 'allergies':
+                        sanitized[key] = this.sanitizeInput(value, 1000);
+                        break;
                     case 'password':
                         // Don't sanitize passwords - they should be hashed
                         sanitized[key] = value;
@@ -224,6 +230,8 @@ export class DatabaseSecurity {
                     default:
                         sanitized[key] = this.sanitizeInput(value);
                 }
+            } else if (key === 'age' && typeof value === 'number') {
+                sanitized[key] = value > 0 && value < 150 ? value : null;
             } else {
                 sanitized[key] = value;
             }
@@ -257,6 +265,21 @@ export class DatabaseSecurity {
         if (userData.password) {
             if (typeof userData.password !== 'string' || userData.password.length < 8) {
                 errors.push('Password must be at least 8 characters long');
+            }
+        }
+
+        // Validate age (if present)
+        if (userData.age !== undefined && userData.age !== null) {
+            if (typeof userData.age !== 'number' || userData.age < 0 || userData.age > 150) {
+                errors.push('Invalid age');
+            }
+        }
+
+        // Validate blood group (if present)
+        if (userData.bloodGroup) {
+            const validBloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+            if (typeof userData.bloodGroup !== 'string' || !validBloodGroups.includes(userData.bloodGroup.toUpperCase())) {
+                errors.push('Invalid blood group');
             }
         }
 
