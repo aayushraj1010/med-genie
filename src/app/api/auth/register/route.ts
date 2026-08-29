@@ -170,8 +170,7 @@ const registerHandler = async (req: NextRequest) => {
     const newUser = await SecurePrisma.createUser({
       name,
       email,
-      password: hashed,
-      confirmPassword: hashed
+      password: hashed
     }, ipAddress);
 
     // Generate JWT token pair for immediate login
