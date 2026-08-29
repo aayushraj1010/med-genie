@@ -113,6 +113,22 @@ function HomePage() {
     [activeSessionId, getSession, updateSession]
   );
 
+  const syncChatToBackend = async (sessionId: string, title: string, newMessages: ChatMessage[]) => {
+    try {
+      const token = localStorage.getItem('med-genie-token') || sessionStorage.getItem('med-genie-token');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      
+      await fetch('/api/history/save', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ sessionId, title, messages: newMessages }),
+      });
+    } catch (e) {
+      console.error('Failed to sync to backend', e);
+    }
+  };
+
   const handleSubmitQuestion = useCallback(
     async (question: string) => {
       if (!activeSessionId) return;
@@ -152,13 +168,16 @@ function HomePage() {
                   .join('\n\n');
                 const aiResponseMessage: ChatMessage = {
                   id: `ai-hospital-${Date.now()}`,
-                  text: `Here are some nearby hospitals in **${location}**:\n\n${hospitalList}`,
+                  text: `Here are some nearby hospitals in **${location}**:\n\n${hospitalList}\n\n*Tip: You can use our [Hospital Locator](/hospitals) to find hospitals based on your exact device location.*`,
                   sender: 'ai',
                   timestamp: Date.now(),
                 };
                 setMessages((prev) => [...prev.filter((msg) => msg.id !== aiLoadingMessage.id), aiResponseMessage]);
                 addMessage(activeSessionId, aiResponseMessage);
                 setIsLoading(false);
+                
+                // Sync to backend
+                syncChatToBackend(activeSessionId, question, [userMessage, aiResponseMessage]);
                 return;
               } else {
                 throw new Error('No hospitals found');
@@ -166,15 +185,29 @@ function HomePage() {
             } catch (err) {
               const aiErrorMessage: ChatMessage = {
                 id: `a-hospital-error-${Date.now()}`,
-                text: `😔 I couldn't find hospital data for "${location}". Please check the location name.`,
+                text: `😔 I couldn't find hospital data specifically for "${location}".\n\nTry using our automatic [Hospital Locator](/hospitals) instead!`,
                 sender: 'ai',
                 timestamp: Date.now(),
               };
               setMessages((prev) => [...prev.filter((msg) => msg.id !== aiLoadingMessage.id), aiErrorMessage]);
               addMessage(activeSessionId, aiErrorMessage);
               setIsLoading(false);
+              syncChatToBackend(activeSessionId, question, [userMessage, aiErrorMessage]);
               return;
             }
+          } else {
+            // Mentioned hospital but no specific location given
+            const aiInfoMessage: ChatMessage = {
+              id: `ai-hospital-link-${Date.now()}`,
+              text: `Looking for a hospital? I can help! \n\nPlease use our dedicated **[Hospital Locator](/hospitals)** page to automatically find nearby hospitals using your device's location.`,
+              sender: 'ai',
+              timestamp: Date.now(),
+            };
+            setMessages((prev) => [...prev.filter((msg) => msg.id !== aiLoadingMessage.id), aiInfoMessage]);
+            addMessage(activeSessionId, aiInfoMessage);
+            setIsLoading(false);
+            syncChatToBackend(activeSessionId, question, [userMessage, aiInfoMessage]);
+            return;
           }
         }
 
@@ -204,6 +237,9 @@ function HomePage() {
           };
           setMessages((prev) => [...prev, aiInfoMessage]);
           addMessage(activeSessionId, aiInfoMessage);
+          
+          // Sync to backend
+          syncChatToBackend(activeSessionId, question, [userMessage, aiInfoMessage]);
         }
 
         if (result.followUpQuestion) {

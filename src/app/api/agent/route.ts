@@ -3,13 +3,13 @@ import { getAgentExecutor } from "@/ai/agent";  // ← Uses the fixed async gett
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, sessionId = "medgenie-2025" } = await req.json();
+    const { message, sessionId = "medgenie-2025", language = "en" } = await req.json();
     const agentExecutor = await getAgentExecutor();  // ← Await the fixed executor
 
-    const config = { configurable: { thread_id: sessionId } };
+    const config = { configurable: { thread_id: sessionId, language } };
 
     const result = await agentExecutor.invoke(
-      { messages: [{ role: "user", content: message }] },
+      { messages: [{ role: "user", content: `Please respond in the following language: ${language}. ${message}` }] },
       config
     );
 
