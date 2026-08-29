@@ -19,12 +19,13 @@ export default function ChatInterface() {
     setInput('');
 
     try {
-      const res = await fetch("/api/chat/agent/route", {
+      const res = await fetch("/api/agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: userMessage,
           sessionId: "abhinav-capstone-2025",
+          language: localStorage.getItem('i18nextLng') || 'en'
         }),
       });
 
