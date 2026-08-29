@@ -1,0 +1,22 @@
+{
+  "navbar": {
+    "about": "About",
+    "contact": "Contact",
+    "healthVault": "Health Vault",
+    "findSpecialist": "Find Specialist",
+    "resetChat": "Reset Chat"
+  },
+  "hero": {
+    "title": "Your AI-powered Health Companion",
+    "subtitle": "Care at Your Fingertips",
+    "description": "MedGenie is your smart AI health assistant — get instant answers to basic medical questions, emergency guidance, and symptom-based suggestions. Privacy-first, accessible anywhere, anytime.",
+    "tryButton": "Try MedGenie",
+    "footerText": "Helping users during health emergencies, trusted by the open-source community"
+  },
+  "language": {
+    "en": "English",
+    "hi": "हिन्दी",
+    "bn": "বাংলা",
+    "ta": "தமிழ்"
+  }
+}

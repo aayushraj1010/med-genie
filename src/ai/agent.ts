@@ -8,12 +8,19 @@ import { MemorySaver } from "@langchain/langgraph";
 // Memory for conversation history (stateful agent)
 const memory = new MemorySaver();
 
-// Gemini model setup
-const llm = new ChatGoogleGenerativeAI({
-  model: "gemini-1.5-flash",
-  temperature: 0.7,
-  apiKey: process.env.GEMINI_API_KEY,  // Ensure this is in .env.local
-});
+// Defer llm initialization to prevent build errors when env vars are missing
+let llm: ChatGoogleGenerativeAI;
+
+function getLLM() {
+  if (!llm) {
+    llm = new ChatGoogleGenerativeAI({
+      model: "gemini-1.5-flash",
+      temperature: 0.7,
+      apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "dummy-key-for-build",
+    });
+  }
+  return llm;
+}
 
 // Lazy-load the agent (avoids top-level await issues)
 let agentExecutor: any;
@@ -26,7 +33,7 @@ export async function getAgentExecutor() {
 
   // FIXED: Create ReAct agent with tools, prompt, and memory
   agentExecutor = createReactAgent({
-    llm,
+    llm: getLLM(),
     tools: [searchTool, calculatorTool],
     prompt,
     checkpointSaver: memory,  // Enables memory across sessions
