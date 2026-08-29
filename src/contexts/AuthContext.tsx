@@ -122,6 +122,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+      if (!response.ok) {
+        return { success: false, message: "Login failed" };
+      }
       const data = await response.json();
 
       if (data.success && data.accessToken && data.user) {
@@ -154,6 +157,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, confirmPassword }),
       });
+      if (!response.ok) {
+        return { success: false, message: "Registration failed" };
+      }
       const data = await response.json();
 
       if (data.success && data.accessToken && data.user) {
