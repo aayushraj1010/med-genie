@@ -23,6 +23,7 @@ REFRESH_TOKEN_EXPIRES_IN=7d           # Refresh token lifetime
 
 # Security Headers
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+APP_URL=https://med-genie-five.vercel.app
 
 # Database Configuration
 DATABASE_URL="file:./dev.db"
