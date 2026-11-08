@@ -145,6 +145,17 @@ class SecurityEvent(Base):
     resolvedBy = Column(Integer, nullable=True)
 
 
+class ContactSubmission(Base):
+    __tablename__ = "contact_submissions"
+
+    id = Column(String(100), primary_key=True)
+    name = Column(String(200), nullable=False)
+    email = Column(String(254), nullable=False)
+    message = Column(Text, nullable=False)
+    status = Column(String(20), nullable=False, default="received", index=True)
+    createdAt = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+
 class NewsletterSubscription(Base):
     __tablename__ = "newsletter_subscriptions"
 

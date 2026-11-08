@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../features/landing/presentation/landing_screen.dart';
 import '../features/auth/presentation/auth_screen.dart';
+import '../features/auth/presentation/password_recovery_screen.dart';
 import '../features/chat/presentation/dashboard_screen.dart';
 import '../features/profile/presentation/health_profile_screen.dart';
 import '../features/risk/presentation/heart_risk_screen.dart';
@@ -17,7 +18,13 @@ class AppRouter {
   static const String contact = '/contact';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
+    final uri = Uri.tryParse(settings.name ?? '/');
+    switch (uri?.path) {
+      case '/forgot-password':
+        return MaterialPageRoute(settings: settings, builder: (_) => const PasswordRecoveryScreen());
+      case '/reset-password':
+        return MaterialPageRoute(settings: settings, builder: (_) => PasswordRecoveryScreen(
+          isReset: true, token: uri?.queryParameters['token'], email: uri?.queryParameters['email']));
       case landing:
         return MaterialPageRoute(builder: (_) => const LandingScreen());
       case auth:

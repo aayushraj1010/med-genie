@@ -1,6 +1,11 @@
 import re
 import logging
-from fastapi import APIRouter, HTTPException, status
+import uuid
+from fastapi import APIRouter, HTTPException, status, Depends
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
+from app.core.database import get_db
+from app.models.db_models import ContactSubmission
 from app.schemas.pydantic_objs import ContactForm
 
 logger = logging.getLogger("contact_api")
@@ -12,7 +17,7 @@ MAX_MESSAGE_LEN = 5000
 
 
 @router.post("")
-async def submit_contact(body: ContactForm):
+async def submit_contact(body: ContactForm, db: Session = Depends(get_db)):
     """Accept contact form submissions from users."""
     name = body.name.strip()
     email = body.email.strip().lower()
@@ -40,13 +45,17 @@ async def submit_contact(body: ContactForm):
             detail=f"Message cannot exceed {MAX_MESSAGE_LEN} characters."
         )
 
-    # Log to server console (SMTP integration can be added here)
-    logger.info(
-        f"[CONTACT SUBMISSION] From: {name} <{email}> | "
-        f"Message: {message[:200]}{'...' if len(message) > 200 else ''}"
-    )
+    submission_id = str(uuid.uuid4())
+    try:
+        db.add(ContactSubmission(id=submission_id, name=name, email=email, message=message))
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        logger.error("Failed to persist contact submission")
+        raise HTTPException(status_code=503, detail="Your message could not be saved. Please try again.")
 
     return {
         "success": True,
+        "submissionId": submission_id,
         "message": "Your message has been received. We'll get back to you shortly."
     }

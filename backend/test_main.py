@@ -2,8 +2,13 @@ import os
 import unittest
 import warnings
 import json
+from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
+
+# Never initialize the application's tracked development database in tests.
+os.environ["DATABASE_URL"] = "sqlite://"
+os.environ["ENVIRONMENT"] = "test"
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -14,13 +19,13 @@ from sqlalchemy.orm import sessionmaker
 
 from app.main import app
 from app.core.database import Base, get_db
-from app.models.db_models import User, HealthProfile, ChatSession, ChatMessage
+from app.models.db_models import User, HealthProfile, ChatSession, ChatMessage, ContactSubmission
 from app.core.security import get_password_hash
 from app.api.risk import fallback_cardiac_risk
 from app.schemas.pydantic_objs import RiskFeatures
 
 # Isolate Test Database URL
-TEST_DATABASE_URL = "sqlite:///./test_temp.db"
+TEST_DATABASE_URL = "sqlite:///./test_runtime.db"
 test_engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
@@ -44,13 +49,18 @@ class TestWellnessBackend(unittest.TestCase):
     def tearDownClass(cls):
         # Drop test tables and clean up DB file
         Base.metadata.drop_all(bind=test_engine)
-        if os.path.exists("test_temp.db"):
+        test_engine.dispose()
+        if os.path.exists("test_runtime.db"):
             try:
-                os.remove("test_temp.db")
+                os.remove("test_runtime.db")
             except Exception:
                 pass
 
     def setUp(self):
+        self.mail_mock = patch("app.api.auth.send_password_reset_email").start()
+        self.addCleanup(patch.stopall)
+        patch("app.api.auth.settings.SMTP_HOST", "smtp.example.com").start()
+        patch("app.api.auth.settings.SMTP_FROM_EMAIL", "noreply@example.com").start()
         self.client = TestClient(app)
         self.db = TestingSessionLocal()
         # Clean data before each test
@@ -206,7 +216,8 @@ class TestWellnessBackend(unittest.TestCase):
         self.assertIn("risk_predicted", response.json())
         self.assertIn("risk_probability", response.json())
 
-    @patch("app.api.chat.genai.GenerativeModel")
+    @patch("app.core.gemini.settings.GOOGLE_AI_API_KEY", "test-key-not-real")
+    @patch("app.core.gemini.genai.Client")
     def test_chat_flow(self, mock_generative_model):
         # Set up a test user
         hashed = get_password_hash("password123")
@@ -231,7 +242,7 @@ class TestWellnessBackend(unittest.TestCase):
         ]
         mock_response.text = '{"answer": "Based on history, seek medical attention.", "followUpQuestion": "Do you have dizziness?"}'
         mock_model_instance.generate_content.return_value = mock_response
-        mock_generative_model.return_value = mock_model_instance
+        mock_generative_model.return_value.__enter__.return_value.models = mock_model_instance
 
         # Create session
         sess_response = self.client.post("/api/chat/sessions", json={"title": "Test Chat"}, headers=headers)
@@ -249,6 +260,7 @@ class TestWellnessBackend(unittest.TestCase):
         self.assertEqual(msg_response.status_code, 200)
         self.assertEqual(msg_response.json()["answer"], "Based on history, seek medical attention.")
         self.assertEqual(msg_response.json()["followUpQuestion"], "Do you have dizziness?")
+        self.assertEqual(msg_response.json()["source"], "gemini")
 
     def test_logout(self):
         # Set up a test user
@@ -357,13 +369,14 @@ class TestWellnessBackend(unittest.TestCase):
         # Test forgot password (valid email)
         response = self.client.post("/api/auth/forgot-password", json={"email": "reset@example.com"})
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Password reset link sent", response.json()["message"])
+        self.assertIn("If an account exists", response.json()["message"])
 
         # Retrieve user reset token from DB
         updated_user = self.db.query(User).filter(User.email == "reset@example.com").first()
         self.assertIsNotNone(updated_user.resetToken)
         self.assertIsNotNone(updated_user.resetTokenExpiry)
-        token = updated_user.resetToken
+        token = self.mail_mock.call_args.args[1]
+        self.assertNotEqual(updated_user.resetToken, token)
 
         # Test reset password (mismatch new/confirm passwords)
         reset_payload_mismatch = {
@@ -450,6 +463,196 @@ class TestWellnessBackend(unittest.TestCase):
         self.assertIn("recommendations", response.json())
         specialties = [r["specialty"] for r in response.json()["recommendations"]]
         self.assertIn("Cardiologist", specialties)
+
+
+    def _login_tokens(self):
+        response = self.client.post("/api/auth/register", json={
+            "name": "Security Test", "email": "security@example.com", "password": "strongpassword123"
+        })
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post("/api/auth/login", json={
+            "email": "security@example.com", "password": "strongpassword123"
+        })
+        self.assertEqual(response.status_code, 200)
+        return response.json()
+
+    def test_refresh_rotation_rejects_replay(self):
+        tokens = self._login_tokens()
+        self.client.cookies.clear()
+        response = self.client.post("/api/auth/refresh", headers={"Authorization": f"Bearer {tokens['refresh_token']}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.json()["refresh_token"], tokens["refresh_token"])
+        self.client.cookies.clear()
+        replay = self.client.post("/api/auth/refresh", headers={"Authorization": f"Bearer {tokens['refresh_token']}"})
+        self.assertEqual(replay.status_code, 401)
+        old_access = self.client.get("/api/user/profile", headers={"Authorization": f"Bearer {tokens['access_token']}"})
+        self.assertEqual(old_access.status_code, 401)
+
+    def test_repeated_logins_create_distinct_sessions(self):
+        first = self._login_tokens()
+        second = self.client.post("/api/auth/login", json={
+            "email": "security@example.com", "password": "strongpassword123"
+        })
+        self.assertEqual(second.status_code, 200)
+        self.assertNotEqual(first["access_token"], second.json()["access_token"])
+        self.assertNotEqual(first["refresh_token"], second.json()["refresh_token"])
+
+    @patch("app.core.gemini.settings.GOOGLE_AI_API_KEY", "test-key-not-real")
+    @patch("app.core.gemini.genai.Client")
+    def test_invalid_ai_response_uses_fallback(self, mock_model):
+        tokens = self._login_tokens()
+        headers = {"Authorization": f"Bearer {tokens['access_token']}"}
+        session = self.client.post("/api/chat/sessions", json={"title": "Invalid AI"}, headers=headers).json()
+        response = MagicMock()
+        response.candidates = [MagicMock()]
+        for invalid in ['not json', '[]', '{"answer": null}', '{"answer": "ok", "followUpQuestion": []}']:
+            response.text = invalid
+            mock_model.return_value.__enter__.return_value.models.generate_content.return_value = response
+            result = self.client.post(f"/api/chat/sessions/{session['sessionId']}/messages",
+                                      json={"content": "test question", "isFollowUp": False}, headers=headers)
+            self.assertEqual(result.status_code, 200)
+            self.assertIn("trouble connecting", result.json()["answer"])
+            self.assertEqual(result.json()["source"], "local_fallback")
+            self.assertEqual(result.json()["fallbackReason"], "invalid_response")
+
+    def test_unconfigured_ai_fallback_status_survives_history(self):
+        from app.core.gemini import settings
+        tokens = self._login_tokens()
+        headers = {"Authorization": f"Bearer {tokens['access_token']}"}
+        session = self.client.post("/api/chat/sessions", json={"title": "Offline"}, headers=headers).json()
+        with patch.object(settings, "GOOGLE_AI_API_KEY", ""), patch.object(settings, "GOOGLE_API_KEY", ""), patch.object(settings, "GEMINI_API_KEY", ""):
+            response = self.client.post(f"/api/chat/sessions/{session['sessionId']}/messages",
+                                        json={"content": "test question"}, headers=headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["source"], "local_fallback")
+        self.assertEqual(response.json()["fallbackReason"], "not_configured")
+        history = self.client.get(f"/api/chat/sessions/{session['sessionId']}/messages", headers=headers).json()
+        metadata = json.loads(history[-1]["metadata"])
+        self.assertEqual(metadata["source"], "local_fallback")
+
+    @patch("app.core.gemini.settings.GOOGLE_AI_API_KEY", "test-key-not-real")
+    @patch("app.core.gemini.genai.Client")
+    def test_provider_timeout_is_sanitized(self, mock_client):
+        from app.core.gemini import generate_health_answer, GeminiUnavailable
+        import httpx
+        mock_client.return_value.__enter__.return_value.models.generate_content.side_effect = httpx.ReadTimeout("private provider details")
+        with self.assertRaises(GeminiUnavailable) as result:
+            generate_health_answer("test")
+        self.assertEqual(result.exception.reason, "timeout")
+        self.assertNotIn("private", str(result.exception))
+
+    def test_password_reset_revokes_existing_sessions(self):
+        tokens = self._login_tokens()
+        self.client.post("/api/auth/forgot-password", json={"email": "security@example.com"})
+        user = self.db.query(User).filter(User.email == "security@example.com").first()
+        response = self.client.post("/api/auth/reset-password", json={
+            "email": user.email, "token": self.mail_mock.call_args.args[1],
+            "newPassword": "newpassword123", "confirmPassword": "newpassword123"
+        })
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get("/api/user/profile", headers={"Authorization": f"Bearer {tokens['access_token']}"})
+        self.assertEqual(response.status_code, 401)
+        self.client.cookies.clear()
+        response = self.client.post("/api/auth/refresh", headers={"Authorization": f"Bearer {tokens['refresh_token']}"})
+        self.assertEqual(response.status_code, 401)
+
+    def test_refresh_rejects_deactivated_user(self):
+        tokens = self._login_tokens()
+        user = self.db.query(User).filter(User.email == "security@example.com").first()
+        user.isActive = False
+        self.db.commit()
+        response = self.client.post("/api/auth/refresh", headers={"Authorization": f"Bearer {tokens['refresh_token']}"})
+        self.assertEqual(response.status_code, 401)
+
+    def test_missing_auth_returns_401(self):
+        self.assertEqual(self.client.get("/api/user/profile").status_code, 401)
+
+    def test_health_endpoints(self):
+        self.assertEqual(self.client.get("/health/live").json()["status"], "ok")
+        self.assertEqual(self.client.get("/health/ready").status_code, 200)
+        with patch("app.main.engine.connect", side_effect=RuntimeError("database offline")):
+            response = self.client.get("/health/ready")
+        self.assertEqual(response.status_code, 503)
+        self.assertNotIn("database offline", response.text)
+
+    def test_production_config_rejects_unsafe_defaults(self):
+        from app.core.config import Settings
+        from pydantic import ValidationError
+        with self.assertRaises(ValidationError):
+            Settings(_env_file=None, ENVIRONMENT="production", JWT_SECRET="")
+        config = Settings(_env_file=None, ENVIRONMENT="production", JWT_SECRET="x" * 48,
+                          COOKIE_SECURE=True, CORS_ORIGINS=["https://app.example.com"],
+                          FRONTEND_URL="https://app.example.com")
+        self.assertTrue(config.COOKIE_SECURE)
+
+    def test_reset_delivery_failure_clears_token(self):
+        from app.core.mail import EmailDeliveryError
+        self._login_tokens()
+        self.mail_mock.side_effect = EmailDeliveryError("SMTP unavailable")
+        result = self.client.post("/api/auth/forgot-password", json={"email": "security@example.com"})
+        self.assertEqual(result.status_code, 503)
+        user = self.db.query(User).filter(User.email == "security@example.com").first()
+        self.assertIsNone(user.resetToken)
+        self.assertIsNone(user.resetTokenExpiry)
+        self.assertNotIn("SMTP unavailable", result.text)
+
+    def test_forgot_password_unknown_account_has_same_response(self):
+        self._login_tokens()
+        known = self.client.post("/api/auth/forgot-password", json={"email": "security@example.com"})
+        unknown = self.client.post("/api/auth/forgot-password", json={"email": "unknown@example.com"})
+        self.assertEqual(known.json(), unknown.json())
+        self.assertEqual(unknown.status_code, 200)
+        self.mail_mock.assert_called_once()
+
+    def test_missing_smtp_does_not_claim_delivery(self):
+        with patch("app.api.auth.settings.SMTP_HOST", ""):
+            response = self.client.post("/api/auth/forgot-password", json={"email": "unknown@example.com"})
+        self.assertEqual(response.status_code, 503)
+        self.mail_mock.assert_not_called()
+
+    def test_reset_token_is_single_use_and_expires(self):
+        self._login_tokens()
+        self.client.post("/api/auth/forgot-password", json={"email": "security@example.com"})
+        payload = {"email": "security@example.com", "token": self.mail_mock.call_args.args[1],
+                   "newPassword": "newpassword123", "confirmPassword": "newpassword123"}
+        self.assertEqual(self.client.post("/api/auth/reset-password", json=payload).status_code, 200)
+        self.assertEqual(self.client.post("/api/auth/reset-password", json=payload).status_code, 400)
+        self.client.post("/api/auth/forgot-password", json={"email": "security@example.com"})
+        payload["token"] = self.mail_mock.call_args.args[1]
+        user = self.db.query(User).filter(User.email == "security@example.com").first()
+        user.resetTokenExpiry = datetime.utcnow() - timedelta(minutes=1)
+        self.db.commit()
+        self.assertEqual(self.client.post("/api/auth/reset-password", json=payload).status_code, 400)
+
+    def test_contact_submission_is_persisted(self):
+        response = self.client.post("/api/contact", json={
+            "name": " Test User ", "email": "test@example.com", "message": " Please help with my account. "})
+        self.assertEqual(response.status_code, 200)
+        submission = self.db.query(ContactSubmission).filter_by(id=response.json()["submissionId"]).one()
+        self.assertEqual(submission.name, "Test User")
+        self.assertEqual(submission.message, "Please help with my account.")
+        self.assertEqual(submission.status, "received")
+
+    def test_contact_database_failure_returns_error(self):
+        with patch("sqlalchemy.orm.Session.commit", side_effect=SQLAlchemyError()):
+            response = self.client.post("/api/contact", json={
+                "name": "Test User", "email": "test@example.com", "message": "Please help with my account."})
+        self.assertEqual(response.status_code, 503)
+
+    def test_smtp_transport_and_reset_link(self):
+        from app.core.mail import send_password_reset_email
+        from urllib.parse import urlsplit, parse_qs
+        with patch("app.core.mail.smtplib.SMTP") as transport:
+            smtp = transport.return_value.__enter__.return_value
+            smtp.send_message.return_value = {}
+            send_password_reset_email("user+tag@example.com", "a" * 64)
+            smtp.starttls.assert_called_once()
+            message = smtp.send_message.call_args.args[0]
+            self.assertEqual(message["To"], "user+tag@example.com")
+            link = next(line for line in message.get_content().splitlines() if line.startswith("http"))
+            fragment = urlsplit(link).fragment
+            self.assertTrue(fragment.startswith("/reset-password?"))
+            self.assertEqual(parse_qs(fragment.split("?", 1)[1])["email"], ["user+tag@example.com"])
 
 
 if __name__ == "__main__":

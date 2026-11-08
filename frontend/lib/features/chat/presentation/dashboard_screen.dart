@@ -65,9 +65,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             );
           });
         },
-        listenFor: const Duration(seconds: 30),
-        pauseFor: const Duration(seconds: 5),
-        localeId: 'en_US',
+        listenOptions: stt.SpeechListenOptions(
+          listenFor: const Duration(seconds: 30),
+          pauseFor: const Duration(seconds: 5),
+          localeId: 'en_US',
+        ),
       );
     }
   }
@@ -202,10 +204,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     builder: (_) => const SpecialistScreen()),
               ),
               icon: const Icon(Icons.open_in_new,
-                  size: 14, color: const Color(0xFF3B82F6)),
+                  size: 14, color: Color(0xFF3B82F6)),
               label: const Text("Specialists",
                   style: TextStyle(
-                      fontSize: 12, color: const Color(0xFF3B82F6))),
+                      fontSize: 12, color: Color(0xFF3B82F6))),
             ),
           ),
 
@@ -369,6 +371,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 height: 1.4,
               ),
             ),
+            if (!isUser && msg.source == 'local_fallback') ...[
+              const SizedBox(height: 8),
+              const Text('General guidance · AI unavailable',
+                style: TextStyle(color: Colors.amber, fontSize: 12)),
+            ],
             if (msg.isFollowUpPrompt) ...[
               const SizedBox(height: 10),
               Wrap(

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class ChatSessionModel {
   final String sessionId;
   final String title;
@@ -26,12 +28,14 @@ class ChatSessionModel {
 }
 
 class ChatMessageModel {
+  final String? source;
   final String content;
   final String sender; // 'user' or 'ai'
   final DateTime timestamp;
   final bool isFollowUp;
 
   ChatMessageModel({
+    this.source,
     required this.content,
     required this.sender,
     required this.timestamp,
@@ -39,7 +43,18 @@ class ChatMessageModel {
   });
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
+    String? source;
+    try {
+      final metadata = json['metadata'];
+      final decoded = metadata is String ? jsonDecode(metadata) : metadata;
+      if (decoded is Map && decoded['source'] is String) {
+        source = decoded['source'] as String;
+      }
+    } on FormatException {
+      // Older messages may not have structured metadata.
+    }
     return ChatMessageModel(
+      source: source,
       content: json['content'] as String,
       sender: json['sender'] as String,
       timestamp: json['timestamp'] != null
@@ -51,16 +66,19 @@ class ChatMessageModel {
 }
 
 class ChatSendResponseModel {
+  final String? source;
   final String answer;
   final String followUpQuestion;
 
   ChatSendResponseModel({
+    this.source,
     required this.answer,
     required this.followUpQuestion,
   });
 
   factory ChatSendResponseModel.fromJson(Map<String, dynamic> json) {
     return ChatSendResponseModel(
+      source: json['source'] as String?,
       answer: json['answer'] as String? ?? '',
       followUpQuestion: json['followUpQuestion'] as String? ?? '',
     );

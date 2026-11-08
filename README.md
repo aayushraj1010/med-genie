@@ -1,4 +1,13 @@
 # 🩺 Wellness
+
+Current implementation status and verification: [APP_STATUS.md](APP_STATUS.md).
+The primary application is Flutter (`frontend/`) with FastAPI (`backend/`);
+the root Next.js application is a separate legacy implementation.
+
+For local web development, use `flutter run -d chrome --web-port 9004`.
+For a hosted backend, build with
+`flutter build web --dart-define=API_BASE_URL=https://your-api-host/api`.
+Backend environment settings are documented in `backend/env.example`.
 ### Your Intelligent AI Health Assistant with Secure Authentication
 
 ---

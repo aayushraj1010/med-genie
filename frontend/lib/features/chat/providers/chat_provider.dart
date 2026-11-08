@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/chat_api.dart';
 
 class ChatMessage {
+  final String? source;
   final String text;
   final String sender; // 'user' or 'ai'
   final DateTime timestamp;
   final bool isFollowUpPrompt;
 
   ChatMessage({
+    this.source,
     required this.text,
     required this.sender,
     required this.timestamp,
@@ -53,6 +55,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
     try {
       final messages = await _chatApi.getSessionMessages(sessionId);
       state = messages.map((m) => ChatMessage(
+        source: m.source,
         text: m.content,
         sender: m.sender,
         timestamp: m.timestamp,
@@ -106,6 +109,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
         ...state,
         ChatMessage(
           text: response.answer,
+          source: response.source,
           sender: 'ai',
           timestamp: DateTime.now(),
         )
@@ -116,6 +120,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
           ...state,
           ChatMessage(
             text: response.followUpQuestion,
+            source: response.source,
             sender: 'ai',
             timestamp: DateTime.now(),
             isFollowUpPrompt: true,

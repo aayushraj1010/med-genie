@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 import uuid
 import logging
+import hashlib
+import hmac
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Request, Query
 from sqlalchemy.orm import Session as DBSession
 from sqlalchemy.exc import SQLAlchemyError
@@ -8,6 +10,9 @@ from app.core.database import get_db
 from app.models.db_models import User, Session as UserSession, SecurityEvent
 from app.schemas.pydantic_objs import UserRegister, UserLogin, Token, UserResponse, ForgotPasswordRequest, ResetPasswordRequest
 from app.core.security import get_password_hash, verify_password, create_access_token, create_refresh_token, decode_token
+from app.core.config import settings
+from app.core.mail import send_password_reset_email, EmailDeliveryError
+from starlette.concurrency import run_in_threadpool
 
 # Setup local logger
 logger = logging.getLogger("auth_api")
@@ -128,7 +133,7 @@ async def login(
         # Generate tokens
         access_token = create_access_token(user.id)
         refresh_token = create_refresh_token(user.id)
-        expires_at = datetime.utcnow() + timedelta(days=7)
+        expires_at = datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
         
         # Create persistent session
         session_id = str(uuid.uuid4())
@@ -150,9 +155,9 @@ async def login(
             key="refreshToken",
             value=refresh_token,
             httponly=True,
-            secure=True,
+            secure=settings.COOKIE_SECURE,
             samesite="strict",
-            max_age=60 * 60 * 24 * 30  # 30 Days in seconds
+            max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS
         )
 
         log_security_event(db, "login_success", "low", f"Successful login for user: {user.email}", user_id=user.id, ip=ip, ua=ua)
@@ -229,6 +234,10 @@ async def refresh(
                 detail="Session expired or invalid"
             )
 
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user or not user.isActive or session.userId != user_id:
+            raise HTTPException(status_code=401, detail="User inactive or session invalid")
+
         # Generate new tokens
         new_access_token = create_access_token(user_id)
         new_refresh_token = create_refresh_token(user_id)
@@ -244,9 +253,9 @@ async def refresh(
             key="refreshToken",
             value=new_refresh_token,
             httponly=True,
-            secure=True,
+            secure=settings.COOKIE_SECURE,
             samesite="strict",
-            max_age=60 * 60 * 24 * 30
+            max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS
         )
 
         return {
@@ -310,33 +319,36 @@ async def forgot_password(
     ip = request.client.host if request.client else "unknown"
     ua = request.headers.get("user-agent", "unknown")
     email = body.email.lower().strip()
+    if not settings.smtp_configured:
+        raise HTTPException(status_code=503, detail="Password reset email is temporarily unavailable. Please try again later.")
+    generic_response = {"success": True, "message": "If an account exists for this email, a password reset link has been sent."}
     
     try:
         user = db.query(User).filter(User.email == email).first()
         if not user:
-            log_security_event(db, "forgot_password_failed", "low", f"Forgot password requested for non-existent email: {email}", ip=ip, ua=ua)
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="No user found with this email"
-            )
+            return generic_response
         
         import secrets
         token = secrets.token_hex(32)
         expiry = datetime.utcnow() + timedelta(hours=1)
         
-        user.resetToken = token
+        user.resetToken = hashlib.sha256(token.encode()).hexdigest()
         user.resetTokenExpiry = expiry
         db.commit()
         
-        reset_link = f"http://localhost:9005/api/auth/reset-password?token={token}&email={email}"
-        logger.info(f"[SIMULATED EMAIL] Password reset requested for {email}. Reset Link: {reset_link}")
+        try:
+            await run_in_threadpool(send_password_reset_email, email, token)
+        except EmailDeliveryError:
+            # A slower failed delivery must not invalidate a newer reset request.
+            db.query(User).filter(User.id == user.id, User.resetToken == hashlib.sha256(token.encode()).hexdigest()).update(
+                {"resetToken": None, "resetTokenExpiry": None}, synchronize_session=False)
+            db.commit()
+            logger.warning("Password reset email delivery failed")
+            raise HTTPException(status_code=503, detail="Password reset email is temporarily unavailable. Please try again later.")
         
         log_security_event(db, "password_reset_requested", "low", f"Password reset link generated for user: {user.email}", user_id=user.id, ip=ip, ua=ua)
         
-        return {
-            "success": True,
-            "message": "Password reset link sent to your email"
-        }
+        return generic_response
     except SQLAlchemyError as e:
         db.rollback()
         logger.error(f"Database error during forgot-password request: {e}")
@@ -372,7 +384,8 @@ async def reset_password(
         
     try:
         user = db.query(User).filter(User.email == email).first()
-        if not user or user.resetToken != body.token:
+        token_hash = hashlib.sha256(body.token.encode()).hexdigest()
+        if not user or not user.resetToken or not hmac.compare_digest(user.resetToken, token_hash):
             log_security_event(db, "password_reset_failed", "medium", f"Invalid reset token or email for: {email}", ip=ip, ua=ua)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -387,12 +400,20 @@ async def reset_password(
             )
             
         hashed_password = get_password_hash(body.newPassword)
-        user.password = hashed_password
-        user.confirmpassword = hashed_password
-        user.resetToken = None
-        user.resetTokenExpiry = None
-        user.lastPasswordChange = datetime.utcnow()
-        user.passwordVersion += 1
+        # Consume the token in the same transaction as the password/session update.
+        # This also rejects a token consumed by another worker after the read above.
+        updated = db.query(User).filter(
+            User.id == user.id, User.resetToken == token_hash,
+            User.resetTokenExpiry > datetime.utcnow()
+        ).update({
+            "password": hashed_password, "confirmpassword": hashed_password,
+            "resetToken": None, "resetTokenExpiry": None,
+            "lastPasswordChange": datetime.utcnow(), "passwordVersion": User.passwordVersion + 1,
+        }, synchronize_session=False)
+        if updated != 1:
+            db.rollback()
+            raise HTTPException(status_code=400, detail="Reset token expired or already used")
+        db.query(UserSession).filter(UserSession.userId == user.id).update({"isActive": False})
         
         db.commit()
         

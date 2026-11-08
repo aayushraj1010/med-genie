@@ -4,13 +4,13 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session as DBSession
 from sqlalchemy.exc import SQLAlchemyError
-import google.generativeai as genai
+from starlette.concurrency import run_in_threadpool
+from app.core.gemini import generate_health_answer, GeminiUnavailable
 from app.core.database import get_db
 from app.models.db_models import User, ChatSession, ChatMessage, HealthProfile
 from app.schemas.pydantic_objs import ChatMessageCreate, ChatSessionCreate, ChatMessageResponse
 from typing import List
 from app.api.deps import get_current_user
-from app.core.config import settings
 
 logger = logging.getLogger("chat_api")
 
@@ -41,14 +41,6 @@ def _local_health_fallback(question: str) -> tuple[str, str]:
     )
 
 
-# Initialize Gemini AI
-if settings.gemini_api_key:
-    try:
-        genai.configure(api_key=settings.gemini_api_key)
-        logger.info("Gemini AI API client successfully configured.")
-    except Exception as e:
-        logger.error(f"Error configuring Gemini AI Client: {e}")
-
 SYSTEM_PROMPT = """You are a medical AI assistant. Your goal is to answer the user's question or ask for more information if needed.
 
 IMPORTANT: You have access to the conversation history. Use this context to:
@@ -57,26 +49,8 @@ IMPORTANT: You have access to the conversation history. Use this context to:
 - Avoid asking for information already provided in previous messages
 - Build upon previous advice or recommendations
 
-You MUST respond in JSON format. The JSON object should conform to the following structure:
-{{
-  "answer": "string (This field is REQUIRED. It should contain the direct answer to the user's question. If you need to ask a follow-up question, this field should state that more information is needed, e.g., 'I need more information to help you effectively.')",
-  "followUpQuestion": "string (This field is OPTIONAL. If you need more details from the user to provide a complete answer, include your specific follow-up question here. Otherwise, omit this field or provide an empty string.)"
-}}
-
-Example 1 (Direct Answer):
-User question: "What are common flu symptoms?"
-Your JSON response:
-{{
-  "answer": "Common flu symptoms include fever, cough, sore throat, runny or stuffy nose, muscle or body aches, headaches, and fatigue."
-}}
-
-Example 2 (Need More Information):
-User question: "I have a cough, what could it be?"
-Your JSON response:
-{{
-  "answer": "To understand what might be causing your cough, I need a bit more information.",
-  "followUpQuestion": "Could you tell me more about your cough (e.g., is it dry or wet, how long have you had it) and if you have any other symptoms like fever or shortness of breath?"
-}}
+Provide a direct answer in the answer field. When more information is needed,
+include a specific followUpQuestion. The API supplies the response schema.
 
 Carefully review the user's input:
 Question: {question}
@@ -185,7 +159,8 @@ async def send_chat_message(
         # Load recent conversation history (last 10 messages)
         history_msgs = db.query(ChatMessage).filter(
             ChatMessage.sessionId == chat_session.id
-        ).order_by(ChatMessage.timestamp.asc()).all()[-10:]
+        ).order_by(ChatMessage.timestamp.desc(), ChatMessage.id.desc()).limit(10).all()
+        history_msgs.reverse()
         
         history_str = "\n".join([f"{m.sender.upper()}: {m.content}" for m in history_msgs])
     except SQLAlchemyError as e:
@@ -202,48 +177,23 @@ async def send_chat_message(
         history=history_str or "No previous messages"
     )
 
+    source, fallback_reason = "gemini", None
     try:
-        if not settings.gemini_api_key:
-            ai_answer, follow_up = _local_health_fallback(message_in.content)
-            logger.warning("Gemini API key is not configured. Returned local health fallback.")
-        else:
-            model = genai.GenerativeModel("gemini-3.5-flash")
-            response = model.generate_content(
-                formatted_prompt,
-                generation_config={"response_mime_type": "application/json"},
-                request_options={"timeout": 8.0}
-            )
+        result = await run_in_threadpool(generate_health_answer, formatted_prompt)
+        ai_answer, follow_up = result.answer, result.followUpQuestion
+    except GeminiUnavailable as error:
+        source, fallback_reason = "local_fallback", error.reason
+        ai_answer, follow_up = _local_health_fallback(message_in.content)
+        logger.warning("Chat returned local fallback (%s)", fallback_reason)
 
-            # Safely check if response contains content
-            if (
-                not response.candidates
-                or not response.candidates[0].content
-                or not response.candidates[0].content.parts
-            ):
-                logger.error("Gemini API returned an empty/blocked response.")
-                ai_answer, follow_up = _local_health_fallback(message_in.content)
-            else:
-                response_text = response.text
-
-                # Parse JSON output safely
-                try:
-                    response_data = json.loads(response_text)
-                    ai_answer = response_data.get("answer", "I need more information to help you effectively.")
-                    follow_up = response_data.get("followUpQuestion", "")
-                except json.JSONDecodeError as je:
-                    logger.error(f"Failed to parse JSON from Gemini response: {response_text}. Error: {je}")
-                    # Resilient fallback if LLM produces invalid JSON
-                    ai_answer = response_text
-                    follow_up = ""
-        
-        # Save AI response
+    try:
         ai_msg = ChatMessage(
             sessionId=chat_session.id,
             content=ai_answer,
             sender="ai",
             timestamp=datetime.utcnow(),
             isFollowUp=bool(follow_up),
-            messageMetadata=json.dumps({"followUpQuestion": follow_up}) if follow_up else None
+            messageMetadata=json.dumps({"followUpQuestion": follow_up, "source": source, "fallbackReason": fallback_reason})
         )
         db.add(ai_msg)
         
@@ -253,36 +203,14 @@ async def send_chat_message(
         
         return {
             "answer": ai_answer,
-            "followUpQuestion": follow_up
+            "followUpQuestion": follow_up,
+            "source": source,
+            "fallbackReason": fallback_reason,
         }
-    except Exception as e:
+    except SQLAlchemyError:
         db.rollback()
-        logger.error(f"Gemini API or database error during chat response generation: {e}")
-        ai_answer, follow_up = _local_health_fallback(message_in.content)
-        try:
-            ai_msg = ChatMessage(
-                sessionId=chat_session.id,
-                content=ai_answer,
-                sender="ai",
-                timestamp=datetime.utcnow(),
-                isFollowUp=bool(follow_up),
-                messageMetadata=json.dumps({"followUpQuestion": follow_up}) if follow_up else None
-            )
-            db.add(ai_msg)
-            chat_session.updatedAt = datetime.utcnow()
-            db.commit()
-            return {
-                "answer": ai_answer,
-                "followUpQuestion": follow_up,
-                "source": "local_fallback",
-            }
-        except SQLAlchemyError as db_error:
-            db.rollback()
-            logger.error(f"Failed to save fallback chat response: {db_error}")
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to save chat response."
-            )
+        logger.error("Failed to persist chat response")
+        raise HTTPException(status_code=500, detail="Failed to save chat response.")
 
 
 @router.get("/sessions/{session_id}/messages", response_model=List[ChatMessageResponse])

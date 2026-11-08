@@ -51,7 +51,7 @@ class MockChatNotifier extends ChatNotifier {
   @override
   List<ChatMessage> build() {
     return [
-      ChatMessage(text: "Hello! I am mock Wellness.", sender: "ai", timestamp: DateTime.now()),
+      ChatMessage(text: "Hello! I am mock Wellness.", sender: "ai", timestamp: DateTime.now(), source: 'local_fallback'),
       ChatMessage(text: "Hello AI!", sender: "user", timestamp: DateTime.now()),
     ];
   }
@@ -107,6 +107,7 @@ void main() {
     expect(find.text("Hello, Mock User"), findsOneWidget);
     expect(find.text("Hello! I am mock Wellness."), findsOneWidget);
     expect(find.text("Hello AI!"), findsOneWidget);
+    expect(find.text('General guidance · AI unavailable'), findsOneWidget);
     expect(find.byType(TextField), findsOneWidget);
   });
 

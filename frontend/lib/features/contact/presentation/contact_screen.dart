@@ -34,11 +34,13 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
         "email": _emailCtrl.text.trim(),
         "message": _messageCtrl.text.trim(),
       });
+      if (!mounted) return;
       setState(() {
         _submitted = true;
         _isSubmitting = false;
       });
     } catch (_) {
+      if (!mounted) return;
       setState(() => _isSubmitting = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

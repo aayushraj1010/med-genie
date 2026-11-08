@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_text_field.dart';
+import 'password_recovery_screen.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -214,6 +215,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
+
+                        if (isLogin) TextButton(
+                          onPressed: authState.isLoading ? null : () => Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => PasswordRecoveryScreen(email: _emailCtrl.text.trim()))),
+                          child: const Text('Forgot password?'),
+                        ),
 
                         // Toggle login/register
                         TextButton(

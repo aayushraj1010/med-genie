@@ -44,3 +44,10 @@ next-env.d.ts
 firebase-debug.log
 firestore-debug.log
 /src/generated/prisma
+
+# Python development artifacts
+backend/.venv/
+__pycache__/
+*.pyc
+backend/test_runtime.db
+backend/test-results.log
